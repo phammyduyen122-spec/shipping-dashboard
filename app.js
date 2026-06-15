@@ -243,39 +243,47 @@ function linkTransfers(rawTransfers) {
         correctiveMap[key].push(c);
     });
 
+    // Pass 1: Match by generatedDoc code link (highest priority)
     originals.forEach(orig => {
         const key = `${norm(orig.toBranch)}_${norm(orig.itemCode)}`;
         const candidates = correctiveMap[key];
-        if (candidates) {
-            // 1. Try to match by code link (if orig has generatedDoc/PT chuyển hoàn)
-            let match = null;
-            if (orig.generatedDoc) {
-                const origGen = norm(orig.generatedDoc);
-                match = candidates.find(c => {
-                    if (c.isMerged) return false;
-                    const cCode = norm(c.transferCode);
-                    return cCode !== "" && origGen.includes(cCode);
-                });
-            }
-            
-            // 2. Fallback: match by branch, item, and date proximity (within 3 days) if the original had a shortfall
-            if (!match && (orig.qtyShipped > orig.qtyReceived)) {
-                const origDate = new Date(orig.date);
-                match = candidates.find(c => {
-                    if (c.isMerged) return false;
-                    const cDate = new Date(c.date);
-                    const diffDays = Math.abs(cDate - origDate) / (1000 * 60 * 60 * 24);
-                    // Match if dates are close (within 3 days) and supplement qty is positive
-                    return diffDays <= 3 && c.qtyShipped > 0;
-                });
-            }
-            
+        if (candidates && orig.generatedDoc) {
+            const origGen = norm(orig.generatedDoc);
+            const match = candidates.find(c => {
+                if (c.isMerged) return false;
+                const cCode = norm(c.transferCode);
+                return cCode !== "" && origGen.includes(cCode);
+            });
             if (match) {
                 orig.matchedCorrectiveQty = match.qtyShipped;
                 match.isMerged = true;
             }
         }
     });
+
+    // Pass 2: Fallback matches prioritizing date proximity (0 days first, then up to 3 days)
+    for (let maxDiff = 0; maxDiff <= 3; maxDiff++) {
+        originals.forEach(orig => {
+            if (orig.matchedCorrectiveQty > 0) return; // Already matched
+            if (orig.qtyShipped <= orig.qtyReceived) return; // No shortfall
+            
+            const key = `${norm(orig.toBranch)}_${norm(orig.itemCode)}`;
+            const candidates = correctiveMap[key];
+            if (candidates) {
+                const origDate = new Date(orig.date);
+                const match = candidates.find(c => {
+                    if (c.isMerged) return false;
+                    const cDate = new Date(c.date);
+                    const diffDays = Math.abs(cDate - origDate) / (1000 * 60 * 60 * 24);
+                    return diffDays <= maxDiff && c.qtyShipped > 0;
+                });
+                if (match) {
+                    orig.matchedCorrectiveQty = match.qtyShipped;
+                    match.isMerged = true;
+                }
+            }
+        });
+    }
 
     return [...originals, ...correctives];
 }

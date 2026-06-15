@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Giám sát Điều chuyển Hàng hóa - Dashboard</title>
+    
+    <!-- Premium Stylesheet Link -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <!-- Application Header -->
+        <header>
+            <div class="brand-section">
+                <div class="logo-icon">🚚</div>
+                <div class="title-section">
+                    <h1>Giám sát Điều chuyển Hàng hóa</h1>
+                    <p>Dashboard thống kê giao nhận & kiểm soát chênh lệch hàng hóa</p>
+                </div>
+            </div>
+            <div class="header-controls">
+                <!-- Theme Toggle Button -->
+                <button class="theme-switch" id="themeToggleBtn" title="Chuyển chế độ Sáng / Tối">
+                    <div class="theme-switch-toggle" id="themeToggleIcon">☀️</div>
+                </button>
+                <!-- Add New Entry Button -->
+                <button class="btn btn-primary" id="btnAddRecord">
+                    <span>➕ Thêm Vận Chuyển</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Tab Navigation Bar -->
+        <div class="tabs-navigation">
+            <button class="tab-btn active" id="tabTransferMonitor">🚚 Giám sát Điều chuyển</button>
+            <button class="tab-btn" id="tabPerformanceReport">📊 Hiệu suất Chia hàng</button>
+        </div>
+
+        <!-- Tab 1: Shipping Transfer Monitor -->
+        <div class="tab-content active" id="contentTransferMonitor">
+            <!-- Advanced Filter Controls -->
+        <div class="filters-card">
+            <div class="filters-header">
+                🔍 <span>Bộ lọc tìm kiếm dữ liệu</span>
+            </div>
+            <div class="filters-grid">
+                <!-- Mã hàng Filter with multi-tag support -->
+                <div class="filter-group dropdown-search-wrapper">
+                    <label class="filter-label">Barcode / Tên Sản phẩm (Chọn nhiều)</label>
+                    <div class="input-field tags-input-container" id="itemTagsContainer">
+                        <input type="text" id="filterItemCode" placeholder="Tìm và chọn sản phẩm..." autocomplete="off">
+                    </div>
+                    <div id="itemDropdownList" class="dropdown-search-list"></div>
+                </div>
+                
+                <!-- Trạng thái Filter (Multi-select) -->
+                <div class="filter-group">
+                    <label class="filter-label">Trạng thái giao nhận</label>
+                    <div class="multiselect-container" id="filterStatusContainer">
+                        <div class="multiselect-select">
+                            <span class="multiselect-value">-- Tất cả trạng thái --</span>
+                            <span class="multiselect-arrow">▾</span>
+                        </div>
+                        <div class="multiselect-dropdown">
+                            <div class="multiselect-options-list">
+                                <label class="multiselect-option">
+                                    <input type="checkbox" value="Đủ"> <span>Đủ (Đầy đủ)</span>
+                                </label>
+                                <label class="multiselect-option">
+                                    <input type="checkbox" value="Thiếu"> <span>Thiếu (Hụt hàng)</span>
+                                </label>
+                                <label class="multiselect-option">
+                                    <input type="checkbox" value="Dư"> <span>Dư (Dôi thừa)</span>
+                                </label>
+                                <label class="multiselect-option">
+                                    <input type="checkbox" value="Đang chuyển"> <span>Đang chuyển (Đang đi)</span>
+                                </label>
+                                <label class="multiselect-option">
+                                    <input type="checkbox" value="Hao hụt"> <span>Hao hụt (&lt; 15% kg)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chi nhánh chuyển Filter (Multi-select) -->
+                <div class="filter-group">
+                    <label class="filter-label">Nơi chuyển</label>
+                    <div class="multiselect-container" id="filterFromBranchContainer">
+                        <div class="multiselect-select">
+                            <span class="multiselect-value">-- Tất cả nơi chuyển --</span>
+                            <span class="multiselect-arrow">▾</span>
+                        </div>
+                        <div class="multiselect-dropdown">
+                            <div class="multiselect-search-wrapper">
+                                <input type="text" class="multiselect-search-input" placeholder="Tìm nơi chuyển...">
+                            </div>
+                            <div class="multiselect-actions">
+                                <span class="multiselect-action-btn select-all">Chọn tất cả</span>
+                                <span class="multiselect-action-btn clear-all">Xóa tất cả</span>
+                            </div>
+                            <div class="multiselect-options-list" id="filterFromBranchOptions">
+                                <!-- Generated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chi nhánh nhận Filter (Multi-select) -->
+                <div class="filter-group">
+                    <label class="filter-label">Nơi nhận</label>
+                    <div class="multiselect-container" id="filterToBranchContainer">
+                        <div class="multiselect-select">
+                            <span class="multiselect-value">-- Tất cả nơi nhận --</span>
+                            <span class="multiselect-arrow">▾</span>
+                        </div>
+                        <div class="multiselect-dropdown">
+                            <div class="multiselect-search-wrapper">
+                                <input type="text" class="multiselect-search-input" placeholder="Tìm nơi nhận...">
+                            </div>
+                            <div class="multiselect-actions">
+                                <span class="multiselect-action-btn select-all">Chọn tất cả</span>
+                                <span class="multiselect-action-btn clear-all">Xóa tất cả</span>
+                            </div>
+                            <div class="multiselect-options-list" id="filterToBranchOptions">
+                                <!-- Generated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Đơn vị tính Filter (Multi-select) -->
+                <div class="filter-group">
+                    <label class="filter-label">Đơn vị tính</label>
+                    <div class="multiselect-container" id="filterUnitContainer">
+                        <div class="multiselect-select">
+                            <span class="multiselect-value">-- Tất cả đơn vị --</span>
+                            <span class="multiselect-arrow">▾</span>
+                        </div>
+                        <div class="multiselect-dropdown">
+                            <div class="multiselect-search-wrapper">
+                                <input type="text" class="multiselect-search-input" placeholder="Tìm đơn vị...">
+                            </div>
+                            <div class="multiselect-actions">
+                                <span class="multiselect-action-btn select-all">Chọn tất cả</span>
+                                <span class="multiselect-action-btn clear-all">Xóa tất cả</span>
+                            </div>
+                            <div class="multiselect-options-list" id="filterUnitOptions">
+                                <!-- Generated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ngành hàng Filter (Multi-select) -->
+                <div class="filter-group">
+                    <label class="filter-label">Ngành hàng</label>
+                    <div class="multiselect-container" id="filterCategoryContainer">
+                        <div class="multiselect-select">
+                            <span class="multiselect-value">-- Tất cả ngành hàng --</span>
+                            <span class="multiselect-arrow">▾</span>
+                        </div>
+                        <div class="multiselect-dropdown">
+                            <div class="multiselect-actions">
+                                <span class="multiselect-action-btn select-all">Chọn tất cả</span>
+                                <span class="multiselect-action-btn clear-all">Xóa tất cả</span>
+                            </div>
+                            <div class="multiselect-options-list" id="filterCategoryOptions">
+                                <label class="multiselect-option"><input type="checkbox" value="2.EGGS"> <span>2.EGGS</span></label>
+                                <label class="multiselect-option"><input type="checkbox" value="2.DELICA"> <span>2.DELICA</span></label>
+                                <label class="multiselect-option"><input type="checkbox" value="2.VEGETABLES"> <span>2.VEGETABLES</span></label>
+                                <label class="multiselect-option"><input type="checkbox" value="2.BAKERY"> <span>2.BAKERY</span></label>
+                                <label class="multiselect-option"><input type="checkbox" value="2.FRUITS"> <span>2.FRUITS</span></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Date Range Filters -->
+                <div class="filter-group">
+                    <label class="filter-label">Từ ngày</label>
+                    <input type="date" id="filterStartDate" class="input-field">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Đến ngày</label>
+                    <input type="date" id="filterEndDate" class="input-field">
+                </div>
+            </div>
+            <div style="margin-top: 16px; display: flex; justify-content: flex-end;">
+                <button class="btn btn-secondary" id="clearFiltersBtn">
+                    <span>🧹 Xóa bộ lọc</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SUMIFS Summary Card -->
+        <div class="filters-card" id="sumifsCard" style="background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%); margin-bottom: 24px;">
+            <div class="filters-header" style="margin-bottom: 12px; color: var(--color-primary); font-weight: 700;">
+                📊 <span>Bảng tổng hợp nhanh (SUMIFS) cho kết quả lọc</span>
+            </div>
+            <div class="stats-grid" style="margin-bottom: 0;">
+                <!-- Tổng số lượng chuyển -->
+                <div class="stat-card total" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; --color-primary: #4f46e5;">
+                    <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                        <span>TỔNG SỐ LƯỢNG CHUYỂN</span>
+                        <span style="color: #4f46e5;">●</span>
+                    </div>
+                    <div class="stat-value" id="sumifsTotalShipped" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0</div>
+                    <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Theo mã hàng & ngày chuyển (Tất cả chi nhánh)</div>
+                </div>
+
+                <!-- Đủ -->
+                <div class="stat-card du-ok" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px;">
+                    <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                        <span>ĐỦ HÀNG</span>
+                        <span style="color: var(--color-success);">●</span>
+                    </div>
+                    <div class="stat-value" id="sumifsDuCount" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đơn</div>
+                    <div class="stat-subtitle" id="sumifsDuQty" style="font-size: 11px; color: var(--text-muted);">Chuyển: 0 | Nhận: 0</div>
+                </div>
+                
+                <!-- Thiếu -->
+                <div class="stat-card thieu" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px;">
+                    <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                        <span>THIẾU HÀNG</span>
+                        <span style="color: var(--color-danger);">●</span>
+                    </div>
+                    <div class="stat-value" id="sumifsThieuCount" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đơn</div>
+                    <div class="stat-subtitle" id="sumifsThieuQty" style="font-size: 11px; color: var(--text-muted);">Tổng lệch thiếu: 0</div>
+                </div>
+                
+                <!-- Dư -->
+                <div class="stat-card du" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px;">
+                    <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                        <span>DƯ HÀNG</span>
+                        <span style="color: var(--color-info);">●</span>
+                    </div>
+                    <div class="stat-value" id="sumifsDuThieuCount" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đơn</div>
+                    <div class="stat-subtitle" id="sumifsDuThieuQty" style="font-size: 11px; color: var(--text-muted);">Tổng lệch dư: 0</div>
+                </div>
+                
+                <!-- Đang chuyển -->
+                <div class="stat-card total" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; --color-primary: #d97706;">
+                    <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                        <span>ĐANG CHUYỂN</span>
+                        <span style="color: #d97706;">●</span>
+                    </div>
+                    <div class="stat-value" id="sumifsChuyenCount" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đơn</div>
+                    <div class="stat-subtitle" id="sumifsChuyenQty" style="font-size: 11px; color: var(--text-muted);">Tổng đang đi: 0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Data Table -->
+        <div class="table-card">
+            <div class="table-header-row">
+                <span class="table-title">📋 Danh sách chi tiết vận chuyển</span>
+                <div class="table-actions">
+                    <button class="btn btn-secondary" id="btnExport">
+                        <span>📥 Xuất Excel/CSV</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-sort="date">Ngày chuyển</th>
+                            <th data-sort="fromBranch">Chi nhánh chuyển</th>
+                            <th data-sort="toBranch">Chi nhánh nhận</th>
+                            <th data-sort="nguoiChia">Người chia</th>
+                            <th data-sort="itemCode" class="sort-asc">Mã hàng</th>
+                            <th data-sort="itemName">Tên hàng</th>
+                            <th data-sort="unit">Đơn vị tính</th>
+                            <th data-sort="nganhHang">Ngành hàng</th>
+                            <th data-sort="slChuyenKRC" style="text-align: right;">SL chuyển</th>
+                            <th data-sort="slNhanKRC" style="text-align: right;">SL nhận</th>
+                            <th data-sort="chenhLech" style="text-align: right;">Chênh lệch</th>
+                            <th data-sort="slBoSung" style="text-align: right;">SL bổ sung</th>
+                            <th data-sort="diff" style="text-align: right;">SL chênh lệch còn lại</th>
+                            <th data-sort="status">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Content generated dynamically via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Table Pagination Bar -->
+            <div class="pagination">
+                <div class="pagination-info" id="paginationInfo">
+                    Hiển thị 0-0 trên 0 bản ghi
+                </div>
+                <div class="pagination-buttons">
+                    <button class="pagination-btn" id="prevPageBtn" disabled>Trở lại</button>
+                    <button class="pagination-btn" id="nextPageBtn" disabled>Tiếp theo</button>
+                </div>
+            </div>
+        </div>
+        </div> <!-- End of contentTransferMonitor -->
+
+        <!-- Tab 2: Performance Report -->
+        <div class="tab-content" id="contentPerformanceReport">
+            <!-- Advanced Filter Controls for Performance -->
+            <div class="filters-card">
+                <div class="filters-header">
+                    🔍 <span>Bộ lọc hiệu suất chia hàng</span>
+                </div>
+                <div class="filters-grid">
+                    <!-- Barcode/Tên sản phẩm Filter -->
+                    <div class="filter-group dropdown-search-wrapper">
+                        <label class="filter-label">Barcode / Tên Sản phẩm (Chọn nhiều)</label>
+                        <div class="input-field tags-input-container" id="perfItemTagsContainer">
+                            <input type="text" id="perfFilterItemCode" placeholder="Tìm và chọn sản phẩm..." autocomplete="off">
+                        </div>
+                        <div id="perfItemDropdownList" class="dropdown-search-list"></div>
+                    </div>
+                    
+                    <!-- Nhóm nhân sự Filter (Multi-select) -->
+                    <div class="filter-group">
+                        <label class="filter-label">Nhóm nhân sự</label>
+                        <div class="multiselect-container" id="perfFilterGroupContainer">
+                            <div class="multiselect-select">
+                                <span class="multiselect-value">-- Tất cả nhóm --</span>
+                                <span class="multiselect-arrow">▾</span>
+                            </div>
+                            <div class="multiselect-dropdown">
+                                <div class="multiselect-options-list">
+                                    <label class="multiselect-option">
+                                        <input type="checkbox" value="F1"> <span>F1</span>
+                                    </label>
+                                    <label class="multiselect-option">
+                                        <input type="checkbox" value="F2"> <span>F2</span>
+                                    </label>
+                                    <label class="multiselect-option">
+                                        <input type="checkbox" value="HUYHOANG"> <span>HUYHOANG</span>
+                                    </label>
+                                    <label class="multiselect-option">
+                                        <input type="checkbox" value="CTV"> <span>CTV</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Người chia hàng Filter (Multi-select) -->
+                    <div class="filter-group">
+                        <label class="filter-label">Người chia hàng</label>
+                        <div class="multiselect-container" id="perfFilterUserContainer">
+                            <div class="multiselect-select">
+                                <span class="multiselect-value">-- Tất cả người chia --</span>
+                                <span class="multiselect-arrow">▾</span>
+                            </div>
+                            <div class="multiselect-dropdown">
+                                <div class="multiselect-search-wrapper">
+                                    <input type="text" class="multiselect-search-input" placeholder="Tìm người chia...">
+                                </div>
+                                <div class="multiselect-actions">
+                                    <span class="multiselect-action-btn select-all">Chọn tất cả</span>
+                                    <span class="multiselect-action-btn clear-all">Xóa tất cả</span>
+                                </div>
+                                <div class="multiselect-options-list" id="perfFilterUserOptions">
+                                    <!-- Dynamic -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Trạng thái Filter (Multi-select) -->
+                    <div class="filter-group">
+                        <label class="filter-label">Trạng thái chia</label>
+                        <div class="multiselect-container" id="perfFilterStatusContainer">
+                            <div class="multiselect-select">
+                                <span class="multiselect-value">-- Tất cả trạng thái --</span>
+                                <span class="multiselect-arrow">▾</span>
+                            </div>
+                            <div class="multiselect-dropdown">
+                                <div class="multiselect-options-list">
+                                    <label class="multiselect-option">
+                                        <input type="checkbox" value="Đủ"> <span>Đủ (Đầy đủ)</span>
+                                    </label>
+                                    <label class="multiselect-option">
+                                        <input type="checkbox" value="Thiếu"> <span>Thiếu (Hụt hàng)</span>
+                                    </label>
+                                    <label class="multiselect-option">
+                                        <input type="checkbox" value="Dư"> <span>Dư (Dôi thừa)</span>
+                                    </label>
+                                    <label class="multiselect-option">
+                                        <input type="checkbox" value="Đang chuyển"> <span>Đang chuyển (Đang đi)</span>
+                                    </label>
+                                    <label class="multiselect-option">
+                                        <input type="checkbox" value="Hao hụt"> <span>Hao hụt (&lt; 15% kg)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Nơi nhận Filter (Multi-select) -->
+                    <div class="filter-group">
+                        <label class="filter-label">Nơi nhận</label>
+                        <div class="multiselect-container" id="perfFilterToBranchContainer">
+                            <div class="multiselect-select">
+                                <span class="multiselect-value">-- Tất cả nơi nhận --</span>
+                                <span class="multiselect-arrow">▾</span>
+                            </div>
+                            <div class="multiselect-dropdown">
+                                <div class="multiselect-search-wrapper">
+                                    <input type="text" class="multiselect-search-input" placeholder="Tìm nơi nhận...">
+                                </div>
+                                <div class="multiselect-actions">
+                                    <span class="multiselect-action-btn select-all">Chọn tất cả</span>
+                                    <span class="multiselect-action-btn clear-all">Xóa tất cả</span>
+                                </div>
+                                <div class="multiselect-options-list" id="perfFilterToBranchOptions">
+                                    <!-- Dynamic -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Đơn vị tính Filter (Multi-select) -->
+                    <div class="filter-group">
+                        <label class="filter-label">Đơn vị tính</label>
+                        <div class="multiselect-container" id="perfFilterUnitContainer">
+                            <div class="multiselect-select">
+                                <span class="multiselect-value">-- Tất cả đơn vị --</span>
+                                <span class="multiselect-arrow">▾</span>
+                            </div>
+                            <div class="multiselect-dropdown">
+                                <div class="multiselect-search-wrapper">
+                                    <input type="text" class="multiselect-search-input" placeholder="Tìm đơn vị...">
+                                </div>
+                                <div class="multiselect-actions">
+                                    <span class="multiselect-action-btn select-all">Chọn tất cả</span>
+                                    <span class="multiselect-action-btn clear-all">Xóa tất cả</span>
+                                </div>
+                                <div class="multiselect-options-list" id="perfFilterUnitOptions">
+                                    <!-- Dynamic -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ngành hàng Filter (Multi-select) -->
+                    <div class="filter-group">
+                        <label class="filter-label">Ngành hàng</label>
+                        <div class="multiselect-container" id="perfFilterCategoryContainer">
+                            <div class="multiselect-select">
+                                <span class="multiselect-value">-- Tất cả ngành hàng --</span>
+                                <span class="multiselect-arrow">▾</span>
+                            </div>
+                            <div class="multiselect-dropdown">
+                                <div class="multiselect-actions">
+                                    <span class="multiselect-action-btn select-all">Chọn tất cả</span>
+                                    <span class="multiselect-action-btn clear-all">Xóa tất cả</span>
+                                </div>
+                                <div class="multiselect-options-list" id="perfFilterCategoryOptions">
+                                    <label class="multiselect-option"><input type="checkbox" value="2.EGGS"> <span>2.EGGS</span></label>
+                                    <label class="multiselect-option"><input type="checkbox" value="2.DELICA"> <span>2.DELICA</span></label>
+                                    <label class="multiselect-option"><input type="checkbox" value="2.VEGETABLES"> <span>2.VEGETABLES</span></label>
+                                    <label class="multiselect-option"><input type="checkbox" value="2.BAKERY"> <span>2.BAKERY</span></label>
+                                    <label class="multiselect-option"><input type="checkbox" value="2.FRUITS"> <span>2.FRUITS</span></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Date Range Filters -->
+                    <div class="filter-group">
+                        <label class="filter-label">Từ ngày</label>
+                        <input type="date" id="perfFilterStartDate" class="input-field">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Đến ngày</label>
+                        <input type="date" id="perfFilterEndDate" class="input-field">
+                    </div>
+                </div>
+                <div style="margin-top: 16px; display: flex; justify-content: flex-end;">
+                    <button class="btn btn-secondary" id="perfClearFiltersBtn">
+                        <span>🧹 Xóa bộ lọc</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Performance Stats Grid -->
+            <div class="filters-card" style="background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%); margin-bottom: 24px;">
+                <div class="filters-header" style="margin-bottom: 12px; color: var(--color-primary); font-weight: 700;">
+                    📊 <span>Bảng tổng hợp nhanh hiệu suất chia hàng</span>
+                </div>
+                <div class="stats-grid" style="margin-bottom: 0;">
+                    <!-- Tổng SL yêu cầu -->
+                    <div class="stat-card total" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; --color-primary: #4f46e5;">
+                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                            <span>TỔNG SL YÊU CẦU</span>
+                            <span style="color: #4f46e5;">●</span>
+                        </div>
+                        <div class="stat-value" id="perfTotalReq" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0</div>
+                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Số lượng yêu cầu ban đầu</div>
+                    </div>
+
+                    <!-- Tổng SL thực chia -->
+                    <div class="stat-card du-ok" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px;">
+                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                            <span>TỔNG SL THỰC CHIA</span>
+                            <span style="color: var(--color-success);">●</span>
+                        </div>
+                        <div class="stat-value" id="perfTotalShared" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0</div>
+                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Số lượng thực sự chia xong</div>
+                    </div>
+                    
+                    <!-- Lệch chia -->
+                    <div class="stat-card thieu" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px;">
+                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                            <span>LỆCH CHIA HỤT (THIẾU)</span>
+                            <span style="color: var(--color-danger);">●</span>
+                        </div>
+                        <div class="stat-value" id="perfTotalDiff" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0</div>
+                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Tổng lệch thiếu (không tính hao hụt)</div>
+                    </div>
+                    
+                    <!-- SL Rổ/Kiện -->
+                    <div class="stat-card du" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px;">
+                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                            <span>TỔNG SỐ RỔ / KIỆN</span>
+                            <span style="color: var(--color-info);">●</span>
+                        </div>
+                        <div class="stat-value" id="perfTotalBaskets" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 Rổ / 0 Kiện</div>
+                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Được kiểm đếm thực tế</div>
+                    </div>
+                </div>
+                <!-- Breakdown of discrepancy by category -->
+                <div id="perfCategoryDiffBreakdown" style="margin-top: 16px; border-top: 1px dashed var(--border-color); padding-top: 16px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center;">
+                </div>
+            </div>
+
+            <!-- Top 10 CTV Chia Lệch Card -->
+            <div class="table-card" style="margin-bottom: 24px;">
+                <div class="table-header-row" style="background-color: rgba(239, 68, 68, 0.05); border-bottom: 1px solid rgba(239, 68, 68, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <span class="table-title" style="color: var(--color-danger); display: flex; align-items: center; gap: 8px; margin: 0;">
+                        ⚠️ <span id="topCTVTitleText">Top 10 CTV chia sai lệch nhiều nhất</span>
+                    </span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <label for="topCTVSortSelect" style="font-size: 12px; font-weight: 600; color: var(--color-danger);">Sắp xếp theo:</label>
+                        <select id="topCTVSortSelect" class="input-field" style="width: auto; padding: 4px 28px 4px 12px; font-size: 12px; height: 30px; margin: 0; background-color: var(--bg-primary); border-color: var(--color-danger); color: var(--color-danger); font-weight: 600; cursor: pointer; border-radius: var(--radius-sm);">
+                            <option value="stErrorRate">% ST lệch</option>
+                            <option value="qtyErrorRate">% SL lệch</option>
+                            <option value="totalDiffQty">SL lệch</option>
+                            <option value="storesDiscrepant">ST lệch</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 60px;">STT</th>
+                                <th>Ngày</th>
+                                <th>Người chia hàng</th>
+                                <th style="text-align: right;">Tổng số ST chia</th>
+                                <th style="text-align: right; color: var(--color-danger);">Tổng số ST lệch</th>
+                                <th style="text-align: right; color: var(--color-danger);">% ST sai</th>
+                                <th style="text-align: right;">Tổng SL chia</th>
+                                <th style="text-align: right; color: var(--color-danger);">SL chia sai</th>
+                                <th style="text-align: right; color: var(--color-danger);">% Chia sai</th>
+                                <th style="text-align: right; color: var(--color-danger);">SL lệch - Kg</th>
+                                <th style="text-align: right; color: var(--color-danger);">SL lệch - Pack</th>
+                            </tr>
+                        </thead>
+                        <tbody id="perfTopCTVBody">
+                            <!-- Dynamic aggregate content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Top 10 CTV Chia Tốt Nhất Card -->
+            <div class="table-card" style="margin-bottom: 24px;">
+                <div class="table-header-row" style="background-color: rgba(16, 185, 129, 0.05); border-bottom: 1px solid rgba(16, 185, 129, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <span class="table-title" style="color: var(--color-success); display: flex; align-items: center; gap: 8px; margin: 0;">
+                        🏆 <span id="topCTVBestTitleText">Top 10 CTV chia hàng tốt nhất</span>
+                    </span>
+                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <label for="topCTVBestSort1" style="font-size: 12px; font-weight: 600; color: var(--color-success);">Ưu tiên 1:</label>
+                            <select id="topCTVBestSort1" class="input-field" style="width: auto; padding: 4px 28px 4px 12px; font-size: 12px; height: 30px; margin: 0; background-color: var(--bg-primary); border-color: var(--color-success); color: var(--color-success); font-weight: 600; cursor: pointer; border-radius: var(--radius-sm);">
+                                <option value="qtyErrorRate">% SL sai</option>
+                                <option value="stErrorRate">% ST sai</option>
+                                <option value="totalSharedQty">Tổng SL chia</option>
+                                <option value="storesShared">Tổng ST chia</option>
+                                <option value="totalDiffQty">SL sai</option>
+                                <option value="storesDiscrepant">ST sai</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <label for="topCTVBestSort2" style="font-size: 12px; font-weight: 600; color: var(--color-success);">Ưu tiên 2:</label>
+                            <select id="topCTVBestSort2" class="input-field" style="width: auto; padding: 4px 28px 4px 12px; font-size: 12px; height: 30px; margin: 0; background-color: var(--bg-primary); border-color: var(--color-success); color: var(--color-success); font-weight: 600; cursor: pointer; border-radius: var(--radius-sm);">
+                                <option value="totalSharedQty">Tổng SL chia</option>
+                                <option value="qtyErrorRate">% SL sai</option>
+                                <option value="stErrorRate">% ST sai</option>
+                                <option value="storesShared">Tổng ST chia</option>
+                                <option value="totalDiffQty">SL sai</option>
+                                <option value="storesDiscrepant">ST sai</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 60px;">STT</th>
+                                <th>Ngày</th>
+                                <th>Người chia hàng</th>
+                                <th style="text-align: right;">Tổng số ST chia</th>
+                                <th style="text-align: right; color: var(--color-success);">Tổng số ST lệch</th>
+                                <th style="text-align: right; color: var(--color-success);">% ST sai</th>
+                                <th style="text-align: right;">Tổng SL chia</th>
+                                <th style="text-align: right; color: var(--color-success);">SL chia sai</th>
+                                <th style="text-align: right; color: var(--color-success);">% Chia sai</th>
+                                <th style="text-align: right; color: var(--color-success);">SL lệch - Kg</th>
+                                <th style="text-align: right; color: var(--color-success);">SL lệch - Pack</th>
+                            </tr>
+                        </thead>
+                        <tbody id="perfTopCTVBestBody">
+                            <!-- Dynamic aggregate content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Bảng theo dõi hiệu suất phân loại theo Ngành Hàng (Nhóm F1) -->
+            <div class="table-card" style="margin-bottom: 24px;">
+                <div class="table-header-row" style="background-color: rgba(79, 70, 229, 0.05); border-bottom: 1px solid rgba(79, 70, 229, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <span class="table-title" id="perfF1TableTitle" style="color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0;">
+                        📊 Theo dõi hiệu suất phân loại theo Ngành Hàng (Nhóm F1)
+                    </span>
+                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="text" id="perfF1UserSearch" class="table-filter-input" style="width: 150px; margin: 0; padding: 6px 12px;" placeholder="Tìm nhân sự...">
+                        </div>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="perfF1CategoryTable">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="text-align: center; vertical-align: middle; width: 60px;">STT</th>
+                                <th rowspan="2" id="perfF1TableHeaderName" style="vertical-align: middle; white-space: nowrap; padding: 8px 12px;">
+                                    <div style="display: inline-flex; align-items: center; gap: 6px; justify-content: center; width: 100%;">
+                                        <span>Nhân sự</span>
+                                        <select id="perfF1GroupFilter" style="padding: 2px 4px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--bg-card); color: var(--text-primary); font-size: 11px; font-weight: 600; cursor: pointer; outline: none; margin: 0; display: inline-block; width: auto; vertical-align: middle;">
+                                            <option value="All" selected>Tất cả</option>
+                                            <option value="F1">F1</option>
+                                            <option value="F2">F2</option>
+                                            <option value="HUYHOANG">HUYHOANG</option>
+                                            <option value="CTV">CTV</option>
+                                        </select>
+                                    </div>
+                                </th>
+                                <th colspan="6" style="text-align: center; border-bottom: 1px solid var(--border-color);">Sản lượng chia</th>
+                                <th colspan="6" style="text-align: center; border-bottom: 1px solid var(--border-color);">Tỷ lệ chia sai</th>
+                            </tr>
+                            <tr>
+                                <th style="text-align: right; white-space: nowrap;">2.VEGETABLES</th>
+                                <th style="text-align: right; white-space: nowrap;">2.FRUITS</th>
+                                <th style="text-align: right; white-space: nowrap;">2.BAKERY</th>
+                                <th style="text-align: right; white-space: nowrap;">2.EGGS</th>
+                                <th style="text-align: right; white-space: nowrap;">2.DELICA</th>
+                                <th style="text-align: right; white-space: nowrap; font-weight: bold; border-left: 1px solid var(--border-color); color: var(--color-primary);">Tổng SL</th>
+                                <th style="text-align: right; white-space: nowrap;">2.VEGETABLES</th>
+                                <th style="text-align: right; white-space: nowrap;">2.FRUITS</th>
+                                <th style="text-align: right; white-space: nowrap;">2.BAKERY</th>
+                                <th style="text-align: right; white-space: nowrap;">2.EGGS</th>
+                                <th style="text-align: right; white-space: nowrap;">2.DELICA</th>
+                                <th style="text-align: right; white-space: nowrap; font-weight: bold; border-left: 1px solid var(--border-color); color: var(--color-primary);">Tổng % chia sai</th>
+                            </tr>
+                        </thead>
+                        <tbody id="perfF1CategoryBody">
+                            <!-- Dynamic aggregate content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Performance Summary Table Card -->
+            <div class="table-card" style="margin-bottom: 24px;">
+                <div class="table-header-row" style="background-color: rgba(79, 70, 229, 0.05); border-bottom: 1px solid rgba(79, 70, 229, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <span class="table-title" style="color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0;">
+                        📊 Tóm tắt hiệu suất chia hàng
+                    </span>
+                </div>
+                <div class="table-inline-filters" style="display: flex; gap: 16px; padding: 12px 20px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;">🔍 Bộ lọc nhanh:</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 150px;">
+                        <label for="perfSummaryFilterDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Ngày chia:</label>
+                        <input type="text" id="perfSummaryFilterDate" class="input-field" placeholder="dd/mm/yyyy..." style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%;">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 180px;">
+                        <label for="perfSummaryFilterUser" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Nhân sự chia:</label>
+                        <input type="text" id="perfSummaryFilterUser" class="input-field" placeholder="Nhập tên nhân sự..." style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%;">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 2; min-width: 320px;">
+                        <label for="perfSummaryFilterProduct" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Sản phẩm:</label>
+                        <div class="dropdown-search-wrapper" style="flex: 1; position: relative; display: flex; flex-direction: column;">
+                            <div class="input-field tags-input-container" id="perfSummaryItemTagsContainer" style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 4px 8px; min-height: 34px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-primary); width: 100%; cursor: text; box-sizing: border-box;">
+                                <input type="text" id="perfSummaryFilterProduct" placeholder="Chọn nhiều sản phẩm..." autocomplete="off" style="border: none; outline: none; background: transparent; padding: 2px 4px; font-size: 13px; margin: 0; flex: 1; min-width: 120px; color: var(--text-primary);">
+                            </div>
+                            <div id="perfSummaryItemDropdownList" class="dropdown-search-list"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 60px;">STT</th>
+                                <th>Ngày chia hàng</th>
+                                <th>Nhân sự chia</th>
+                                <th>Barcode</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Đơn vị tính</th>
+                                <th>Ngành hàng</th>
+                                <th style="text-align: right;">SL chia</th>
+                                <th style="text-align: right;">SL lệch còn lại</th>
+                                <th style="text-align: right;">% Lệch</th>
+                            </tr>
+                        </thead>
+                        <tbody id="perfSummaryBody">
+                            <!-- Dynamic aggregate content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Performance Data Table -->
+            <div class="table-card">
+                <div class="table-header-row">
+                    <span class="table-title">📋 Chi tiết hiệu suất chia hàng PO qua cảnh</span>
+                    <div class="table-actions">
+                        <button class="btn btn-secondary" id="perfBtnExport">
+                            <span>📥 Xuất Excel/CSV</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-inline-filters" style="display: flex; gap: 16px; padding: 12px 20px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;">🔍 Bộ lọc nhanh bảng:</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 150px;">
+                        <label for="perfTableFilterDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Ngày chia:</label>
+                        <input type="text" id="perfTableFilterDate" class="input-field" placeholder="dd/mm/yyyy..." style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%;">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 180px;">
+                        <label for="perfTableFilterUser" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Người chia:</label>
+                        <input type="text" id="perfTableFilterUser" class="input-field" placeholder="Nhập tên người chia để lọc..." style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%;">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 180px;">
+                        <label for="perfTableFilterBarcode" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Barcode / Mã hàng:</label>
+                        <input type="text" id="perfTableFilterBarcode" class="input-field" placeholder="Nhập barcode để lọc..." style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%;">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 180px;">
+                        <label for="perfTableFilterName" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Tên hàng:</label>
+                        <input type="text" id="perfTableFilterName" class="input-field" placeholder="Nhập tên hàng để lọc..." style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%;">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 150px;">
+                        <label for="perfTableFilterUnit" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Đơn vị tính:</label>
+                        <input type="text" id="perfTableFilterUnit" class="input-field" placeholder="Nhập đơn vị để lọc..." style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%;">
+                    </div>
+                </div>
+                
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-perf-sort="ngayChuyen" class="sort-asc">Ngày chuyển</th>
+                                <th data-perf-sort="maPhieu">Mã Phiếu</th>
+                                <th data-perf-sort="noiNhan">Nơi nhận</th>
+                                <th data-perf-sort="barcode">Barcode</th>
+                                <th data-perf-sort="tenSanPham">Tên sản phẩm</th>
+                                <th data-perf-sort="donVi">Đơn vị</th>
+                                <th data-perf-sort="nganhHang">Ngành hàng</th>
+                                <th data-perf-sort="qtyShipped" style="text-align: right;">SL chuyển</th>
+                                <th data-perf-sort="qtyReceived" style="text-align: right;">SL nhận</th>
+                                <th data-perf-sort="chenhLech" style="text-align: right;">Chênh lệch</th>
+                                <th data-perf-sort="slBoSung" style="text-align: right;">Bổ sung</th>
+                                <th data-perf-sort="diff" style="text-align: right;">CL còn lại</th>
+                                <th data-perf-sort="nguoiChia">Người chia hàng</th>
+                                <th data-perf-sort="trangThai">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="perfTableBody">
+                            <!-- Content generated dynamically via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Table Pagination Bar -->
+                <div class="pagination">
+                    <div class="pagination-info" id="perfPaginationInfo">
+                        Hiển thị 0-0 trên 0 bản ghi
+                    </div>
+                    <div class="pagination-buttons">
+                        <button class="pagination-btn" id="perfPrevPageBtn" disabled>Trở lại</button>
+                        <button class="pagination-btn" id="perfNextPageBtn" disabled>Tiếp theo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding New Record -->
+    <div class="modal-overlay" id="addRecordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Thêm thông tin điều chuyển hàng</h3>
+                <button class="modal-close" id="modalCloseBtn">&times;</button>
+            </div>
+            <form id="addRecordForm">
+                <div class="modal-body">
+                    <!-- Date Input -->
+                    <div class="filter-group">
+                        <label class="filter-label">Ngày chuyển hàng</label>
+                        <input type="date" id="newRecordDate" class="input-field" required>
+                    </div>
+                    
+                    <!-- Branch Inputs -->
+                    <div class="filter-group">
+                        <label class="filter-label">Nơi chuyển</label>
+                        <input type="text" id="newRecordFromBranch" class="input-field" placeholder="Ví dụ: KHO RAU CỦ" required list="fromBranchSuggestions">
+                        <datalist id="fromBranchSuggestions">
+                            <option value="Tổng kho miền Nam">
+                            <option value="Chi nhánh Quận 1">
+                            <option value="Chi nhánh Quận 3">
+                            <option value="Chi nhánh Bình Thạnh">
+                            <option value="Chi nhánh Gò Vấp">
+                            <option value="Chi nhánh Thủ Đức">
+                        </datalist>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Nơi nhận</label>
+                        <input type="text" id="newRecordToBranch" class="input-field" placeholder="Ví dụ: Chi nhánh Quận 1" required list="toBranchSuggestions">
+                        <datalist id="toBranchSuggestions">
+                            <option value="Tổng kho miền Nam">
+                            <option value="Chi nhánh Quận 1">
+                            <option value="Chi nhánh Quận 3">
+                            <option value="Chi nhánh Bình Thạnh">
+                            <option value="Chi nhánh Gò Vấp">
+                            <option value="Chi nhánh Thủ Đức">
+                        </datalist>
+                    </div>
+
+                    <div class="filter-group dropdown-search-wrapper">
+                        <label class="filter-label">Barcode</label>
+                        <input type="text" id="newRecordItemCode" class="input-field" placeholder="Nhập barcode (ví dụ: 11712)..." required autocomplete="off">
+                        <div id="modalItemDropdownList" class="dropdown-search-list"></div>
+                    </div>
+                    
+                    <!-- Item details (Autofilled or manually input) -->
+                    <div class="filter-group">
+                        <label class="filter-label">Tên Sản phẩm</label>
+                        <input type="text" id="newRecordItemName" class="input-field" placeholder="Nhập tên sản phẩm..." required>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Đơn vị tính</label>
+                        <input type="text" id="newRecordUnit" class="input-field" placeholder="Hộp, Kg, Cái..." required>
+                    </div>
+
+                    <!-- Quantities Inputs -->
+                    <div class="filter-group">
+                        <label class="filter-label">Số lượng chuyển</label>
+                        <input type="number" id="newRecordQtyShipped" class="input-field" min="1" placeholder="Nhập số lượng chuyển..." required>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Số lượng nhận</label>
+                        <input type="number" id="newRecordQtyReceived" class="input-field" min="0" placeholder="Nhập số lượng nhận..." required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="modalCancelBtn">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu bản ghi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Data Script -->
+    <script src="data.js?v=51"></script>
+    <!-- Core App Execution Script -->
+    <script src="app.js?v=51"></script>
+</body>
+</html>

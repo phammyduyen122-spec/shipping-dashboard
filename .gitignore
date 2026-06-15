@@ -1,0 +1,6 @@
+*.xlsx
+performance dashboard/*.xlsx
+gdrive_temp/
+__pycache__/
+active_tunnel_url.txt
+.vscode/

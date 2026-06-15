@@ -1,0 +1,24 @@
+Total rows in df: 38249
+Total combo 3 rows in perf sheet: 106
+
+        Mã Phiếu Barcode                   Tên sản phẩm                                       Nơi nhận Mã phiếu chuyển  Người chia hàng
+46  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)   KFM_HCM_Q04 - TM.B.06 Millennium Bến Vân Đồn       PT1390158  Nhan Quang Hiếu
+48  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)       KFM_HCM_TDU - S08.02 Vinhomes Grand Park       PT1390156  Nhan Quang Hiếu
+50  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)                      KFM_HCM_BTH - 86B Vũ Tùng       PT1390140  Nhan Quang Hiếu
+53  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)                    KFM_HCM_BTH - 54 Vũ Huy Tấn       PT1390160  Nhan Quang Hiếu
+55  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)         KFM_HCM_TDU - BS11 Vinhomes Grand Park       PT1390161  Nhan Quang Hiếu
+57  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)          KFM_HCM_TDU - GH5 Vinhomes Grand Park       PT1390162  Nhan Quang Hiếu
+59  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)       KFM_HCM_TDU - S03.05 Vinhomes Grand Park       PT1390163  Nhan Quang Hiếu
+61  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)       KFM_HCM_TDU - S07.02 Vinhomes Grand Park       PT1390138  Nhan Quang Hiếu
+63  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)        KFM_HCM_TDU - S1.05 Vinhomes Grand Park       PT1390164  Nhan Quang Hiếu
+65  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)       KFM_HCM_TDU - S10.02 Vinhomes Grand Park       PT1390165  Nhan Quang Hiếu
+67  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)       KFM_HCM_TDU - S06.06 Vinhomes Grand Park       PT1390166  Nhan Quang Hiếu
+69  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)                  KFM_HCM_Q10 - BB17 Trường Sơn       PT1390155  Nhan Quang Hiếu
+70  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)                   KFM_HCM_GVA - 195 Thống Nhất       PT1390167  Nhan Quang Hiếu
+71  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)                      KFM_HCM_TDU - 46 Trần Não       PT1390168  Nhan Quang Hiếu
+73  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)                        KFM_HCM_Q07 - 31 Tân Mỹ       PT1390169  Nhan Quang Hiếu
+75  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)                       KFM_HCM_TDU - 02 Tạ Hiện       PT1390170  Nhan Quang Hiếu
+76  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)  KFM_HCM_NBE - SH14-15 Saigon South Residences       PT1390171  Nhan Quang Hiếu
+78  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)        KFM_HCM_TDU - D1-1.24 SAFIRA Khang Điền       PT1390172  Nhan Quang Hiếu
+81  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)      KFM_HCM_Q07 - C0.01 Riverside Phú Mỹ Hưng       PT1390148  Nhan Quang Hiếu
+83  PO1002534817   10700  COMBO 3 - DỪA XIÊM XANH (LỚN)                    KFM_HCM_TDU - 59 Quốc Hương       PT1390135  Nhan Quang Hiếu

@@ -1886,16 +1886,14 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
     const perfCatDateBtnExport = document.getElementById("perfCatDateBtnExport");
     if (perfCatDateBtnExport) {
         perfCatDateBtnExport.addEventListener("click", () => {
-            const todayStr = new Date().toISOString().split("T")[0];
-            downloadTableToExcel("perfF1CategoryDateTable", `BaoCao_HieuSuatNganhHang_Ngay_${todayStr}.csv`);
+            downloadCategoryDateTabular();
         });
     }
 
     const perfCatF1BtnExport = document.getElementById("perfCatF1BtnExport");
     if (perfCatF1BtnExport) {
         perfCatF1BtnExport.addEventListener("click", () => {
-            const todayStr = new Date().toISOString().split("T")[0];
-            downloadTableToExcel("perfF1CategoryTable", `BaoCao_HieuSuatNganhHang_NhanSu_${todayStr}.csv`);
+            downloadCategoryF1Tabular();
         });
     }
 }
@@ -4314,4 +4312,267 @@ function downloadTableToExcel(tableId, filename) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}
+
+// Helper to export clean raw tabular data directly to CSV file
+function downloadCSV(headers, rows, filename) {
+    let csvContent = "\uFEFF"; // UTF-8 BOM representation
+    csvContent += headers.join(",") + "\n";
+    
+    rows.forEach(row => {
+        const formattedRow = row.map(val => {
+            if (typeof val === "string") {
+                return `"${val.replace(/"/g, '""')}"`;
+            }
+            return val;
+        });
+        csvContent += formattedRow.join(",") + "\n";
+    });
+    
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.visibility = "hidden";
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Export Category Performance by divided personnel in row-by-row (tabular) format
+function downloadCategoryF1Tabular() {
+    const catGroupEl = document.getElementById("catFilterGroupContainer");
+    const groupSelector = catGroupEl ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
+    const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
+    
+    let activeGroups = [];
+    const groupFilterEl = document.getElementById("perfF1GroupFilter");
+    const groupFilterVal = groupFilterEl ? groupFilterEl.value : "All";
+
+    if (selectedGroups.length > 0) {
+        activeGroups = selectedGroups;
+    } else {
+        if (groupFilterVal === "All") {
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV"];
+        } else {
+            activeGroups = [groupFilterVal];
+        }
+    }
+
+    const catStartEl = document.getElementById("catFilterStartDate");
+    const catEndEl = document.getElementById("catFilterEndDate");
+    const startDateQuery = catStartEl ? catStartEl.value : (document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "");
+    const endDateQuery = catEndEl ? catEndEl.value : (document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "");
+    
+    const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
+
+    const activeTransfers = transfers.filter(t => {
+        if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") return false;
+        if (!t.nguoiChia) return false;
+        const name = t.nguoiChia.trim().toLowerCase();
+        
+        let matchGroupPrefix = false;
+        for (const g of activeGroups) {
+            if (name.startsWith(g.toLowerCase())) {
+                matchGroupPrefix = true;
+                break;
+            }
+        }
+        if (!matchGroupPrefix) return false;
+
+        if (localUserSearch !== "") {
+            if (!name.includes(localUserSearch)) return false;
+        }
+
+        const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
+        const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;
+        return matchStartDate && matchEndDate;
+    });
+
+    if (activeTransfers.length === 0) {
+        alert("Không có dữ liệu để xuất!");
+        return;
+    }
+
+    const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+    const userAgg = {};
+    
+    activeTransfers.forEach(t => {
+        const user = t.nguoiChia.trim();
+        const cat = t.nganhHang || "Khác";
+        
+        if (!userAgg[user]) {
+            userAgg[user] = {
+                user: user,
+                categories: {}
+            };
+            categories.forEach(c => {
+                userAgg[user].categories[c] = { shipped: 0, received: 0, diff: 0 };
+            });
+        }
+        
+        const statusInfo = calculateStatus(t);
+        if (statusInfo.statusText === "Đang chuyển") return;
+        
+        if (categories.includes(cat)) {
+            const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
+            userAgg[user].categories[cat].shipped += t.qtyShipped;
+            userAgg[user].categories[cat].received += t.qtyReceived + (t.matchedCorrectiveQty || 0);
+            if (isDiscrepant) {
+                userAgg[user].categories[cat].diff += Math.abs(statusInfo.chenhLechConLai);
+            }
+        }
+    });
+
+    const headers = ["Nhân sự", "Nhóm nhân sự", "Ngành hàng", "SL chuyển", "SL nhận + Bổ sung", "SL lệch còn lại", "Tỷ lệ chia sai"];
+    const rows = [];
+    
+    Object.keys(userAgg).sort((a,b) => a.localeCompare(b, "vi")).forEach(user => {
+        const uData = userAgg[user];
+        const name = user.toLowerCase();
+        let group = "CTV";
+        if (name.startsWith("f1")) group = "F1";
+        else if (name.startsWith("f2")) group = "F2";
+        else if (name.startsWith("huyhoang")) group = "HUYHOANG";
+        
+        categories.forEach(cat => {
+            const shipped = uData.categories[cat].shipped;
+            const received = uData.categories[cat].received;
+            const diff = uData.categories[cat].diff;
+            if (shipped === 0 && received === 0 && diff === 0) return;
+            const rate = shipped > 0 ? (diff / shipped) * 100 : 0;
+            rows.push([
+                user,
+                group,
+                cat,
+                shipped,
+                received,
+                diff,
+                `${rate.toFixed(2)}%`
+            ]);
+        });
+    });
+
+    downloadCSV(headers, rows, `BaoCao_HieuSuatNganhHang_Dong_NhanSu_${new Date().toISOString().split("T")[0]}.csv`);
+}
+
+// Export Category Performance by date in row-by-row (tabular) format
+function downloadCategoryDateTabular() {
+    const catGroupEl = document.getElementById("catFilterGroupContainer");
+    const groupSelector = catGroupEl ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
+    const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
+    
+    let activeGroups = [];
+    const groupFilterEl = document.getElementById("perfF1GroupFilter");
+    const groupFilterVal = groupFilterEl ? groupFilterEl.value : "All";
+
+    if (selectedGroups.length > 0) {
+        activeGroups = selectedGroups;
+    } else {
+        if (groupFilterVal === "All") {
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV"];
+        } else {
+            activeGroups = [groupFilterVal];
+        }
+    }
+
+    const catStartEl = document.getElementById("catFilterStartDate");
+    const catEndEl = document.getElementById("catFilterEndDate");
+    const startDateQuery = catStartEl ? catStartEl.value : (document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "");
+    const endDateQuery = catEndEl ? catEndEl.value : (document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "");
+    
+    const localDateSearch = document.getElementById("catDateTableFilterDate") ? document.getElementById("catDateTableFilterDate").value.trim() : "";
+
+    const activeTransfers = transfers.filter(t => {
+        if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") return false;
+        if (!t.nguoiChia) return false;
+        const name = t.nguoiChia.trim().toLowerCase();
+        
+        let matchGroupPrefix = false;
+        for (const g of activeGroups) {
+            if (name.startsWith(g.toLowerCase())) {
+                matchGroupPrefix = true;
+                break;
+            }
+        }
+        if (!matchGroupPrefix) return false;
+
+        const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
+        const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;
+        return matchStartDate && matchEndDate;
+    });
+
+    if (activeTransfers.length === 0) {
+        alert("Không có dữ liệu để xuất!");
+        return;
+    }
+
+    const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+    const dateAgg = {};
+    
+    activeTransfers.forEach(t => {
+        const date = t.date;
+        const cat = t.nganhHang || "Khác";
+        
+        if (!dateAgg[date]) {
+            dateAgg[date] = {
+                date: date,
+                categories: {}
+            };
+            categories.forEach(c => {
+                dateAgg[date].categories[c] = { shipped: 0, received: 0, diff: 0 };
+            });
+        }
+        
+        const statusInfo = calculateStatus(t);
+        if (statusInfo.statusText === "Đang chuyển") return;
+        
+        if (categories.includes(cat)) {
+            const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
+            dateAgg[date].categories[cat].shipped += t.qtyShipped;
+            dateAgg[date].categories[cat].received += t.qtyReceived + (t.matchedCorrectiveQty || 0);
+            if (isDiscrepant) {
+                dateAgg[date].categories[cat].diff += Math.abs(statusInfo.chenhLechConLai);
+            }
+        }
+    });
+
+    const headers = ["Ngày", "Ngành hàng", "SL chuyển", "SL nhận + Bổ sung", "SL lệch còn lại", "Tỷ lệ chia sai"];
+    const rows = [];
+    
+    Object.keys(dateAgg).sort().forEach(date => {
+        const dData = dateAgg[date];
+        const formattedDate = formatDateToVN(date);
+        
+        if (localDateSearch !== "") {
+            if (!formattedDate.includes(localDateSearch)) {
+                return;
+            }
+        }
+        
+        categories.forEach(cat => {
+            const shipped = dData.categories[cat].shipped;
+            const received = dData.categories[cat].received;
+            const diff = dData.categories[cat].diff;
+            if (shipped === 0 && received === 0 && diff === 0) return;
+            const rate = shipped > 0 ? (diff / shipped) * 100 : 0;
+            rows.push([
+                formattedDate,
+                cat,
+                shipped,
+                received,
+                diff,
+                `${rate.toFixed(2)}%`
+            ]);
+        });
+    });
+
+    if (rows.length === 0) {
+        alert("Không có dữ liệu để xuất!");
+        return;
+    }
+
+    downloadCSV(headers, rows, `BaoCao_HieuSuatNganhHang_Dong_Ngay_${new Date().toISOString().split("T")[0]}.csv`);
 }

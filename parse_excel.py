@@ -59,8 +59,106 @@ def get_date_from_filename(filename):
 # Ensure UTF-8 output
 sys.stdout.reconfigure(encoding='utf-8')
 
+def load_existing_data(filepath="data.js"):
+    if not os.path.exists(filepath):
+        print(f"Không tìm thấy file {filepath} để đọc dữ liệu cũ.")
+        return [], []
+    try:
+        print(f"Đang đọc dữ liệu cũ từ {filepath}...")
+        with open(filepath, "r", encoding="utf-8") as f:
+            content = f.read()
+            
+        def extract_json(var_name):
+            start_str = f"window.{var_name} = "
+            idx = content.find(start_str)
+            if idx == -1:
+                return None
+            start_idx = idx + len(start_str)
+            end_idx = content.find(";", start_idx)
+            if end_idx == -1:
+                return None
+            return json.loads(content[start_idx:end_idx])
+            
+        catalog = extract_json("itemCatalog")
+        branches = extract_json("branchesList")
+        users = extract_json("usersList")
+        compressed_trans = extract_json("compressedTransfers")
+        compressed_perf = extract_json("compressedPerformance")
+        
+        if not all([catalog is not None, branches is not None, users is not None, compressed_trans is not None, compressed_perf is not None]):
+            print("Lỗi: Không thể giải nén một số biến từ data.js")
+            return [], []
+            
+        # Decompress transfers
+        existing_trans = []
+        for row in compressed_trans:
+            toBranch = branches[row[3]] if 0 <= row[3] < len(branches) else ""
+            itemInfo = catalog.get(row[4], ["", "", ""])
+            fromBranch = "KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG" if row[2] == "XL" else "KHO RAU CỦ"
+            nguoiChia = users[row[10]] if 0 <= row[10] < len(users) else ""
+            existing_trans.append({
+                'date': row[1],
+                'fromBranch': fromBranch,
+                'toBranch': toBranch,
+                'itemCode': row[4],
+                'itemName': itemInfo[0],
+                'unit': itemInfo[2],
+                'qtyShipped': row[5],
+                'qtyReceived': row[6],
+                'transferCode': row[7],
+                'originalDoc': "",
+                'generatedDoc': row[8],
+                'supplementQty': 0,
+                'docStatus': row[9],
+                'nguoiChia': nguoiChia
+            })
+            
+        # Decompress performance
+        existing_perf = []
+        for row in compressed_perf:
+            noiNhan = branches[row[4]] if 0 <= row[4] < len(branches) else ""
+            itemInfo = catalog.get(row[3], ["", "", ""])
+            nguoiChia = users[row[23]] if 0 <= row[23] < len(users) else ""
+            existing_perf.append({
+                'maYeuCau': row[1],
+                'maPhieu': row[2],
+                'barcode': row[3],
+                'tenSanPham': itemInfo[0],
+                'donVi': itemInfo[2],
+                'noiNhan': noiNhan,
+                'noiNhanVietTat': "",
+                'qtyYcBanDau': row[5],
+                'qtyHeThong': row[6],
+                'qtyThucChia': row[7],
+                'trangThai': row[8],
+                'trangThaiPR': row[9],
+                'trangThaiChuyen': row[10],
+                'canChia': row[11],
+                'chotNhan': row[12],
+                'ngayChuyen': row[13],
+                'ngayGiaoDuKien': row[14],
+                'noiChuyen': row[15],
+                'maPhieuChuyen': row[16],
+                'ngayCapNhat': row[17],
+                'nguoiCapNhat': row[18],
+                'batDauChia': row[19],
+                'hoanTatChia': row[20],
+                'slRo': row[21],
+                'slKien': row[22],
+                'nguoiChia': nguoiChia
+            })
+            
+        print(f"Đã giải nén thành công {len(existing_trans)} transfers và {len(existing_perf)} performance records từ data.js")
+        return existing_trans, existing_perf
+    except Exception as e:
+        print(f"Lỗi giải nén data.js: {e}")
+        return [], []
+
 def parse_excel():
     print("--- BẮT ĐẦU XỬ LÝ PHÂN TÍCH EXCEL ---")
+    
+    # Load existing data
+    existing_trans, existing_perf = load_existing_data("data.js")
     
     # 1. Read Performance Reports
     perf_records = []
@@ -80,7 +178,7 @@ def parse_excel():
             recent_perf_files.sort()
             print(f"Lọc file hiệu suất (max date: {max_date.strftime('%Y-%m-%d')}): Giữ {len(recent_perf_files)} / {len(perf_dates)} files.")
         
-        if recent_perf_files:
+        if recent_perf_files or len(existing_perf) > 0:
             perf_mapping = {
                 'Mã yêu cầu': 'maYeuCau',
                 'Mã Phiếu': 'maPhieu',
@@ -128,6 +226,9 @@ def parse_excel():
                     return val.strftime('%Y-%m-%d')
                 try:
                     s = str(val).strip()
+                    # If already YYYY-MM-DD, return as is
+                    if len(s) == 10 and s[4] == '-' and s[7] == '-':
+                        return s
                     parts = s.split("/")
                     if len(parts) == 3 and len(parts[2]) == 4:
                         return f"{parts[2]}-{parts[1]}-{parts[0]}"
@@ -139,6 +240,9 @@ def parse_excel():
                     return str(val)
 
             dfs_perf = []
+            if len(existing_perf) > 0:
+                df_existing_perf = pd.DataFrame(existing_perf)
+                dfs_perf.append(df_existing_perf)
             for perf_file in recent_perf_files:
                 print(f"Đang đọc file Excel hiệu suất chia hàng: {perf_file}")
                 try:
@@ -153,7 +257,9 @@ def parse_excel():
                     
                     # Normalizing string columns
                     for str_col in ['maYeuCau', 'maPhieu', 'barcode', 'tenSanPham', 'donVi', 'noiNhan', 'noiNhanVietTat', 'trangThai', 'trangThaiPR', 'trangThaiChuyen', 'canChia', 'chotNhan', 'noiChuyen', 'maPhieuChuyen', 'ngayCapNhat', 'nguoiCapNhat', 'batDauChia', 'hoanTatChia', 'nguoiChia']:
-                        df_perf_clean[str_col] = df_perf_clean[str_col].fillna("").astype(str).str.strip().apply(lambda x: unicodedata.normalize('NFC', x))
+                        df_perf_clean[str_col] = df_perf_clean[str_col].fillna("").astype(str).str.strip()
+                        unique_vals = {x: unicodedata.normalize('NFC', x) for x in df_perf_clean[str_col].unique()}
+                        df_perf_clean[str_col] = df_perf_clean[str_col].map(unique_vals)
                     
                     # Clean numeric columns
                     for num_col in ['qtyYcBanDau', 'qtyHeThong', 'qtyThucChia']:
@@ -221,8 +327,8 @@ def parse_excel():
         recent_excel_files.sort()
         print(f"Lọc file điều chuyển (max date: {max_date.strftime('%Y-%m-%d')}): Giữ {len(recent_excel_files)} / {len(trans_dates)} files.")
     
-    if not recent_excel_files:
-        print("Lỗi: Không tìm thấy file Excel transfer_*.xlsx nào cho 7 ngày gần nhất.")
+    if not recent_excel_files and len(existing_trans) == 0:
+        print("Lỗi: Không tìm thấy file Excel transfer_*.xlsx nào và không có dữ liệu cũ.")
         return
         
     try:
@@ -245,6 +351,9 @@ def parse_excel():
         }
         
         dfs_transfers = []
+        if len(existing_trans) > 0:
+            df_existing_trans = pd.DataFrame(existing_trans)
+            dfs_transfers.append(df_existing_trans)
         for excel_file in recent_excel_files:
             print(f"Đang đọc file Excel điều chuyển: {excel_file}")
             try:
@@ -281,7 +390,9 @@ def parse_excel():
                         df_clean_f[key] = ""
                 
                 # Normalize fromBranch immediately to filter rows accurately
-                df_clean_f['fromBranch'] = df_clean_f['fromBranch'].fillna("").astype(str).str.strip().apply(lambda x: unicodedata.normalize('NFC', x))
+                df_clean_f['fromBranch'] = df_clean_f['fromBranch'].fillna("").astype(str).str.strip()
+                unique_vals = {x: unicodedata.normalize('NFC', x) for x in df_clean_f['fromBranch'].unique()}
+                df_clean_f['fromBranch'] = df_clean_f['fromBranch'].map(unique_vals)
                 
                 # Filter rows immediately to save huge memory & CPU concat time
                 df_clean_f = df_clean_f[df_clean_f['fromBranch'].isin(['KHO RAU CỦ', 'KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG'])]
@@ -309,6 +420,9 @@ def parse_excel():
                 if isinstance(val, pd.Timestamp):
                     return val.strftime('%Y-%m-%d')
                 s = str(val).strip()
+                # If already YYYY-MM-DD, return as is
+                if len(s) == 10 and s[4] == '-' and s[7] == '-':
+                    return s
                 dt = pd.to_datetime(s, dayfirst=True, errors='coerce')
                 if not pd.isna(dt):
                     return dt.strftime('%Y-%m-%d')
@@ -324,9 +438,12 @@ def parse_excel():
             cutoff_trans_date = max_trans_date - pd.Timedelta(days=5)
             df_clean = df_clean[pd.to_datetime(df_clean['date'], errors='coerce') >= cutoff_trans_date]
         
-        # Clean strings and normalize Unicode to NFC format
+        # Clean strings and normalize Unicode to NFC format using fast unique values map
         for str_col in ['fromBranch', 'toBranch', 'itemCode', 'itemName', 'unit', 'transferCode', 'originalDoc', 'generatedDoc', 'docStatus', 'daHauKiem']:
-            df_clean[str_col] = df_clean[str_col].fillna("").astype(str).str.strip().apply(lambda x: unicodedata.normalize('NFC', x))
+            if str_col in df_clean.columns:
+                df_clean[str_col] = df_clean[str_col].fillna("").astype(str).str.strip()
+                unique_vals = {x: unicodedata.normalize('NFC', x) for x in df_clean[str_col].unique()}
+                df_clean[str_col] = df_clean[str_col].map(unique_vals)
             
         # Filter: only keep KHO RAU CỦ and KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG
         df_clean = df_clean[df_clean['fromBranch'].isin(['KHO RAU CỦ', 'KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG'])]
@@ -344,7 +461,14 @@ def parse_excel():
         df_clean.loc[is_corrective & ~is_to_supermarket, 'supplementQty'] = 0
 
         # Map nguoiChia using perf_map
-        df_clean['nguoiChia'] = df_clean.apply(lambda r: perf_map.get((r['transferCode'], r['itemCode']), ""), axis=1)
+        def get_nguoi_chia(r):
+            val = perf_map.get((r['transferCode'], r['itemCode']))
+            if val:
+                return val
+            if 'nguoiChia' in r and pd.notna(r['nguoiChia']) and r['nguoiChia'] != "":
+                return r['nguoiChia']
+            return ""
+        df_clean['nguoiChia'] = df_clean.apply(get_nguoi_chia, axis=1)
 
         # Inherit nguoiChia for corrective rows from original rows with matching itemCode, toBranch, and date proximity (within 3 days)
         is_orig = df_clean['fromBranch'] == 'KHO RAU CỦ'

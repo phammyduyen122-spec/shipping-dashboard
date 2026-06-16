@@ -37,7 +37,6 @@
             <button class="tab-btn active" id="tabTransferMonitor">🚚 Giám sát Điều chuyển</button>
             <button class="tab-btn" id="tabPerformanceReport">📊 Hiệu suất Chia hàng</button>
             <button class="tab-btn" id="tabCategoryPerformance">🗂️ Hiệu suất Ngành hàng</button>
-            <button class="tab-btn" id="tabExportExcel">📥 Đổ Excel Dạng Cột</button>
         </div>
 
         <!-- Tab 1: Shipping Transfer Monitor -->
@@ -546,18 +545,23 @@
                     <span class="table-title" style="color: var(--color-danger); display: flex; align-items: center; gap: 8px; margin: 0;">
                         ⚠️ <span id="topCTVTitleText">Top 10 CTV chia sai lệch nhiều nhất</span>
                     </span>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <label for="topCTVSortSelect" style="font-size: 12px; font-weight: 600; color: var(--color-danger);">Sắp xếp theo:</label>
-                        <select id="topCTVSortSelect" class="input-field" style="width: auto; padding: 4px 28px 4px 12px; font-size: 12px; height: 30px; margin: 0; background-color: var(--bg-primary); border-color: var(--color-danger); color: var(--color-danger); font-weight: 600; cursor: pointer; border-radius: var(--radius-sm);">
-                            <option value="stErrorRate">% ST lệch</option>
-                            <option value="qtyErrorRate">% SL lệch</option>
-                            <option value="totalDiffQty">SL lệch</option>
-                            <option value="storesDiscrepant">ST lệch</option>
-                        </select>
+                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <label for="topCTVSortSelect" style="font-size: 12px; font-weight: 600; color: var(--color-danger);">Sắp xếp theo:</label>
+                            <select id="topCTVSortSelect" class="input-field" style="width: auto; padding: 4px 28px 4px 12px; font-size: 12px; height: 30px; margin: 0; background-color: var(--bg-primary); border-color: var(--color-danger); color: var(--color-danger); font-weight: 600; cursor: pointer; border-radius: var(--radius-sm);">
+                                <option value="stErrorRate">% ST lệch</option>
+                                <option value="qtyErrorRate">% SL lệch</option>
+                                <option value="totalDiffQty">SL lệch</option>
+                                <option value="storesDiscrepant">ST lệch</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" id="btnExportTopCTVWorst" style="border-color: var(--color-danger); color: var(--color-danger); height: 30px; padding: 4px 12px; font-size: 12px;">
+                            <span>📥 Xuất Excel</span>
+                        </button>
                     </div>
                 </div>
                 <div class="table-wrapper">
-                    <table>
+                    <table id="topCTVWorstTable">
                         <thead>
                             <tr>
                                 <th style="text-align: center; width: 60px;">STT</th>
@@ -609,10 +613,13 @@
                                 <option value="storesDiscrepant">ST sai</option>
                             </select>
                         </div>
+                        <button class="btn btn-secondary" id="btnExportTopCTVBest" style="border-color: var(--color-success); color: var(--color-success); height: 30px; padding: 4px 12px; font-size: 12px;">
+                            <span>📥 Xuất Excel</span>
+                        </button>
                     </div>
                 </div>
                 <div class="table-wrapper">
-                    <table>
+                    <table id="topCTVBestTable">
                         <thead>
                             <tr>
                                 <th style="text-align: center; width: 60px;">STT</th>
@@ -643,6 +650,11 @@
                     <span class="table-title" style="color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0;">
                         📊 Tóm tắt hiệu suất chia hàng
                     </span>
+                    <div class="table-actions">
+                        <button class="btn btn-secondary" id="btnExportSummary">
+                            <span>📥 Xuất Excel/CSV</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="table-inline-filters" style="display: flex; gap: 16px; padding: 12px 20px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; align-items: center;">
                     <div style="display: flex; align-items: center; gap: 8px;">
@@ -667,7 +679,7 @@
                     </div>
                 </div>
                 <div class="table-wrapper">
-                    <table>
+                    <table id="perfSummaryTable">
                         <thead>
                             <tr>
                                 <th style="text-align: center; width: 60px;">STT</th>
@@ -816,6 +828,48 @@
                 </div>
             </div>
 
+            <!-- Bảng theo dõi hiệu suất theo Ngày & Ngành Hàng -->
+            <div class="table-card" style="margin-bottom: 24px;">
+                <div class="table-header-row" style="background-color: rgba(79, 70, 229, 0.05); border-bottom: 1px solid rgba(79, 70, 229, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <span class="table-title" id="perfF1DateTableTitle" style="color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0;">
+                        📅 Theo dõi hiệu suất phân loại theo Ngày & Ngành Hàng
+                    </span>
+                    <div class="table-actions">
+                        <button class="btn btn-secondary" id="perfCatDateBtnExport">
+                            <span>📥 Xuất Excel/CSV</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-inline-filters" style="display: flex; gap: 16px; padding: 12px 20px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;">🔍 Bộ lọc nhanh:</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 150px;">
+                        <label for="catDateTableFilterDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Ngày chuyển:</label>
+                        <input type="text" id="catDateTableFilterDate" class="input-field" placeholder="dd/mm/yyyy..." style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%;">
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="perfF1CategoryDateTable">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 60px;">STT</th>
+                                <th>Ngày chuyển</th>
+                                <th style="text-align: right;">2.VEGETABLES (% sai)</th>
+                                <th style="text-align: right;">2.FRUITS (% sai)</th>
+                                <th style="text-align: right;">2.BAKERY (% sai)</th>
+                                <th style="text-align: right;">2.EGGS (% sai)</th>
+                                <th style="text-align: right;">2.DELICA (% sai)</th>
+                                <th style="text-align: right; font-weight: bold; border-left: 1px solid var(--border-color); color: var(--color-primary);">Tổng % chia sai</th>
+                            </tr>
+                        </thead>
+                        <tbody id="perfF1CategoryDateBody">
+                            <!-- Dynamic aggregate content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Bảng theo dõi hiệu suất phân loại theo Ngành Hàng -->
             <div class="table-card" style="margin-bottom: 24px;">
                 <div class="table-header-row" style="background-color: rgba(79, 70, 229, 0.05); border-bottom: 1px solid rgba(79, 70, 229, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
@@ -826,6 +880,9 @@
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <input type="text" id="perfF1UserSearch" class="table-filter-input" style="width: 150px; margin: 0; padding: 6px 12px;" placeholder="Tìm nhân sự...">
                         </div>
+                        <button class="btn btn-secondary" id="perfCatF1BtnExport">
+                            <span>📥 Xuất Excel</span>
+                        </button>
                     </div>
                 </div>
                 <div class="table-wrapper">
@@ -869,92 +926,8 @@
                     </table>
                 </div>
             </div>
-
-            <!-- Bảng theo dõi hiệu suất theo Ngày & Ngành Hàng -->
-            <div class="table-card" style="margin-bottom: 24px;">
-                <div class="table-header-row" style="background-color: rgba(79, 70, 229, 0.05); border-bottom: 1px solid rgba(79, 70, 229, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                    <span class="table-title" id="perfF1DateTableTitle" style="color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0;">
-                        📅 Theo dõi hiệu suất phân loại theo Ngày & Ngành Hàng
-                    </span>
-                </div>
-                <div class="table-wrapper">
-                    <table id="perfF1CategoryDateTable">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; width: 60px;">STT</th>
-                                <th>Ngày chuyển</th>
-                                <th style="text-align: right;">2.VEGETABLES (% sai)</th>
-                                <th style="text-align: right;">2.FRUITS (% sai)</th>
-                                <th style="text-align: right;">2.BAKERY (% sai)</th>
-                                <th style="text-align: right;">2.EGGS (% sai)</th>
-                                <th style="text-align: right;">2.DELICA (% sai)</th>
-                                <th style="text-align: right; font-weight: bold; border-left: 1px solid var(--border-color); color: var(--color-primary);">Tổng % chia sai</th>
-                            </tr>
-                        </thead>
-                        <tbody id="perfF1CategoryDateBody">
-                            <!-- Dynamic aggregate content -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
 
-        <!-- Tab 4: Tabular Excel Export Panel -->
-        <div class="tab-content" id="contentExportExcel">
-            <div class="filters-card">
-                <div class="filters-header">
-                    📥 <span>Cấu hình Đổ Excel Dạng Cột (Tabular Format)</span>
-                </div>
-                <div class="filters-grid">
-                    <!-- Dataset Selection -->
-                    <div class="filter-group">
-                        <label class="filter-label">Chọn bảng dữ liệu cần xuất</label>
-                        <select id="exportDatasetSelect" class="input-field">
-                            <option value="transfers">1. Chi tiết Điều chuyển hàng (Kho Rau Củ)</option>
-                            <option value="performance">2. Chi tiết Hiệu suất chia hàng (PO Qua cảnh)</option>
-                            <option value="category">3. Hiệu suất Ngành hàng theo CTV/F1/F2 (Dạng Cột)</option>
-                            <option value="ctvSummary">4. Tóm tắt Hiệu suất theo CTV/F1/F2 (Dạng Cột)</option>
-                            <option value="categoryDate">5. Hiệu suất Ngành hàng theo Ngày (Dạng Cột)</option>
-                        </select>
-                    </div>
-
-                    <!-- Date Range Filters -->
-                    <div class="filter-group">
-                        <label class="filter-label">Từ ngày</label>
-                        <input type="date" id="exportStartDate" class="input-field">
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Đến ngày</label>
-                        <input type="date" id="exportEndDate" class="input-field">
-                    </div>
-                </div>
-                <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="font-size: 13px; color: var(--text-muted);" id="exportRecordCount">
-                        Sẵn sàng xuất 0 dòng dữ liệu.
-                    </div>
-                    <button class="btn btn-primary" id="btnExportTabular">
-                        <span>📥 Tải File CSV/Excel Dạng Cột</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Preview Card -->
-            <div class="table-card">
-                <div class="table-header-row">
-                    <span class="table-title">👀 Xem trước 10 dòng đầu tiên của bảng dữ liệu</span>
-                </div>
-                <div class="table-wrapper">
-                    <table>
-                        <thead id="exportPreviewHead">
-                            <!-- Dynamic -->
-                        </thead>
-                        <tbody id="exportPreviewBody">
-                            <!-- Dynamic -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
         </div>
 
     <!-- Modal for Adding New Record -->

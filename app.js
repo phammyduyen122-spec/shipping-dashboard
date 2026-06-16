@@ -1530,30 +1530,30 @@ function setupTabs() {
     const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
     const contentExportExcel = document.getElementById("contentExportExcel");
 
-    if (!tabTransferMonitor || !tabPerformanceReport || !tabCategoryPerformance || !tabExportExcel) return;
+    if (!tabTransferMonitor || !tabPerformanceReport || !tabCategoryPerformance) return;
 
     tabTransferMonitor.addEventListener("click", () => {
         tabTransferMonitor.classList.add("active");
         tabPerformanceReport.classList.remove("active");
         tabCategoryPerformance.classList.remove("active");
-        tabExportExcel.classList.remove("active");
+        if (tabExportExcel) tabExportExcel.classList.remove("active");
         
         contentTransferMonitor.classList.add("active");
         contentPerformanceReport.classList.remove("active");
         contentCategoryPerformance.classList.remove("active");
-        contentExportExcel.classList.remove("active");
+        if (contentExportExcel) contentExportExcel.classList.remove("active");
     });
 
     tabPerformanceReport.addEventListener("click", () => {
         tabPerformanceReport.classList.add("active");
         tabTransferMonitor.classList.remove("active");
         tabCategoryPerformance.classList.remove("active");
-        tabExportExcel.classList.remove("active");
+        if (tabExportExcel) tabExportExcel.classList.remove("active");
         
         contentPerformanceReport.classList.add("active");
         contentTransferMonitor.classList.remove("active");
         contentCategoryPerformance.classList.remove("active");
-        contentExportExcel.classList.remove("active");
+        if (contentExportExcel) contentExportExcel.classList.remove("active");
         
         applyPerfFiltersAndRender();
     });
@@ -1562,29 +1562,31 @@ function setupTabs() {
         tabCategoryPerformance.classList.add("active");
         tabTransferMonitor.classList.remove("active");
         tabPerformanceReport.classList.remove("active");
-        tabExportExcel.classList.remove("active");
+        if (tabExportExcel) tabExportExcel.classList.remove("active");
         
         contentCategoryPerformance.classList.add("active");
         contentTransferMonitor.classList.remove("active");
         contentPerformanceReport.classList.remove("active");
-        contentExportExcel.classList.remove("active");
+        if (contentExportExcel) contentExportExcel.classList.remove("active");
         
         renderF1CategoryTable();
     });
 
-    tabExportExcel.addEventListener("click", () => {
-        tabExportExcel.classList.add("active");
-        tabTransferMonitor.classList.remove("active");
-        tabPerformanceReport.classList.remove("active");
-        tabCategoryPerformance.classList.remove("active");
-        
-        contentExportExcel.classList.add("active");
-        contentTransferMonitor.classList.remove("active");
-        contentPerformanceReport.classList.remove("active");
-        contentCategoryPerformance.classList.remove("active");
-        
-        renderExportPreview();
-    });
+    if (tabExportExcel && contentExportExcel) {
+        tabExportExcel.addEventListener("click", () => {
+            tabExportExcel.classList.add("active");
+            tabTransferMonitor.classList.remove("active");
+            tabPerformanceReport.classList.remove("active");
+            tabCategoryPerformance.classList.remove("active");
+            
+            contentExportExcel.classList.add("active");
+            contentTransferMonitor.classList.remove("active");
+            contentPerformanceReport.classList.remove("active");
+            contentCategoryPerformance.classList.remove("active");
+            
+            renderExportPreview();
+        });
+    }
 }
 
 // Populate filters drop-down lists for Performance Tab
@@ -1817,6 +1819,30 @@ function setupPerfEventListeners() {
             renderPerfTable();
         });
     });
+
+    const btnExportTopCTVWorst = document.getElementById("btnExportTopCTVWorst");
+    if (btnExportTopCTVWorst) {
+        btnExportTopCTVWorst.addEventListener("click", () => {
+            const todayStr = new Date().toISOString().split("T")[0];
+            downloadTableToExcel("topCTVWorstTable", `BaoCao_Top10_CTV_Lech_${todayStr}.csv`);
+        });
+    }
+
+    const btnExportTopCTVBest = document.getElementById("btnExportTopCTVBest");
+    if (btnExportTopCTVBest) {
+        btnExportTopCTVBest.addEventListener("click", () => {
+            const todayStr = new Date().toISOString().split("T")[0];
+            downloadTableToExcel("topCTVBestTable", `BaoCao_Top10_CTV_TotNhat_${todayStr}.csv`);
+        });
+    }
+
+    const btnExportSummary = document.getElementById("btnExportSummary");
+    if (btnExportSummary) {
+        btnExportSummary.addEventListener("click", () => {
+            const todayStr = new Date().toISOString().split("T")[0];
+            downloadTableToExcel("perfSummaryTable", `BaoCao_TomTatHieuSuat_${todayStr}.csv`);
+        });
+    }
 }
 
 // Bind Category tab filters event listeners
@@ -1847,6 +1873,29 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
             if (selectFilter) selectFilter.value = "All";
             
             renderF1CategoryTable();
+        });
+    }
+
+    const catDateTableFilterDate = document.getElementById("catDateTableFilterDate");
+    if (catDateTableFilterDate) {
+        catDateTableFilterDate.addEventListener("input", () => {
+            renderF1CategoryDateTable();
+        });
+    }
+
+    const perfCatDateBtnExport = document.getElementById("perfCatDateBtnExport");
+    if (perfCatDateBtnExport) {
+        perfCatDateBtnExport.addEventListener("click", () => {
+            const todayStr = new Date().toISOString().split("T")[0];
+            downloadTableToExcel("perfF1CategoryDateTable", `BaoCao_HieuSuatNganhHang_Ngay_${todayStr}.csv`);
+        });
+    }
+
+    const perfCatF1BtnExport = document.getElementById("perfCatF1BtnExport");
+    if (perfCatF1BtnExport) {
+        perfCatF1BtnExport.addEventListener("click", () => {
+            const todayStr = new Date().toISOString().split("T")[0];
+            downloadTableToExcel("perfF1CategoryTable", `BaoCao_HieuSuatNganhHang_NhanSu_${todayStr}.csv`);
         });
     }
 }
@@ -3782,13 +3831,23 @@ function renderF1CategoryDateTable() {
         }
     };
 
-    sortedDates.forEach((date, index) => {
+    const localDateSearch = document.getElementById("catDateTableFilterDate") ? document.getElementById("catDateTableFilterDate").value.trim() : "";
+    let displayIndex = 1;
+
+    sortedDates.forEach((date) => {
+        const formattedDate = formatDateToVN(date);
+        if (localDateSearch !== "") {
+            if (!formattedDate.includes(localDateSearch)) {
+                return;
+            }
+        }
+
         const dData = dateAgg[date];
         const tr = document.createElement("tr");
 
         let htmlContent = `
-            <td style="text-align: center;">${index + 1}</td>
-            <td><strong>${formatDateToVN(date)}</strong></td>
+            <td style="text-align: center;">${displayIndex++}</td>
+            <td><strong>${formattedDate}</strong></td>
         `;
 
         let totalShipped = 0;
@@ -4198,6 +4257,57 @@ function downloadExportDataset() {
     else if (datasetType === "ctvSummary") filename = `BaoCao_TomTatHieuSuat_Col_${todayStr}.csv`;
     else if (datasetType === "categoryDate") filename = `BaoCao_HieuSuatNganhHangTheoNgay_Col_${todayStr}.csv`;
     
+    link.setAttribute("download", filename);
+    link.style.visibility = "hidden";
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Helper function to export any DOM table directly to CSV
+function downloadTableToExcel(tableId, filename) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+    
+    const rows = [];
+    const trs = table.querySelectorAll("tr");
+    
+    trs.forEach(tr => {
+        if (tr.style.display === "none") return;
+        
+        const row = [];
+        const cells = tr.querySelectorAll("th, td");
+        cells.forEach(cell => {
+            let text = cell.innerText.trim().replace(/\n/g, " ");
+            
+            const select = cell.querySelector("select");
+            if (select) {
+                const span = cell.querySelector("span");
+                text = span ? span.innerText.trim() : select.options[select.selectedIndex].text;
+            }
+            row.push(text);
+        });
+        rows.push(row);
+    });
+    
+    if (rows.length === 0) {
+        alert("Không có dữ liệu để xuất!");
+        return;
+    }
+    
+    let csvContent = "\uFEFF"; // UTF-8 BOM
+    rows.forEach(row => {
+        const formattedRow = row.map(val => {
+            return `"${val.replace(/"/g, '""')}"`;
+        });
+        csvContent += formattedRow.join(",") + "\n";
+    });
+    
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
     link.setAttribute("download", filename);
     link.style.visibility = "hidden";
     

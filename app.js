@@ -392,6 +392,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("perfFilterEndDate")) {
         document.getElementById("perfFilterEndDate").value = latestDate;
     }
+    if (document.getElementById("catFilterStartDate")) {
+        document.getElementById("catFilterStartDate").value = earliestDate;
+    }
+    if (document.getElementById("catFilterEndDate")) {
+        document.getElementById("catFilterEndDate").value = latestDate;
+    }
 
     // Populate Filters
     populateFilterOptions();
@@ -401,6 +407,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupEventListeners();
     setupTabs();
     setupPerfEventListeners();
+    setupCategoryEventListeners(earliestDate, latestDate);
     
     // Initial Render
     applyFiltersAndRender();
@@ -1056,7 +1063,12 @@ function setupMultiSelectDropdown(containerId) {
     const clearAllBtn = container.querySelector(".clear-all");
     const optionsList = container.querySelector(".multiselect-options-list");
 
-    const filterFn = containerId.includes("perf") ? applyPerfFiltersAndRender : applyFiltersAndRender;
+    let filterFn = applyFiltersAndRender;
+    if (containerId.includes("cat")) {
+        filterFn = renderF1CategoryTable;
+    } else if (containerId.includes("perf")) {
+        filterFn = applyPerfFiltersAndRender;
+    }
 
     // Toggle dropdown
     select.addEventListener("click", (e) => {
@@ -1503,25 +1515,46 @@ function updateSumifsSummary() {
 function setupTabs() {
     const tabTransferMonitor = document.getElementById("tabTransferMonitor");
     const tabPerformanceReport = document.getElementById("tabPerformanceReport");
+    const tabCategoryPerformance = document.getElementById("tabCategoryPerformance");
+    
     const contentTransferMonitor = document.getElementById("contentTransferMonitor");
     const contentPerformanceReport = document.getElementById("contentPerformanceReport");
+    const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
 
-    if (!tabTransferMonitor || !tabPerformanceReport) return;
+    if (!tabTransferMonitor || !tabPerformanceReport || !tabCategoryPerformance) return;
 
     tabTransferMonitor.addEventListener("click", () => {
         tabTransferMonitor.classList.add("active");
         tabPerformanceReport.classList.remove("active");
+        tabCategoryPerformance.classList.remove("active");
+        
         contentTransferMonitor.classList.add("active");
         contentPerformanceReport.classList.remove("active");
+        contentCategoryPerformance.classList.remove("active");
     });
 
     tabPerformanceReport.addEventListener("click", () => {
         tabPerformanceReport.classList.add("active");
         tabTransferMonitor.classList.remove("active");
+        tabCategoryPerformance.classList.remove("active");
+        
         contentPerformanceReport.classList.add("active");
         contentTransferMonitor.classList.remove("active");
+        contentCategoryPerformance.classList.remove("active");
         
         applyPerfFiltersAndRender();
+    });
+
+    tabCategoryPerformance.addEventListener("click", () => {
+        tabCategoryPerformance.classList.add("active");
+        tabTransferMonitor.classList.remove("active");
+        tabPerformanceReport.classList.remove("active");
+        
+        contentCategoryPerformance.classList.add("active");
+        contentTransferMonitor.classList.remove("active");
+        contentPerformanceReport.classList.remove("active");
+        
+        renderF1CategoryTable();
     });
 }
 
@@ -1755,6 +1788,38 @@ function setupPerfEventListeners() {
             renderPerfTable();
         });
     });
+}
+
+// Bind Category tab filters event listeners
+function setupCategoryEventListeners(earliestDate, latestDate) {
+    setupMultiSelectDropdown("catFilterGroupContainer");
+    
+    const catStartDate = document.getElementById("catFilterStartDate");
+    const catEndDate = document.getElementById("catFilterEndDate");
+    if (catStartDate) catStartDate.addEventListener("change", renderF1CategoryTable);
+    if (catEndDate) catEndDate.addEventListener("change", renderF1CategoryTable);
+    
+    const catClearFiltersBtn = document.getElementById("catClearFiltersBtn");
+    if (catClearFiltersBtn) {
+        catClearFiltersBtn.addEventListener("click", () => {
+            if (catStartDate) catStartDate.value = earliestDate;
+            if (catEndDate) catEndDate.value = latestDate;
+            
+            const groupContainer = document.getElementById("catFilterGroupContainer");
+            if (groupContainer) {
+                groupContainer.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = true);
+                updateSelectLabel(groupContainer, groupContainer.querySelector(".multiselect-value"));
+            }
+            
+            const searchInput = document.getElementById("perfF1UserSearch");
+            if (searchInput) searchInput.value = "";
+            
+            const selectFilter = document.getElementById("perfF1GroupFilter");
+            if (selectFilter) selectFilter.value = "All";
+            
+            renderF1CategoryTable();
+        });
+    }
 }
 
 // Autocomplete render and checkbox logic for Performance Search
@@ -3334,7 +3399,9 @@ function renderF1CategoryTable() {
     if (!tbody) return;
     tbody.innerHTML = "";
 
-    const selectedGroups = Array.from(document.querySelectorAll("#perfFilterGroupContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const catGroupEl = document.getElementById("catFilterGroupContainer");
+    const groupSelector = catGroupEl ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
+    const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
     
     let activeGroups = [];
     const groupFilterEl = document.getElementById("perfF1GroupFilter");
@@ -3374,9 +3441,14 @@ function renderF1CategoryTable() {
         }
     }
 
-    const startDateQuery = document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "";
-    const endDateQuery = document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "";
-    const selectedUsers = Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const catStartEl = document.getElementById("catFilterStartDate");
+    const catEndEl = document.getElementById("catFilterEndDate");
+    const startDateQuery = catStartEl ? catStartEl.value : (document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "");
+    const endDateQuery = catEndEl ? catEndEl.value : (document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "");
+    
+    const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
+    const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
+    const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
 
     const activeTransfers = transfers.filter(t => {
@@ -3397,7 +3469,7 @@ function renderF1CategoryTable() {
         }
         if (!matchGroupPrefix) return false;
 
-        // Match global user selection
+        // Match global user selection (only if not on the dedicated Category tab)
         const matchUser = selectedUsers.length === 0 || selectedUsers.includes(t.nguoiChia);
         if (!matchUser) return false;
 

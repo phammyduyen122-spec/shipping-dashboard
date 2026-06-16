@@ -398,6 +398,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("catFilterEndDate")) {
         document.getElementById("catFilterEndDate").value = latestDate;
     }
+    if (document.getElementById("exportStartDate")) {
+        document.getElementById("exportStartDate").value = earliestDate;
+    }
+    if (document.getElementById("exportEndDate")) {
+        document.getElementById("exportEndDate").value = latestDate;
+    }
 
     // Populate Filters
     populateFilterOptions();
@@ -408,6 +414,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupTabs();
     setupPerfEventListeners();
     setupCategoryEventListeners(earliestDate, latestDate);
+    setupExportTabEventListeners(earliestDate, latestDate);
     
     // Initial Render
     applyFiltersAndRender();
@@ -1516,31 +1523,37 @@ function setupTabs() {
     const tabTransferMonitor = document.getElementById("tabTransferMonitor");
     const tabPerformanceReport = document.getElementById("tabPerformanceReport");
     const tabCategoryPerformance = document.getElementById("tabCategoryPerformance");
+    const tabExportExcel = document.getElementById("tabExportExcel");
     
     const contentTransferMonitor = document.getElementById("contentTransferMonitor");
     const contentPerformanceReport = document.getElementById("contentPerformanceReport");
     const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
+    const contentExportExcel = document.getElementById("contentExportExcel");
 
-    if (!tabTransferMonitor || !tabPerformanceReport || !tabCategoryPerformance) return;
+    if (!tabTransferMonitor || !tabPerformanceReport || !tabCategoryPerformance || !tabExportExcel) return;
 
     tabTransferMonitor.addEventListener("click", () => {
         tabTransferMonitor.classList.add("active");
         tabPerformanceReport.classList.remove("active");
         tabCategoryPerformance.classList.remove("active");
+        tabExportExcel.classList.remove("active");
         
         contentTransferMonitor.classList.add("active");
         contentPerformanceReport.classList.remove("active");
         contentCategoryPerformance.classList.remove("active");
+        contentExportExcel.classList.remove("active");
     });
 
     tabPerformanceReport.addEventListener("click", () => {
         tabPerformanceReport.classList.add("active");
         tabTransferMonitor.classList.remove("active");
         tabCategoryPerformance.classList.remove("active");
+        tabExportExcel.classList.remove("active");
         
         contentPerformanceReport.classList.add("active");
         contentTransferMonitor.classList.remove("active");
         contentCategoryPerformance.classList.remove("active");
+        contentExportExcel.classList.remove("active");
         
         applyPerfFiltersAndRender();
     });
@@ -1549,12 +1562,28 @@ function setupTabs() {
         tabCategoryPerformance.classList.add("active");
         tabTransferMonitor.classList.remove("active");
         tabPerformanceReport.classList.remove("active");
+        tabExportExcel.classList.remove("active");
         
         contentCategoryPerformance.classList.add("active");
         contentTransferMonitor.classList.remove("active");
         contentPerformanceReport.classList.remove("active");
+        contentExportExcel.classList.remove("active");
         
         renderF1CategoryTable();
+    });
+
+    tabExportExcel.addEventListener("click", () => {
+        tabExportExcel.classList.add("active");
+        tabTransferMonitor.classList.remove("active");
+        tabPerformanceReport.classList.remove("active");
+        tabCategoryPerformance.classList.remove("active");
+        
+        contentExportExcel.classList.add("active");
+        contentTransferMonitor.classList.remove("active");
+        contentPerformanceReport.classList.remove("active");
+        contentCategoryPerformance.classList.remove("active");
+        
+        renderExportPreview();
     });
 }
 
@@ -1820,6 +1849,19 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
             renderF1CategoryTable();
         });
     }
+}
+
+// Bind Tabular Export tab events
+function setupExportTabEventListeners(earliestDate, latestDate) {
+    const exportDatasetSelect = document.getElementById("exportDatasetSelect");
+    const exportStartDate = document.getElementById("exportStartDate");
+    const exportEndDate = document.getElementById("exportEndDate");
+    const btnExportTabular = document.getElementById("btnExportTabular");
+
+    if (exportDatasetSelect) exportDatasetSelect.addEventListener("change", renderExportPreview);
+    if (exportStartDate) exportStartDate.addEventListener("change", renderExportPreview);
+    if (exportEndDate) exportEndDate.addEventListener("change", renderExportPreview);
+    if (btnExportTabular) btnExportTabular.addEventListener("click", downloadExportDataset);
 }
 
 // Autocomplete render and checkbox logic for Performance Search
@@ -3618,4 +3660,548 @@ function renderF1CategoryTable() {
         tr.innerHTML = htmlContent;
         tbody.appendChild(tr);
     });
+    renderF1CategoryDateTable();
+}
+
+// ============================================================
+// Bảng theo dõi hiệu suất phân loại theo Ngày & Ngành Hàng
+// ============================================================
+function renderF1CategoryDateTable() {
+    const tbody = document.getElementById("perfF1CategoryDateBody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    const catGroupEl = document.getElementById("catFilterGroupContainer");
+    const groupSelector = catGroupEl ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
+    const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
+    
+    let activeGroups = [];
+    const groupFilterEl = document.getElementById("perfF1GroupFilter");
+    const groupFilterVal = groupFilterEl ? groupFilterEl.value : "All";
+
+    if (selectedGroups.length > 0) {
+        activeGroups = selectedGroups;
+    } else {
+        if (groupFilterVal === "All") {
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV"];
+        } else {
+            activeGroups = [groupFilterVal];
+        }
+    }
+
+    const catStartEl = document.getElementById("catFilterStartDate");
+    const catEndEl = document.getElementById("catFilterEndDate");
+    const startDateQuery = catStartEl ? catStartEl.value : (document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "");
+    const endDateQuery = catEndEl ? catEndEl.value : (document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "");
+    
+    const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
+    const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
+    const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
+
+    const activeTransfers = transfers.filter(t => {
+        if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") {
+            return false;
+        }
+        if (!t.nguoiChia) {
+            return false;
+        }
+        const name = t.nguoiChia.trim().toLowerCase();
+        
+        let matchGroupPrefix = false;
+        for (const g of activeGroups) {
+            if (name.startsWith(g.toLowerCase())) {
+                matchGroupPrefix = true;
+                break;
+            }
+        }
+        if (!matchGroupPrefix) return false;
+
+        const matchUser = selectedUsers.length === 0 || selectedUsers.includes(t.nguoiChia);
+        if (!matchUser) return false;
+
+        if (localUserSearch !== "") {
+            if (!name.includes(localUserSearch)) {
+                return false;
+            }
+        }
+
+        const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
+        const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;
+
+        return matchStartDate && matchEndDate;
+    });
+
+    if (activeTransfers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 20px; color: var(--text-muted);">Không có dữ liệu phù hợp</td></tr>`;
+        return;
+    }
+
+    const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+    const dateAgg = {};
+
+    activeTransfers.forEach(t => {
+        const date = t.date;
+        const cat = t.nganhHang || "Khác";
+
+        if (!dateAgg[date]) {
+            dateAgg[date] = {
+                date: date,
+                categories: {}
+            };
+            categories.forEach(c => {
+                dateAgg[date].categories[c] = { shipped: 0, received: 0, diff: 0 };
+            });
+        }
+
+        const statusInfo = calculateStatus(t);
+        if (statusInfo.statusText === "Đang chuyển") {
+            return;
+        }
+
+        if (categories.includes(cat)) {
+            const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
+            dateAgg[date].categories[cat].shipped += t.qtyShipped;
+            dateAgg[date].categories[cat].received += t.qtyReceived + (t.matchedCorrectiveQty || 0);
+            if (isDiscrepant) {
+                dateAgg[date].categories[cat].diff += Math.abs(statusInfo.chenhLechConLai);
+            }
+        }
+    });
+
+    const sortedDates = Object.keys(dateAgg).sort();
+
+    const getStyleForDailyCat = (rateVal, qtyVal) => {
+        if (qtyVal === 0) return "text-align: right;";
+        if (rateVal < 0.2) {
+            return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
+        } else if (rateVal <= 0.5) {
+            return "background-color: rgba(245, 158, 11, 0.15); color: var(--color-warning); font-weight: bold; text-align: right;";
+        } else {
+            return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
+        }
+    };
+
+    sortedDates.forEach((date, index) => {
+        const dData = dateAgg[date];
+        const tr = document.createElement("tr");
+
+        let htmlContent = `
+            <td style="text-align: center;">${index + 1}</td>
+            <td><strong>${formatDateToVN(date)}</strong></td>
+        `;
+
+        let totalShipped = 0;
+        let totalReceived = 0;
+        let totalDiff = 0;
+
+        categories.forEach(cat => {
+            totalShipped += dData.categories[cat].shipped;
+            totalReceived += dData.categories[cat].received;
+            totalDiff += dData.categories[cat].diff;
+        });
+
+        categories.forEach(cat => {
+            const shipped = dData.categories[cat].shipped;
+            const diff = dData.categories[cat].diff;
+            const rateVal = shipped > 0 ? (diff / shipped) * 100 : 0;
+            const style = getStyleForDailyCat(rateVal, shipped);
+            const displayText = shipped === 0 ? "0.00%" : `${rateVal.toFixed(2)}%`;
+            htmlContent += `<td style="${style}">${displayText}</td>`;
+        });
+
+        const totalErrorRate = totalShipped > 0 ? (totalDiff / totalShipped) * 100 : 0;
+        const totalStyle = getStyleForDailyCat(totalErrorRate, totalShipped) + " font-weight: bold; border-left: 1px solid var(--border-color);";
+        const totalDisplayText = totalShipped === 0 ? "0.00%" : `${totalErrorRate.toFixed(2)}%`;
+        htmlContent += `<td style="${totalStyle}">${totalDisplayText}</td>`;
+
+        tr.innerHTML = htmlContent;
+        tbody.appendChild(tr);
+    });
+}
+
+// ============================================================
+// Dữ liệu Xuất Excel / CSV Dạng Cột (Tabular Format)
+// ============================================================
+function getFilteredExportData(datasetType) {
+    const startDate = document.getElementById("exportStartDate") ? document.getElementById("exportStartDate").value : "";
+    const endDate = document.getElementById("exportEndDate") ? document.getElementById("exportEndDate").value : "";
+
+    if (datasetType === "transfers") {
+        const data = transfers.filter(t => {
+            const matchStart = startDate === "" || t.date >= startDate;
+            const matchEnd = endDate === "" || t.date <= endDate;
+            return matchStart && matchEnd;
+        });
+        
+        const headers = ["Ngày chuyển", "Chi nhánh chuyển", "Chi nhánh nhận", "Người chia", "Mã hàng", "Tên hàng", "Đơn vị tính", "Ngành hàng", "SL chuyển", "SL nhận", "Chênh lệch", "SL bổ sung", "SL chênh lệch còn lại", "Trạng thái"];
+        
+        const rows = data.map(t => {
+            const statusInfo = calculateStatus(t);
+            return [
+                t.date,
+                t.fromBranch,
+                t.toBranch,
+                t.nguoiChia || "",
+                t.itemCode,
+                t.itemName,
+                t.unit,
+                t.nganhHang || "Khác",
+                statusInfo.slChuyenKRC,
+                statusInfo.slNhanKRC === -1 ? -1 : statusInfo.slNhanKRC,
+                statusInfo.slNhanKRC === -1 ? 0 : statusInfo.chenhLech,
+                statusInfo.slBoSung,
+                statusInfo.slNhanKRC === -1 ? 0 : statusInfo.chenhLechConLai,
+                statusInfo.statusText
+            ];
+        });
+        
+        return { headers, rows };
+    }
+    
+    if (datasetType === "performance") {
+        const data = performanceTransfers.filter(t => {
+            const matchStart = startDate === "" || t.ngayChuyen >= startDate;
+            const matchEnd = endDate === "" || t.ngayChuyen <= endDate;
+            return matchStart && matchEnd;
+        });
+        
+        const headers = ["Ngày chuyển", "Mã Phiếu", "Nơi nhận", "Barcode", "Tên sản phẩm", "Đơn vị", "Ngành hàng", "SL chuyển", "SL nhận", "Chênh lệch", "Bổ sung", "CL còn lại", "Người chia hàng", "Trạng thái"];
+        
+        const rows = data.map(t => {
+            const statusInfo = calculateStatus(t);
+            const rawDiff = t.qtyReceived - t.qtyShipped;
+            return [
+                t.date,
+                t.transferCode,
+                t.toBranch,
+                t.itemCode,
+                t.itemName,
+                t.unit,
+                t.nganhHang || "Khác",
+                t.qtyShipped,
+                t.qtyReceived,
+                rawDiff,
+                t.matchedCorrectiveQty || 0,
+                statusInfo.chenhLechConLai,
+                t.nguoiChia || "",
+                getPerfStatus(t)
+            ];
+        });
+        
+        return { headers, rows };
+    }
+    
+    if (datasetType === "category") {
+        const activeTransfers = transfers.filter(t => {
+            if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") return false;
+            if (!t.nguoiChia) return false;
+            const matchStart = startDate === "" || t.date >= startDate;
+            const matchEnd = endDate === "" || t.date <= endDate;
+            return matchStart && matchEnd;
+        });
+        
+        const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+        const userAgg = {};
+        
+        activeTransfers.forEach(t => {
+            const user = t.nguoiChia.trim();
+            const cat = t.nganhHang || "Khác";
+            
+            if (!userAgg[user]) {
+                userAgg[user] = {
+                    user: user,
+                    categories: {}
+                };
+                categories.forEach(c => {
+                    userAgg[user].categories[c] = { shipped: 0, received: 0, diff: 0 };
+                });
+            }
+            
+            const statusInfo = calculateStatus(t);
+            if (statusInfo.statusText === "Đang chuyển") return;
+            
+            if (categories.includes(cat)) {
+                const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
+                userAgg[user].categories[cat].shipped += t.qtyShipped;
+                userAgg[user].categories[cat].received += t.qtyReceived + (t.matchedCorrectiveQty || 0);
+                if (isDiscrepant) {
+                    userAgg[user].categories[cat].diff += Math.abs(statusInfo.chenhLechConLai);
+                }
+            }
+        });
+        
+        const headers = ["Nhân sự", "Nhóm nhân sự", "Ngành hàng", "SL chuyển", "SL nhận + Bổ sung", "SL lệch còn lại", "Tỷ lệ chia sai"];
+        const rows = [];
+        
+        Object.keys(userAgg).sort((a,b) => a.localeCompare(b, "vi")).forEach(user => {
+            const uData = userAgg[user];
+            const name = user.toLowerCase();
+            let group = "CTV";
+            if (name.startsWith("f1")) group = "F1";
+            else if (name.startsWith("f2")) group = "F2";
+            else if (name.startsWith("huyhoang")) group = "HUYHOANG";
+            
+            categories.forEach(cat => {
+                const shipped = uData.categories[cat].shipped;
+                const received = uData.categories[cat].received;
+                const diff = uData.categories[cat].diff;
+                if (shipped === 0 && received === 0 && diff === 0) return;
+                const rate = shipped > 0 ? (diff / shipped) * 100 : 0;
+                rows.push([
+                    user,
+                    group,
+                    cat,
+                    shipped,
+                    received,
+                    diff,
+                    `${rate.toFixed(2)}%`
+                ]);
+            });
+        });
+        
+        return { headers, rows };
+    }
+    
+    if (datasetType === "ctvSummary") {
+        const activeTransfers = transfers.filter(t => {
+            if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") return false;
+            if (!t.nguoiChia) return false;
+            
+            const matchStart = startDate === "" || t.date >= startDate;
+            const matchEnd = endDate === "" || t.date <= endDate;
+            return matchStart && matchEnd;
+        });
+        
+        const userAgg = {};
+        activeTransfers.forEach(t => {
+            const user = t.nguoiChia || "Không rõ";
+            if (!userAgg[user]) {
+                userAgg[user] = {
+                    user: user,
+                    storesShared: new Set(),
+                    storesDiscrepant: new Set(),
+                    totalLines: 0,
+                    discrepantLines: 0,
+                    diffQtyKg: 0,
+                    diffQtyPack: 0,
+                    totalReqQty: 0,
+                    totalDiffQty: 0,
+                    totalSharedQty: 0
+                };
+            }
+            
+            const statusInfo = calculateStatus(t);
+            if (statusInfo.statusText === "Đang chuyển") return;
+            
+            const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
+            if (t.toBranch) {
+                const branchName = t.toBranch.trim();
+                userAgg[user].storesShared.add(branchName);
+                if (isDiscrepant) {
+                    userAgg[user].storesDiscrepant.add(branchName);
+                }
+            }
+            
+            userAgg[user].totalLines += 1;
+            userAgg[user].totalReqQty += t.qtyShipped;
+            userAgg[user].totalSharedQty += (t.qtyReceived + (t.matchedCorrectiveQty || 0));
+            
+            if (isDiscrepant) {
+                userAgg[user].discrepantLines += 1;
+                const absDiff = Math.abs(statusInfo.chenhLechConLai);
+                userAgg[user].totalDiffQty += absDiff;
+                
+                const isKg = (t.unit && t.unit.toLowerCase() === "kg");
+                if (isKg) {
+                    userAgg[user].diffQtyKg += absDiff;
+                } else {
+                    userAgg[user].diffQtyPack += absDiff;
+                }
+            }
+        });
+        
+        const headers = ["Người chia hàng", "Nhóm nhân sự", "Tổng số ST chia", "Tổng số ST lệch", "% ST sai", "Tổng SL chia", "SL chia sai", "% SL chia sai", "SL lệch - Kg", "SL lệch - Pack"];
+        const rows = [];
+        
+        Object.keys(userAgg).sort((a,b) => a.localeCompare(b, "vi")).forEach(user => {
+            const item = userAgg[user];
+            const name = user.toLowerCase();
+            let group = "CTV";
+            if (name.startsWith("f1")) group = "F1";
+            else if (name.startsWith("f2")) group = "F2";
+            else if (name.startsWith("huyhoang")) group = "HUYHOANG";
+            
+            const stErrorRate = item.storesShared.size > 0 ? ((item.storesDiscrepant.size / item.storesShared.size) * 100).toFixed(2) + "%" : "0.00%";
+            const qtyErrorRate = item.totalReqQty > 0 ? ((item.totalDiffQty / item.totalReqQty) * 100).toFixed(2) + "%" : "0.00%";
+            
+            rows.push([
+                user,
+                group,
+                item.storesShared.size,
+                item.storesDiscrepant.size,
+                stErrorRate,
+                item.totalReqQty,
+                item.totalDiffQty,
+                qtyErrorRate,
+                item.diffQtyKg,
+                item.diffQtyPack
+            ]);
+        });
+        
+        return { headers, rows };
+    }
+    
+    if (datasetType === "categoryDate") {
+        const activeTransfers = transfers.filter(t => {
+            if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") return false;
+            if (!t.nguoiChia) return false;
+            const matchStart = startDate === "" || t.date >= startDate;
+            const matchEnd = endDate === "" || t.date <= endDate;
+            return matchStart && matchEnd;
+        });
+        
+        const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+        const dateAgg = {};
+        
+        activeTransfers.forEach(t => {
+            const date = t.date;
+            const cat = t.nganhHang || "Khác";
+            
+            if (!dateAgg[date]) {
+                dateAgg[date] = {
+                    date: date,
+                    categories: {}
+                };
+                categories.forEach(c => {
+                    dateAgg[date].categories[c] = { shipped: 0, received: 0, diff: 0 };
+                });
+            }
+            
+            const statusInfo = calculateStatus(t);
+            if (statusInfo.statusText === "Đang chuyển") return;
+            
+            if (categories.includes(cat)) {
+                const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
+                dateAgg[date].categories[cat].shipped += t.qtyShipped;
+                dateAgg[date].categories[cat].received += t.qtyReceived + (t.matchedCorrectiveQty || 0);
+                if (isDiscrepant) {
+                    dateAgg[date].categories[cat].diff += Math.abs(statusInfo.chenhLechConLai);
+                }
+            }
+        });
+        
+        const headers = ["Ngày", "Ngành hàng", "SL chuyển", "SL nhận + Bổ sung", "SL lệch còn lại", "Tỷ lệ chia sai"];
+        const rows = [];
+        
+        Object.keys(dateAgg).sort().forEach(date => {
+            const dData = dateAgg[date];
+            categories.forEach(cat => {
+                const shipped = dData.categories[cat].shipped;
+                const received = dData.categories[cat].received;
+                const diff = dData.categories[cat].diff;
+                const rate = shipped > 0 ? (diff / shipped) * 100 : 0;
+                rows.push([
+                    date,
+                    cat,
+                    shipped,
+                    received,
+                    diff,
+                    `${rate.toFixed(2)}%`
+                ]);
+            });
+        });
+        
+        return { headers, rows };
+    }
+    
+    return { headers: [], rows: [] };
+}
+
+function renderExportPreview() {
+    const datasetSelect = document.getElementById("exportDatasetSelect");
+    if (!datasetSelect) return;
+    
+    const datasetType = datasetSelect.value;
+    const { headers, rows } = getFilteredExportData(datasetType);
+    
+    // Update count
+    const countEl = document.getElementById("exportRecordCount");
+    if (countEl) {
+        countEl.innerText = `Sẵn sàng xuất ${formatNumber(rows.length)} dòng dữ liệu.`;
+    }
+    
+    // Render head
+    const thead = document.getElementById("exportPreviewHead");
+    if (thead) {
+        thead.innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr>`;
+    }
+    
+    // Render preview body (first 10 rows)
+    const tbody = document.getElementById("exportPreviewBody");
+    if (tbody) {
+        tbody.innerHTML = "";
+        const previewRows = rows.slice(0, 10);
+        if (previewRows.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="${headers.length || 1}" style="text-align: center; padding: 20px; color: var(--text-muted);">Không có dữ liệu phù hợp</td></tr>`;
+            return;
+        }
+        
+        previewRows.forEach(row => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = row.map(val => {
+                const isNumeric = typeof val === "number";
+                const alignStyle = isNumeric ? 'style="text-align: right;"' : '';
+                const displayVal = isNumeric ? formatNumber(val) : val;
+                return `<td ${alignStyle}>${displayVal}</td>`;
+            }).join("");
+            tbody.appendChild(tr);
+        });
+    }
+}
+
+function downloadExportDataset() {
+    const datasetSelect = document.getElementById("exportDatasetSelect");
+    if (!datasetSelect) return;
+    
+    const datasetType = datasetSelect.value;
+    const { headers, rows } = getFilteredExportData(datasetType);
+    
+    if (rows.length === 0) {
+        alert("Không có dữ liệu để xuất!");
+        return;
+    }
+    
+    let csvContent = "\uFEFF"; // UTF-8 BOM representation
+    csvContent += headers.join(",") + "\n";
+    
+    rows.forEach(row => {
+        const formattedRow = row.map(val => {
+            if (typeof val === "string") {
+                return `"${val.replace(/"/g, '""')}"`;
+            }
+            return val;
+        });
+        csvContent += formattedRow.join(",") + "\n";
+    });
+    
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    
+    const todayStr = new Date().toISOString().split("T")[0];
+    let filename = `BaoCao_Tabular_${datasetType}_${todayStr}.csv`;
+    if (datasetType === "transfers") filename = `BaoCao_DieuChuyenHang_Col_${todayStr}.csv`;
+    else if (datasetType === "performance") filename = `BaoCao_HieuSuatChiaHang_Col_${todayStr}.csv`;
+    else if (datasetType === "category") filename = `BaoCao_HieuSuatNganhHang_Col_${todayStr}.csv`;
+    else if (datasetType === "ctvSummary") filename = `BaoCao_TomTatHieuSuat_Col_${todayStr}.csv`;
+    else if (datasetType === "categoryDate") filename = `BaoCao_HieuSuatNganhHangTheoNgay_Col_${todayStr}.csv`;
+    
+    link.setAttribute("download", filename);
+    link.style.visibility = "hidden";
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }

@@ -37,6 +37,7 @@
             <button class="tab-btn active" id="tabTransferMonitor">🚚 Giám sát Điều chuyển</button>
             <button class="tab-btn" id="tabPerformanceReport">📊 Hiệu suất Chia hàng</button>
             <button class="tab-btn" id="tabCategoryPerformance">🗂️ Hiệu suất Ngành hàng</button>
+            <button class="tab-btn" id="tabExportExcel">📥 Đổ Excel Dạng Cột</button>
         </div>
 
         <!-- Tab 1: Shipping Transfer Monitor -->
@@ -868,8 +869,93 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Bảng theo dõi hiệu suất theo Ngày & Ngành Hàng -->
+            <div class="table-card" style="margin-bottom: 24px;">
+                <div class="table-header-row" style="background-color: rgba(79, 70, 229, 0.05); border-bottom: 1px solid rgba(79, 70, 229, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <span class="table-title" id="perfF1DateTableTitle" style="color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0;">
+                        📅 Theo dõi hiệu suất phân loại theo Ngày & Ngành Hàng
+                    </span>
+                </div>
+                <div class="table-wrapper">
+                    <table id="perfF1CategoryDateTable">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 60px;">STT</th>
+                                <th>Ngày chuyển</th>
+                                <th style="text-align: right;">2.VEGETABLES (% sai)</th>
+                                <th style="text-align: right;">2.FRUITS (% sai)</th>
+                                <th style="text-align: right;">2.BAKERY (% sai)</th>
+                                <th style="text-align: right;">2.EGGS (% sai)</th>
+                                <th style="text-align: right;">2.DELICA (% sai)</th>
+                                <th style="text-align: right; font-weight: bold; border-left: 1px solid var(--border-color); color: var(--color-primary);">Tổng % chia sai</th>
+                            </tr>
+                        </thead>
+                        <tbody id="perfF1CategoryDateBody">
+                            <!-- Dynamic aggregate content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-    </div>
+
+        <!-- Tab 4: Tabular Excel Export Panel -->
+        <div class="tab-content" id="contentExportExcel">
+            <div class="filters-card">
+                <div class="filters-header">
+                    📥 <span>Cấu hình Đổ Excel Dạng Cột (Tabular Format)</span>
+                </div>
+                <div class="filters-grid">
+                    <!-- Dataset Selection -->
+                    <div class="filter-group">
+                        <label class="filter-label">Chọn bảng dữ liệu cần xuất</label>
+                        <select id="exportDatasetSelect" class="input-field">
+                            <option value="transfers">1. Chi tiết Điều chuyển hàng (Kho Rau Củ)</option>
+                            <option value="performance">2. Chi tiết Hiệu suất chia hàng (PO Qua cảnh)</option>
+                            <option value="category">3. Hiệu suất Ngành hàng theo CTV/F1/F2 (Dạng Cột)</option>
+                            <option value="ctvSummary">4. Tóm tắt Hiệu suất theo CTV/F1/F2 (Dạng Cột)</option>
+                            <option value="categoryDate">5. Hiệu suất Ngành hàng theo Ngày (Dạng Cột)</option>
+                        </select>
+                    </div>
+
+                    <!-- Date Range Filters -->
+                    <div class="filter-group">
+                        <label class="filter-label">Từ ngày</label>
+                        <input type="date" id="exportStartDate" class="input-field">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Đến ngày</label>
+                        <input type="date" id="exportEndDate" class="input-field">
+                    </div>
+                </div>
+                <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 13px; color: var(--text-muted);" id="exportRecordCount">
+                        Sẵn sàng xuất 0 dòng dữ liệu.
+                    </div>
+                    <button class="btn btn-primary" id="btnExportTabular">
+                        <span>📥 Tải File CSV/Excel Dạng Cột</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Preview Card -->
+            <div class="table-card">
+                <div class="table-header-row">
+                    <span class="table-title">👀 Xem trước 10 dòng đầu tiên của bảng dữ liệu</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead id="exportPreviewHead">
+                            <!-- Dynamic -->
+                        </thead>
+                        <tbody id="exportPreviewBody">
+                            <!-- Dynamic -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        </div>
 
     <!-- Modal for Adding New Record -->
     <div class="modal-overlay" id="addRecordModal">

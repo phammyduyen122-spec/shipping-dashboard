@@ -670,7 +670,14 @@
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 150px;">
                         <label for="perfSummaryFilterCategory" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Ngành hàng:</label>
-                        <input type="text" id="perfSummaryFilterCategory" class="input-field" placeholder="Nhập ngành hàng..." style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%;">
+                        <input type="text" id="perfSummaryFilterCategory" class="input-field" placeholder="Nhập hoặc chọn..." style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%;" list="perfSummaryCategoryDatalist">
+                        <datalist id="perfSummaryCategoryDatalist">
+                            <option value="2.VEGETABLES"></option>
+                            <option value="2.FRUITS"></option>
+                            <option value="2.BAKERY"></option>
+                            <option value="2.EGGS"></option>
+                            <option value="2.DELICA"></option>
+                        </datalist>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 130px;">
                         <label for="perfSummaryFilterStatus" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Trạng thái:</label>
@@ -1019,6 +1026,54 @@
                             </tr>
                         </thead>
                         <tbody id="vegLevel3Body">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Bảng Top 10 SKU chia lệch theo nhóm ngành hàng -->
+            <div class="table-card" style="margin-bottom: 24px;">
+                <div class="table-header-row" style="background-color: rgba(245, 158, 11, 0.05); border-bottom: 1px solid rgba(245, 158, 11, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <span class="table-title" style="color: var(--color-warning); display: flex; align-items: center; gap: 8px; margin: 0;">
+                        ⚠️ Top 10 SKU chia lệch nhiều nhất theo Ngành Hàng
+                    </span>
+                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <label for="topSkuCategoryFilter" style="font-size: 12px; font-weight: 600; color: var(--color-warning);">Ngành hàng:</label>
+                            <select id="topSkuCategoryFilter" class="input-field" style="width: auto; padding: 4px 28px 4px 12px; font-size: 12px; height: 30px; margin: 0; background-color: var(--bg-primary); border-color: var(--color-warning); color: var(--color-warning); font-weight: 600; cursor: pointer; border-radius: var(--radius-sm);">
+                                <option value="All" selected>Tất cả ngành hàng</option>
+                                <option value="2.VEGETABLES">2.VEGETABLES</option>
+                                <option value="2.FRUITS">2.FRUITS</option>
+                                <option value="2.BAKERY">2.BAKERY</option>
+                                <option value="2.EGGS">2.EGGS</option>
+                                <option value="2.DELICA">2.DELICA</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="text" id="topSkuSearchInput" class="table-filter-input" style="width: 150px; margin: 0; padding: 6px 12px; border-color: var(--color-warning);" placeholder="Tìm SKU...">
+                        </div>
+                        <button class="btn btn-secondary" id="topSkuBtnExport" style="border-color: var(--color-warning); color: var(--color-warning); height: 30px; padding: 4px 12px; font-size: 12px;">
+                            <span>📥 Xuất Excel</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="topSkuDiscrepancyTable">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 60px;">STT</th>
+                                <th>Barcode</th>
+                                <th>Tên sản phẩm</th>
+                                <th style="text-align: center; width: 80px;">ĐVT</th>
+                                <th>Ngành hàng</th>
+                                <th style="text-align: right;">Tổng SL chuyển</th>
+                                <th style="text-align: right;">Tổng SL nhận</th>
+                                <th style="text-align: right; color: var(--color-danger);">Tổng SL lệch còn lại</th>
+                                <th style="text-align: right; color: var(--color-danger);">% Lệch</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topSkuDiscrepancyBody">
                             <!-- Dynamic content -->
                         </tbody>
                     </table>

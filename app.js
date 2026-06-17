@@ -1872,7 +1872,7 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
     if (catEndDate) catEndDate.addEventListener("change", renderF1CategoryTable);
     if (vegLevel3FilterDate) {
         vegLevel3FilterDate.addEventListener("input", () => {
-            renderVegetablesLevel3Table(lastActiveTransfers);
+            renderVegetablesLevel3Table();
         });
     }
     if (vegLevel3DateFilterDate) {
@@ -1880,6 +1880,19 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
             renderVegetablesLevel3DateTable();
         });
     }
+
+    // Bind table-specific date filter listeners
+    const bindDateFilters = (startId, endId, renderFunc) => {
+        const startEl = document.getElementById(startId);
+        const endEl = document.getElementById(endId);
+        if (startEl) startEl.addEventListener("change", renderFunc);
+        if (endEl) endEl.addEventListener("change", renderFunc);
+    };
+
+    bindDateFilters("catDateTableStartDate", "catDateTableEndDate", renderF1CategoryDateTable);
+    bindDateFilters("topSkuStartDate", "topSkuEndDate", renderTopSkuDiscrepancyTable);
+    bindDateFilters("vegLevel3DateStartDate", "vegLevel3DateEndDate", renderVegetablesLevel3DateTable);
+    bindDateFilters("vegLevel3StartDate", "vegLevel3EndDate", renderVegetablesLevel3Table);
     
     const catClearFiltersBtn = document.getElementById("catClearFiltersBtn");
     if (catClearFiltersBtn) {
@@ -1888,6 +1901,13 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
             if (catEndDate) catEndDate.value = latestDate;
             if (vegLevel3FilterDate) vegLevel3FilterDate.value = "";
             if (vegLevel3DateFilterDate) vegLevel3DateFilterDate.value = "";
+
+            // Clear table-specific date filters
+            const clearInputs = ["catDateTableStartDate", "catDateTableEndDate", "topSkuStartDate", "topSkuEndDate", "vegLevel3DateStartDate", "vegLevel3DateEndDate", "vegLevel3StartDate", "vegLevel3EndDate"];
+            clearInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = "";
+            });
             
             const groupContainer = document.getElementById("catFilterGroupContainer");
             if (groupContainer) {
@@ -1906,6 +1926,9 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
 
             const topSkuSearchInput = document.getElementById("topSkuSearchInput");
             if (topSkuSearchInput) topSkuSearchInput.value = "";
+
+            const topSkuSortCriteria = document.getElementById("topSkuSortCriteria");
+            if (topSkuSortCriteria) topSkuSortCriteria.value = "qty";
             
             renderF1CategoryTable();
         });
@@ -1945,6 +1968,13 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
     const topSkuCategoryFilter = document.getElementById("topSkuCategoryFilter");
     if (topSkuCategoryFilter) {
         topSkuCategoryFilter.addEventListener("change", () => {
+            renderTopSkuDiscrepancyTable();
+        });
+    }
+
+    const topSkuSortCriteria = document.getElementById("topSkuSortCriteria");
+    if (topSkuSortCriteria) {
+        topSkuSortCriteria.addEventListener("change", () => {
             renderTopSkuDiscrepancyTable();
         });
     }
@@ -3804,17 +3834,81 @@ function renderF1CategoryTable() {
     });
     renderF1CategoryDateTable();
     renderVegetablesLevel3DateTable();
-    renderVegetablesLevel3Table(activeTransfers);
+    renderVegetablesLevel3Table();
     renderTopSkuDiscrepancyTable();
 }
 
 // ============================================================
 // Bảng chi tiết hiệu suất nhóm hàng Rau Củ (Level 3 - 2.VEGETABLES)
 // ============================================================
-function renderVegetablesLevel3Table(activeTransfers) {
+function renderVegetablesLevel3Table() {
     const tbody = document.getElementById("vegLevel3Body");
     if (!tbody) return;
     tbody.innerHTML = "";
+
+    const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
+    const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
+
+    const groupSelector = isCategoryTabActive ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
+    const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
+    
+    let activeGroups = [];
+    const groupFilterEl = document.getElementById("perfF1GroupFilter");
+    const groupFilterVal = groupFilterEl ? groupFilterEl.value : "All";
+
+    if (selectedGroups.length > 0) {
+        activeGroups = selectedGroups;
+    } else {
+        if (groupFilterVal === "All") {
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV"];
+        } else {
+            activeGroups = [groupFilterVal];
+        }
+    }
+
+    const tableStartEl = document.getElementById("vegLevel3StartDate");
+    const tableEndEl = document.getElementById("vegLevel3EndDate");
+    const globalStartEl = document.getElementById(isCategoryTabActive ? "catFilterStartDate" : "perfFilterStartDate");
+    const globalEndEl = document.getElementById(isCategoryTabActive ? "catFilterEndDate" : "perfFilterEndDate");
+
+    const startDateQuery = (tableStartEl && tableStartEl.value) ? tableStartEl.value : (globalStartEl ? globalStartEl.value : "");
+    const endDateQuery = (tableEndEl && tableEndEl.value) ? tableEndEl.value : (globalEndEl ? globalEndEl.value : "");
+
+    const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
+
+    const activeTransfers = transfers.filter(t => {
+        if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") {
+            return false;
+        }
+        if (!t.nguoiChia) {
+            return false;
+        }
+        const name = t.nguoiChia.trim().toLowerCase();
+        
+        let matchGroupPrefix = false;
+        for (const g of activeGroups) {
+            if (name.startsWith(g.toLowerCase())) {
+                matchGroupPrefix = true;
+                break;
+            }
+        }
+        if (!matchGroupPrefix) return false;
+
+        const matchUser = selectedUsers.length === 0 || selectedUsers.includes(t.nguoiChia);
+        if (!matchUser) return false;
+
+        if (localUserSearch !== "") {
+            if (!name.includes(localUserSearch)) {
+                return false;
+            }
+        }
+
+        const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
+        const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;
+
+        return matchStartDate && matchEndDate;
+    });
 
     const vegLevel3FilterDate = document.getElementById("vegLevel3FilterDate") ? document.getElementById("vegLevel3FilterDate").value.toLowerCase().trim() : "";
 
@@ -3955,12 +4049,13 @@ function renderF1CategoryDateTable() {
         }
     }
 
-    const startDateQuery = isCategoryTabActive ? 
-        (document.getElementById("catFilterStartDate") ? document.getElementById("catFilterStartDate").value : "") :
-        (document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "");
-    const endDateQuery = isCategoryTabActive ? 
-        (document.getElementById("catFilterEndDate") ? document.getElementById("catFilterEndDate").value : "") :
-        (document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "");
+    const tableStartEl = document.getElementById("catDateTableStartDate");
+    const tableEndEl = document.getElementById("catDateTableEndDate");
+    const globalStartEl = document.getElementById(isCategoryTabActive ? "catFilterStartDate" : "perfFilterStartDate");
+    const globalEndEl = document.getElementById(isCategoryTabActive ? "catFilterEndDate" : "perfFilterEndDate");
+
+    const startDateQuery = (tableStartEl && tableStartEl.value) ? tableStartEl.value : (globalStartEl ? globalStartEl.value : "");
+    const endDateQuery = (tableEndEl && tableEndEl.value) ? tableEndEl.value : (globalEndEl ? globalEndEl.value : "");
     
     const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
@@ -4124,12 +4219,13 @@ function renderVegetablesLevel3DateTable() {
         }
     }
 
-    const startDateQuery = isCategoryTabActive ? 
-        (document.getElementById("catFilterStartDate") ? document.getElementById("catFilterStartDate").value : "") :
-        (document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "");
-    const endDateQuery = isCategoryTabActive ? 
-        (document.getElementById("catFilterEndDate") ? document.getElementById("catFilterEndDate").value : "") :
-        (document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "");
+    const tableStartEl = document.getElementById("vegLevel3DateStartDate");
+    const tableEndEl = document.getElementById("vegLevel3DateEndDate");
+    const globalStartEl = document.getElementById(isCategoryTabActive ? "catFilterStartDate" : "perfFilterStartDate");
+    const globalEndEl = document.getElementById(isCategoryTabActive ? "catFilterEndDate" : "perfFilterEndDate");
+
+    const startDateQuery = (tableStartEl && tableStartEl.value) ? tableStartEl.value : (globalStartEl ? globalStartEl.value : "");
+    const endDateQuery = (tableEndEl && tableEndEl.value) ? tableEndEl.value : (globalEndEl ? globalEndEl.value : "");
     
     const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
@@ -4278,6 +4374,23 @@ function renderVegetablesLevel3DateTable() {
     });
 }
 
+function getPrevDateStr(dateStr) {
+    if (!dateStr) return "";
+    const parts = dateStr.split("-");
+    if (parts.length !== 3) return "";
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // 0-indexed
+    const day = parseInt(parts[2], 10);
+    
+    const date = new Date(year, month, day);
+    date.setDate(date.getDate() - 1);
+    
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
 // ============================================================
 // Bảng Top 10 SKU chia lệch nhiều nhất theo nhóm ngành hàng
 // ============================================================
@@ -4285,6 +4398,9 @@ function renderTopSkuDiscrepancyTable() {
     const tbody = document.getElementById("topSkuDiscrepancyBody");
     if (!tbody) return;
     tbody.innerHTML = "";
+
+    const sortCriteriaEl = document.getElementById("topSkuSortCriteria");
+    const sortCriteria = sortCriteriaEl ? sortCriteriaEl.value : "qty";
 
     const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
     const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
@@ -4306,12 +4422,16 @@ function renderTopSkuDiscrepancyTable() {
         }
     }
 
-    const startDateQuery = isCategoryTabActive ? 
-        (document.getElementById("catFilterStartDate") ? document.getElementById("catFilterStartDate").value : "") :
-        (document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "");
-    const endDateQuery = isCategoryTabActive ? 
-        (document.getElementById("catFilterEndDate") ? document.getElementById("catFilterEndDate").value : "") :
-        (document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "");
+    const tableStartEl = document.getElementById("topSkuStartDate");
+    const tableEndEl = document.getElementById("topSkuEndDate");
+    const globalStartEl = document.getElementById(isCategoryTabActive ? "catFilterStartDate" : "perfFilterStartDate");
+    const globalEndEl = document.getElementById(isCategoryTabActive ? "catFilterEndDate" : "perfFilterEndDate");
+
+    const startDateQuery = (tableStartEl && tableStartEl.value) ? tableStartEl.value : (globalStartEl ? globalStartEl.value : "");
+    const endDateQuery = (tableEndEl && tableEndEl.value) ? tableEndEl.value : (globalEndEl ? globalEndEl.value : "");
+    
+    const prevStartDateQuery = startDateQuery ? getPrevDateStr(startDateQuery) : "";
+    const prevEndDateQuery = endDateQuery ? getPrevDateStr(endDateQuery) : "";
     
     const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
@@ -4403,20 +4523,97 @@ function renderTopSkuDiscrepancyTable() {
         }
     });
 
+    // Aggregate D-1 transfers
+    const prevSkuAgg = {};
+    if (prevStartDateQuery && prevEndDateQuery) {
+        const prevTransfers = transfers.filter(t => {
+            if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") {
+                return false;
+            }
+            if (!t.nguoiChia) {
+                return false;
+            }
+            const name = t.nguoiChia.trim().toLowerCase();
+            
+            let matchGroupPrefix = false;
+            for (const g of activeGroups) {
+                if (name.startsWith(g.toLowerCase())) {
+                    matchGroupPrefix = true;
+                    break;
+                }
+            }
+            if (!matchGroupPrefix) return false;
+
+            const matchUser = selectedUsers.length === 0 || selectedUsers.includes(t.nguoiChia);
+            if (!matchUser) return false;
+
+            if (localUserSearch !== "") {
+                if (!name.includes(localUserSearch)) {
+                    return false;
+                }
+            }
+
+            const matchStartDate = t.date >= prevStartDateQuery;
+            const matchEndDate = t.date <= prevEndDateQuery;
+
+            return matchStartDate && matchEndDate;
+        });
+
+        prevTransfers.forEach(t => {
+            const cat = t.nganhHang || "Khác";
+            if (selectedCategory !== "All" && cat !== selectedCategory) {
+                return;
+            }
+
+            const itemCode = t.itemCode;
+            const statusInfo = calculateStatus(t);
+            if (statusInfo.statusText === "Đang chuyển") {
+                return;
+            }
+
+            if (!prevSkuAgg[itemCode]) {
+                prevSkuAgg[itemCode] = {
+                    qtyShipped: 0,
+                    qtyReceived: 0,
+                    qtyDiff: 0
+                };
+            }
+
+            prevSkuAgg[itemCode].qtyShipped += t.qtyShipped;
+            prevSkuAgg[itemCode].qtyReceived += t.qtyReceived + (t.matchedCorrectiveQty || 0);
+            
+            const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
+            if (isDiscrepant) {
+                prevSkuAgg[itemCode].qtyDiff += Math.abs(statusInfo.chenhLechConLai);
+            }
+        });
+    }
+
     let skuList = Object.values(skuAgg);
 
-    // Sort by absolute discrepancy descending, then by shipped quantity descending
-    skuList.sort((a, b) => {
-        const diffCmp = b.qtyDiff - a.qtyDiff;
-        if (diffCmp !== 0) return diffCmp;
-        return b.qtyShipped - a.qtyShipped;
-    });
+    // Sort by selected criteria
+    if (sortCriteria === "percent") {
+        skuList.sort((a, b) => {
+            const aRate = a.qtyShipped > 0 ? (a.qtyDiff / a.qtyShipped) : 0;
+            const bRate = b.qtyShipped > 0 ? (b.qtyDiff / b.qtyShipped) : 0;
+            const rateCmp = bRate - aRate;
+            if (rateCmp !== 0) return rateCmp;
+            return b.qtyDiff - a.qtyDiff;
+        });
+    } else {
+        // Sort by absolute discrepancy descending, then by shipped quantity descending
+        skuList.sort((a, b) => {
+            const diffCmp = b.qtyDiff - a.qtyDiff;
+            if (diffCmp !== 0) return diffCmp;
+            return b.qtyShipped - a.qtyShipped;
+        });
+    }
 
     // Take Top 10
     const top10 = skuList.slice(0, 10);
 
     if (top10.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px; color: var(--text-muted);">Không có dữ liệu phù hợp</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; padding: 20px; color: var(--text-muted);">Không có dữ liệu phù hợp</td></tr>`;
         return;
     }
 
@@ -4437,6 +4634,29 @@ function renderTopSkuDiscrepancyTable() {
         const rateVal = shipped > 0 ? (diff / shipped) * 100 : 0;
         const style = getStyleForDailyCat(rateVal, shipped);
 
+        // D-1 comparison calculations
+        let prevRateText = "—";
+        let prevRateStyle = "text-align: right; color: var(--text-muted);";
+        let statusHtml = `<span style="color: var(--text-muted);">—</span>`;
+
+        const prevItem = prevSkuAgg[item.itemCode];
+        if (prevItem && prevItem.qtyShipped > 0) {
+            const prevShipped = prevItem.qtyShipped;
+            const prevDiff = prevItem.qtyDiff;
+            const prevRateVal = (prevDiff / prevShipped) * 100;
+            prevRateText = prevRateVal.toFixed(2) + "%";
+            prevRateStyle = getStyleForDailyCat(prevRateVal, prevShipped);
+
+            const diffRate = rateVal - prevRateVal;
+            if (Math.abs(diffRate) < 0.005) {
+                statusHtml = `<span style="color: var(--text-muted);">—</span>`;
+            } else if (diffRate > 0) {
+                statusHtml = `<span style="color: var(--color-danger); font-weight: 600;">▲ +${diffRate.toFixed(2)}%</span>`;
+            } else {
+                statusHtml = `<span style="color: var(--color-success); font-weight: 600;">▼ ${diffRate.toFixed(2)}%</span>`;
+            }
+        }
+
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td style="text-align: center; font-weight: bold; color: ${index < 3 ? 'var(--color-danger)' : 'var(--text-primary)'};">${index + 1}</td>
@@ -4448,6 +4668,8 @@ function renderTopSkuDiscrepancyTable() {
             <td style="text-align: right; font-weight: 500;">${formatNumber(item.qtyReceived)}</td>
             <td style="text-align: right; color: ${diff > 0 ? 'var(--color-danger)' : 'var(--text-muted)'}; font-weight: bold;">${formatDiffNumber(diff)}</td>
             <td style="${style}">${shipped > 0 ? rateVal.toFixed(2) + "%" : "0.00%"}</td>
+            <td style="${prevRateStyle}">${prevRateText}</td>
+            <td style="text-align: center; font-size: 13px;">${statusHtml}</td>
         `;
         tbody.appendChild(tr);
     });

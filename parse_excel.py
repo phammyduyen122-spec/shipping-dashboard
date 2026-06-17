@@ -283,12 +283,8 @@ def parse_excel():
             if dfs_perf:
                 df_perf_all = pd.concat(dfs_perf, ignore_index=True)
                 df_perf_all['ngayChuyen'] = df_perf_all['ngayChuyen'].apply(parse_dt)
-                # Dynamically keep last 7 days of data based on the latest date present
-                perf_dates_dt = pd.to_datetime(df_perf_all['ngayChuyen'], errors='coerce')
-                max_perf_date = perf_dates_dt.max()
-                if not pd.isna(max_perf_date):
-                    cutoff_perf_date = max_perf_date - pd.Timedelta(days=5)
-                    df_perf_all = df_perf_all[pd.to_datetime(df_perf_all['ngayChuyen'], errors='coerce') >= cutoff_perf_date]
+                # Filter strictly for 2026-06-14, 2026-06-15, 2026-06-16
+                df_perf_all = df_perf_all[df_perf_all['ngayChuyen'].isin(['2026-06-14', '2026-06-15', '2026-06-16'])]
                 
                 # Deduplicate performance records based on unique PO line
                 df_perf_all.drop_duplicates(subset=['maPhieuChuyen', 'barcode', 'noiNhan'], keep='last', inplace=True)
@@ -431,12 +427,8 @@ def parse_excel():
                 return str(val)
                 
         df_clean['date'] = df_clean['date'].apply(format_date)
-        # Dynamically keep last 7 days of data based on the latest date present
-        transfer_dates_dt = pd.to_datetime(df_clean['date'], errors='coerce')
-        max_trans_date = transfer_dates_dt.max()
-        if not pd.isna(max_trans_date):
-            cutoff_trans_date = max_trans_date - pd.Timedelta(days=5)
-            df_clean = df_clean[pd.to_datetime(df_clean['date'], errors='coerce') >= cutoff_trans_date]
+        # Filter strictly for 2026-06-14, 2026-06-15, 2026-06-16
+        df_clean = df_clean[df_clean['date'].isin(['2026-06-14', '2026-06-15', '2026-06-16'])]
         
         # Clean strings and normalize Unicode to NFC format using fast unique values map
         for str_col in ['fromBranch', 'toBranch', 'itemCode', 'itemName', 'unit', 'transferCode', 'originalDoc', 'generatedDoc', 'docStatus', 'daHauKiem']:

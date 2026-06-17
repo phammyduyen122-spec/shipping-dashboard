@@ -953,11 +953,21 @@
                         </button>
                     </div>
                 </div>
+                <div class="table-inline-filters" style="display: flex; gap: 16px; padding: 12px 20px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;">🔍 Bộ lọc nhanh:</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 150px;">
+                        <label for="vegLevel3FilterDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Ngày chuyển:</label>
+                        <input type="text" id="vegLevel3FilterDate" class="input-field" placeholder="dd/mm/yyyy..." style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%;">
+                    </div>
+                </div>
                 <div class="table-wrapper">
                     <table id="vegLevel3Table">
                         <thead>
                             <tr>
                                 <th style="text-align: center; width: 60px;">STT</th>
+                                <th>Ngày chuyển</th>
                                 <th>Nhóm hàng Level 3</th>
                                 <th style="text-align: right;">Tổng số lượng thực tế chia</th>
                                 <th style="text-align: right;">Tổng số lượng chia sai</th>

@@ -293,6 +293,7 @@ function linkTransfers(rawTransfers) {
 // State Variables
 let transfers = [];
 let filteredTransfers = [];
+let lastActiveTransfers = [];
 let selectedItemCodes = []; // Holds selected Item Codes (tags)
 let currentTheme = localStorage.getItem("theme") || "light";
 
@@ -1865,14 +1866,21 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
     
     const catStartDate = document.getElementById("catFilterStartDate");
     const catEndDate = document.getElementById("catFilterEndDate");
+    const vegLevel3FilterDate = document.getElementById("vegLevel3FilterDate");
     if (catStartDate) catStartDate.addEventListener("change", renderF1CategoryTable);
     if (catEndDate) catEndDate.addEventListener("change", renderF1CategoryTable);
+    if (vegLevel3FilterDate) {
+        vegLevel3FilterDate.addEventListener("input", () => {
+            renderVegetablesLevel3Table(lastActiveTransfers);
+        });
+    }
     
     const catClearFiltersBtn = document.getElementById("catClearFiltersBtn");
     if (catClearFiltersBtn) {
         catClearFiltersBtn.addEventListener("click", () => {
             if (catStartDate) catStartDate.value = earliestDate;
             if (catEndDate) catEndDate.value = latestDate;
+            if (vegLevel3FilterDate) vegLevel3FilterDate.value = "";
             
             const groupContainer = document.getElementById("catFilterGroupContainer");
             if (groupContainer) {
@@ -3611,6 +3619,7 @@ function renderF1CategoryTable() {
 
         return matchStartDate && matchEndDate;
     });
+    lastActiveTransfers = activeTransfers;
 
     if (activeTransfers.length === 0) {
         tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; padding: 20px; color: var(--text-muted);">Không có dữ liệu cho nhân sự ${headerGroupText}</td></tr>`;
@@ -3755,6 +3764,8 @@ function renderVegetablesLevel3Table(activeTransfers) {
     if (!tbody) return;
     tbody.innerHTML = "";
 
+    const vegLevel3FilterDate = document.getElementById("vegLevel3FilterDate") ? document.getElementById("vegLevel3FilterDate").value.toLowerCase().trim() : "";
+
     const level3Cats = [
         "3.ROOT VEGGIES",
         "3.FRUIT VEGGIES",
@@ -3765,14 +3776,8 @@ function renderVegetablesLevel3Table(activeTransfers) {
         "3.MUSHROOM"
     ];
 
-    const agg = {};
-    level3Cats.forEach(cat => {
-        agg[cat] = {
-            shipped: 0,
-            diff: 0
-        };
-    });
-
+    // Group by Date + Level 3 category
+    const groupAgg = {};
     activeTransfers.forEach(t => {
         if (t.nganhHang !== "2.VEGETABLES") {
             return;
@@ -3787,21 +3792,52 @@ function renderVegetablesLevel3Table(activeTransfers) {
             return;
         }
 
-        agg[level3].shipped += t.qtyShipped;
+        const date = t.date || "";
+        const key = `${date}_${level3}`;
+
+        if (!groupAgg[key]) {
+            groupAgg[key] = {
+                date,
+                level3,
+                shipped: 0,
+                diff: 0
+            };
+        }
+
+        groupAgg[key].shipped += t.qtyShipped;
         const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
         if (isDiscrepant) {
-            agg[level3].diff += Math.abs(statusInfo.chenhLechConLai);
+            groupAgg[key].diff += Math.abs(statusInfo.chenhLechConLai);
         }
     });
 
-    level3Cats.forEach((cat, index) => {
-        const data = agg[cat];
-        const shipped = data.shipped;
-        const diff = data.diff;
+    let sortedSummary = Object.values(groupAgg);
+
+    // Apply quick inline date filter
+    if (vegLevel3FilterDate !== "") {
+        sortedSummary = sortedSummary.filter(item => {
+            return matchDateQuery(item.date, vegLevel3FilterDate);
+        });
+    }
+
+    // Sort by Date descending, then by Level 3 category name
+    sortedSummary.sort((a, b) => {
+        const dateCmp = b.date.localeCompare(a.date);
+        if (dateCmp !== 0) return dateCmp;
+        return a.level3.localeCompare(b.level3);
+    });
+
+    if (sortedSummary.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 20px; color: var(--text-muted);">Không có dữ liệu phù hợp</td></tr>`;
+        return;
+    }
+
+    sortedSummary.forEach((item, index) => {
+        const formattedDate = formatDateToVN(item.date);
+        const shipped = item.shipped;
+        const diff = item.diff;
         const errorRate = shipped > 0 ? (diff / shipped) * 100 : 0;
 
-        const tr = document.createElement("tr");
-        
         let rateStyle = "";
         if (shipped > 0) {
             if (errorRate > 0.5) {
@@ -3815,9 +3851,11 @@ function renderVegetablesLevel3Table(activeTransfers) {
             rateStyle = "text-align: right; color: var(--text-muted);";
         }
 
+        const tr = document.createElement("tr");
         tr.innerHTML = `
             <td style="text-align: center;">${index + 1}</td>
-            <td style="font-weight: 600; color: var(--text-primary);">${cat}</td>
+            <td>${formattedDate}</td>
+            <td style="font-weight: 600; color: var(--text-primary);">${item.level3}</td>
             <td style="text-align: right; font-weight: 500;">${formatNumber(shipped)}</td>
             <td style="text-align: right; color: ${diff > 0 ? 'var(--color-danger)' : 'var(--text-muted)'}; font-weight: 500;">${formatDiffNumber(diff)}</td>
             <td style="${rateStyle}">${shipped > 0 ? errorRate.toFixed(2) + "%" : "0.00%"}</td>

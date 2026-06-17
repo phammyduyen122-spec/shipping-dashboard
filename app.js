@@ -1867,11 +1867,17 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
     const catStartDate = document.getElementById("catFilterStartDate");
     const catEndDate = document.getElementById("catFilterEndDate");
     const vegLevel3FilterDate = document.getElementById("vegLevel3FilterDate");
+    const vegLevel3DateFilterDate = document.getElementById("vegLevel3DateFilterDate");
     if (catStartDate) catStartDate.addEventListener("change", renderF1CategoryTable);
     if (catEndDate) catEndDate.addEventListener("change", renderF1CategoryTable);
     if (vegLevel3FilterDate) {
         vegLevel3FilterDate.addEventListener("input", () => {
             renderVegetablesLevel3Table(lastActiveTransfers);
+        });
+    }
+    if (vegLevel3DateFilterDate) {
+        vegLevel3DateFilterDate.addEventListener("input", () => {
+            renderVegetablesLevel3DateTable();
         });
     }
     
@@ -1881,6 +1887,7 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
             if (catStartDate) catStartDate.value = earliestDate;
             if (catEndDate) catEndDate.value = latestDate;
             if (vegLevel3FilterDate) vegLevel3FilterDate.value = "";
+            if (vegLevel3DateFilterDate) vegLevel3DateFilterDate.value = "";
             
             const groupContainer = document.getElementById("catFilterGroupContainer");
             if (groupContainer) {
@@ -1916,6 +1923,16 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
     if (perfCatF1BtnExport) {
         perfCatF1BtnExport.addEventListener("click", () => {
             downloadCategoryF1Tabular();
+        });
+    }
+
+    const perfVegLevel3DateBtnExport = document.getElementById("perfVegLevel3DateBtnExport");
+    if (perfVegLevel3DateBtnExport) {
+        const newBtn = perfVegLevel3DateBtnExport.cloneNode(true);
+        perfVegLevel3DateBtnExport.parentNode.replaceChild(newBtn, perfVegLevel3DateBtnExport);
+        newBtn.addEventListener("click", () => {
+            const todayStr = new Date().toISOString().split("T")[0];
+            downloadTableToExcel("perfVegLevel3DateTable", `BaoCao_HieuSuatRauCu_Level3_TheoNgay_${todayStr}.csv`);
         });
     }
 }
@@ -3532,8 +3549,10 @@ function renderF1CategoryTable() {
     if (!tbody) return;
     tbody.innerHTML = "";
 
-    const catGroupEl = document.getElementById("catFilterGroupContainer");
-    const groupSelector = catGroupEl ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
+    const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
+    const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
+
+    const groupSelector = isCategoryTabActive ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
     const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
     
     let activeGroups = [];
@@ -3574,13 +3593,13 @@ function renderF1CategoryTable() {
         }
     }
 
-    const catStartEl = document.getElementById("catFilterStartDate");
-    const catEndEl = document.getElementById("catFilterEndDate");
-    const startDateQuery = catStartEl ? catStartEl.value : (document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "");
-    const endDateQuery = catEndEl ? catEndEl.value : (document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "");
+    const startDateQuery = isCategoryTabActive ? 
+        (document.getElementById("catFilterStartDate") ? document.getElementById("catFilterStartDate").value : "") :
+        (document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "");
+    const endDateQuery = isCategoryTabActive ? 
+        (document.getElementById("catFilterEndDate") ? document.getElementById("catFilterEndDate").value : "") :
+        (document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "");
     
-    const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
-    const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
     const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
 
@@ -3753,6 +3772,7 @@ function renderF1CategoryTable() {
         tbody.appendChild(tr);
     });
     renderF1CategoryDateTable();
+    renderVegetablesLevel3DateTable();
     renderVegetablesLevel3Table(activeTransfers);
 }
 
@@ -3883,8 +3903,10 @@ function renderF1CategoryDateTable() {
     if (!tbody) return;
     tbody.innerHTML = "";
 
-    const catGroupEl = document.getElementById("catFilterGroupContainer");
-    const groupSelector = catGroupEl ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
+    const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
+    const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
+
+    const groupSelector = isCategoryTabActive ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
     const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
     
     let activeGroups = [];
@@ -3901,13 +3923,13 @@ function renderF1CategoryDateTable() {
         }
     }
 
-    const catStartEl = document.getElementById("catFilterStartDate");
-    const catEndEl = document.getElementById("catFilterEndDate");
-    const startDateQuery = catStartEl ? catStartEl.value : (document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "");
-    const endDateQuery = catEndEl ? catEndEl.value : (document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "");
+    const startDateQuery = isCategoryTabActive ? 
+        (document.getElementById("catFilterStartDate") ? document.getElementById("catFilterStartDate").value : "") :
+        (document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "");
+    const endDateQuery = isCategoryTabActive ? 
+        (document.getElementById("catFilterEndDate") ? document.getElementById("catFilterEndDate").value : "") :
+        (document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "");
     
-    const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
-    const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
     const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
 
@@ -4024,6 +4046,188 @@ function renderF1CategoryDateTable() {
         });
 
         categories.forEach(cat => {
+            const shipped = dData.categories[cat].shipped;
+            const diff = dData.categories[cat].diff;
+            const rateVal = shipped > 0 ? (diff / shipped) * 100 : 0;
+            const style = getStyleForDailyCat(rateVal, shipped);
+            const displayText = shipped === 0 ? "0.00%" : `${rateVal.toFixed(2)}%`;
+            htmlContent += `<td style="${style}">${displayText}</td>`;
+        });
+
+        const totalErrorRate = totalShipped > 0 ? (totalDiff / totalShipped) * 100 : 0;
+        const totalStyle = getStyleForDailyCat(totalErrorRate, totalShipped) + " font-weight: bold; border-left: 1px solid var(--border-color);";
+        const totalDisplayText = totalShipped === 0 ? "0.00%" : `${totalErrorRate.toFixed(2)}%`;
+        htmlContent += `<td style="${totalStyle}">${totalDisplayText}</td>`;
+
+        tr.innerHTML = htmlContent;
+        tbody.appendChild(tr);
+    });
+}
+
+// ============================================================
+// Bảng theo dõi hiệu suất phân loại theo Ngày & Ngành Hàng Rau Củ (Level 3)
+// ============================================================
+function renderVegetablesLevel3DateTable() {
+    const tbody = document.getElementById("perfVegLevel3DateBody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
+    const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
+
+    const groupSelector = isCategoryTabActive ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
+    const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
+    
+    let activeGroups = [];
+    const groupFilterEl = document.getElementById("perfF1GroupFilter");
+    const groupFilterVal = groupFilterEl ? groupFilterEl.value : "All";
+
+    if (selectedGroups.length > 0) {
+        activeGroups = selectedGroups;
+    } else {
+        if (groupFilterVal === "All") {
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV"];
+        } else {
+            activeGroups = [groupFilterVal];
+        }
+    }
+
+    const startDateQuery = isCategoryTabActive ? 
+        (document.getElementById("catFilterStartDate") ? document.getElementById("catFilterStartDate").value : "") :
+        (document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "");
+    const endDateQuery = isCategoryTabActive ? 
+        (document.getElementById("catFilterEndDate") ? document.getElementById("catFilterEndDate").value : "") :
+        (document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "");
+    
+    const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
+
+    const activeTransfers = transfers.filter(t => {
+        if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") {
+            return false;
+        }
+        if (!t.nguoiChia) {
+            return false;
+        }
+        const name = t.nguoiChia.trim().toLowerCase();
+        
+        let matchGroupPrefix = false;
+        for (const g of activeGroups) {
+            if (name.startsWith(g.toLowerCase())) {
+                matchGroupPrefix = true;
+                break;
+            }
+        }
+        if (!matchGroupPrefix) return false;
+
+        const matchUser = selectedUsers.length === 0 || selectedUsers.includes(t.nguoiChia);
+        if (!matchUser) return false;
+
+        if (localUserSearch !== "") {
+            if (!name.includes(localUserSearch)) {
+                return false;
+            }
+        }
+
+        const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
+        const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;
+
+        return matchStartDate && matchEndDate;
+    });
+
+    if (activeTransfers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 20px; color: var(--text-muted);">Không có dữ liệu phù hợp</td></tr>`;
+        return;
+    }
+
+    const level3Cats = [
+        "3.ROOT VEGGIES",
+        "3.FRUIT VEGGIES",
+        "3.LEAFY VEGGIES",
+        "3.PROCESSED VEGGIES",
+        "3.HERBS",
+        "3.LETTUCE, SNACKABLES",
+        "3.MUSHROOM"
+    ];
+    const dateAgg = {};
+
+    activeTransfers.forEach(t => {
+        if (t.nganhHang !== "2.VEGETABLES") {
+            return;
+        }
+        const date = t.date;
+        const level3 = t.subCategoryLevel3 || "";
+
+        if (!level3 || !level3Cats.includes(level3)) {
+            return;
+        }
+
+        if (!dateAgg[date]) {
+            dateAgg[date] = {
+                date: date,
+                categories: {}
+            };
+            level3Cats.forEach(c => {
+                dateAgg[date].categories[c] = { shipped: 0, received: 0, diff: 0 };
+            });
+        }
+
+        const statusInfo = calculateStatus(t);
+        if (statusInfo.statusText === "Đang chuyển") {
+            return;
+        }
+
+        const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
+        dateAgg[date].categories[level3].shipped += t.qtyShipped;
+        dateAgg[date].categories[level3].received += t.qtyReceived + (t.matchedCorrectiveQty || 0);
+        if (isDiscrepant) {
+            dateAgg[date].categories[level3].diff += Math.abs(statusInfo.chenhLechConLai);
+        }
+    });
+
+    const sortedDates = Object.keys(dateAgg).sort();
+
+    const getStyleForDailyCat = (rateVal, qtyVal) => {
+        if (qtyVal === 0) return "text-align: right;";
+        if (rateVal < 0.2) {
+            return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
+        } else if (rateVal <= 0.5) {
+            return "background-color: rgba(245, 158, 11, 0.15); color: var(--color-warning); font-weight: bold; text-align: right;";
+        } else {
+            return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
+        }
+    };
+
+    const localDateSearch = document.getElementById("vegLevel3DateFilterDate") ? document.getElementById("vegLevel3DateFilterDate").value.trim() : "";
+    let displayIndex = 1;
+
+    sortedDates.forEach((date) => {
+        const formattedDate = formatDateToVN(date);
+        if (localDateSearch !== "") {
+            if (!formattedDate.includes(localDateSearch)) {
+                return;
+            }
+        }
+
+        const dData = dateAgg[date];
+        const tr = document.createElement("tr");
+
+        let htmlContent = `
+            <td style="text-align: center;">${displayIndex++}</td>
+            <td><strong>${formattedDate}</strong></td>
+        `;
+
+        let totalShipped = 0;
+        let totalReceived = 0;
+        let totalDiff = 0;
+
+        level3Cats.forEach(cat => {
+            totalShipped += dData.categories[cat].shipped;
+            totalReceived += dData.categories[cat].received;
+            totalDiff += dData.categories[cat].diff;
+        });
+
+        level3Cats.forEach(cat => {
             const shipped = dData.categories[cat].shipped;
             const diff = dData.categories[cat].diff;
             const rateVal = shipped > 0 ? (diff / shipped) * 100 : 0;

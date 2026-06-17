@@ -854,63 +854,16 @@
 
         <!-- Tab 3: Category Performance Report -->
         <div class="tab-content" id="contentCategoryPerformance">
-            <!-- Advanced Filter Controls for Category Performance -->
-            <div class="filters-card">
-                <div class="filters-header">
-                    🔍 <span>Bộ lọc hiệu suất theo ngành hàng</span>
-                </div>
-                <div class="filters-grid">
-                    <!-- Date Range Filters -->
-                    <div class="filter-group">
-                        <label class="filter-label">Từ ngày</label>
-                        <input type="date" id="catFilterStartDate" class="input-field">
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Đến ngày</label>
-                        <input type="date" id="catFilterEndDate" class="input-field">
-                    </div>
-                    
-                    <!-- Nhóm nhân sự Filter (Multi-select) -->
-                    <div class="filter-group">
-                        <label class="filter-label">Nhóm nhân sự</label>
-                        <div class="multiselect-container" id="catFilterGroupContainer">
-                            <div class="multiselect-select">
-                                <span class="multiselect-value">-- Tất cả nhóm --</span>
-                                <span class="multiselect-arrow">▾</span>
-                            </div>
-                            <div class="multiselect-dropdown">
-                                <div class="multiselect-options-list">
-                                    <label class="multiselect-option">
-                                        <input type="checkbox" value="F1" checked> <span>F1</span>
-                                    </label>
-                                    <label class="multiselect-option">
-                                        <input type="checkbox" value="F2" checked> <span>F2</span>
-                                    </label>
-                                    <label class="multiselect-option">
-                                        <input type="checkbox" value="HUYHOANG" checked> <span>HUYHOANG</span>
-                                    </label>
-                                    <label class="multiselect-option">
-                                        <input type="checkbox" value="CTV" checked> <span>CTV</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div style="margin-top: 16px; display: flex; justify-content: flex-end;">
-                    <button class="btn btn-secondary" id="catClearFiltersBtn">
-                        <span>🧹 Xóa bộ lọc</span>
-                    </button>
-                </div>
-            </div>
-
             <!-- Bảng theo dõi hiệu suất theo Ngày & Ngành Hàng -->
             <div class="table-card" style="margin-bottom: 24px;">
                 <div class="table-header-row" style="background-color: rgba(79, 70, 229, 0.05); border-bottom: 1px solid rgba(79, 70, 229, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                     <span class="table-title" id="perfF1DateTableTitle" style="color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0;">
                         📅 Theo dõi hiệu suất phân loại theo Ngày & Ngành Hàng
                     </span>
-                    <div class="table-actions">
+                    <div class="table-actions" style="display: flex; gap: 8px;">
+                        <button class="btn btn-secondary" id="catClearFiltersBtn" style="border-color: var(--border-color); color: var(--text-secondary);">
+                            <span>🧹 Xóa bộ lọc</span>
+                        </button>
                         <button class="btn btn-secondary" id="perfCatDateBtnExport">
                             <span>📥 Xuất Excel/CSV</span>
                         </button>

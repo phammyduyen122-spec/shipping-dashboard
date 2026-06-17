@@ -296,6 +296,8 @@ let filteredTransfers = [];
 let lastActiveTransfers = [];
 let selectedItemCodes = []; // Holds selected Item Codes (tags)
 let currentTheme = localStorage.getItem("theme") || "light";
+let earliestDate = "";
+let latestDate = "";
 
 // Performance Tab State Variables
 let performanceTransfers = [];
@@ -370,8 +372,8 @@ document.addEventListener("DOMContentLoaded", () => {
     updateThemeToggleUI();
 
     // Find latest and earliest dates in transfers dataset
-    let latestDate = "";
-    let earliestDate = "";
+    latestDate = "";
+    earliestDate = "";
     if (transfers.length > 0) {
         const dates = transfers.map(t => t.date).filter(Boolean);
         if (dates.length > 0) {
@@ -3743,8 +3745,9 @@ function renderF1CategoryTable() {
     });
 
     const sortedUsers = Object.keys(userAgg).sort((a, b) => a.localeCompare(b, "vi"));
+    const displayUsers = sortedUsers.slice(0, 20);
 
-    sortedUsers.forEach((user, index) => {
+    displayUsers.forEach((user, index) => {
         const uData = userAgg[user];
         
         const catRates = categories.map(cat => {
@@ -3868,11 +3871,20 @@ function renderVegetablesLevel3Table() {
 
     const tableStartEl = document.getElementById("vegLevel3StartDate");
     const tableEndEl = document.getElementById("vegLevel3EndDate");
-    const globalStartEl = document.getElementById(isCategoryTabActive ? "catFilterStartDate" : "perfFilterStartDate");
-    const globalEndEl = document.getElementById(isCategoryTabActive ? "catFilterEndDate" : "perfFilterEndDate");
 
-    const startDateQuery = (tableStartEl && tableStartEl.value) ? tableStartEl.value : (globalStartEl ? globalStartEl.value : "");
-    const endDateQuery = (tableEndEl && tableEndEl.value) ? tableEndEl.value : (globalEndEl ? globalEndEl.value : "");
+    const specificStart = tableStartEl ? tableStartEl.value : "";
+    const specificEnd = tableEndEl ? tableEndEl.value : "";
+    
+    let startDateQuery = "";
+    let endDateQuery = "";
+    
+    if (specificStart === "" && specificEnd === "") {
+        startDateQuery = latestDate;
+        endDateQuery = latestDate;
+    } else {
+        startDateQuery = specificStart;
+        endDateQuery = specificEnd;
+    }
 
     const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";

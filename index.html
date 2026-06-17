@@ -668,6 +668,20 @@
                         <label for="perfSummaryFilterUser" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Nhân sự chia:</label>
                         <input type="text" id="perfSummaryFilterUser" class="input-field" placeholder="Nhập tên nhân sự..." style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%;">
                     </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 150px;">
+                        <label for="perfSummaryFilterCategory" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Ngành hàng:</label>
+                        <input type="text" id="perfSummaryFilterCategory" class="input-field" placeholder="Nhập ngành hàng..." style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%;">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 130px;">
+                        <label for="perfSummaryFilterStatus" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Trạng thái:</label>
+                        <select id="perfSummaryFilterStatus" class="input-field" style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="">Tất cả</option>
+                            <option value="lệch">Bị lệch</option>
+                            <option value="thiếu">Thiếu</option>
+                            <option value="dư">Dư</option>
+                            <option value="đủ">Không lệch</option>
+                        </select>
+                    </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex: 2; min-width: 320px;">
                         <label for="perfSummaryFilterProduct" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Sản phẩm:</label>
                         <div class="dropdown-search-wrapper" style="flex: 1; position: relative; display: flex; flex-direction: column;">
@@ -922,6 +936,36 @@
                         </thead>
                         <tbody id="perfF1CategoryBody">
                             <!-- Dynamic aggregate content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Bảng chi tiết hiệu suất nhóm hàng Rau Củ (Level 3 - 2.VEGETABLES) -->
+            <div class="table-card" style="margin-bottom: 24px;">
+                <div class="table-header-row" style="background-color: rgba(79, 70, 229, 0.05); border-bottom: 1px solid rgba(79, 70, 229, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <span class="table-title" style="color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0;">
+                        🥦 Chi tiết hiệu suất nhóm hàng Rau Củ (Level 3 - 2.VEGETABLES)
+                    </span>
+                    <div class="table-actions">
+                        <button class="btn btn-secondary" id="perfVegLevel3BtnExport">
+                            <span>📥 Xuất Excel/CSV</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="vegLevel3Table">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 60px;">STT</th>
+                                <th>Nhóm hàng Level 3</th>
+                                <th style="text-align: right;">Tổng số lượng thực tế chia</th>
+                                <th style="text-align: right;">Tổng số lượng chia sai</th>
+                                <th style="text-align: right;">% Chia sai</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vegLevel3Body">
+                            <!-- Dynamic content -->
                         </tbody>
                     </table>
                 </div>

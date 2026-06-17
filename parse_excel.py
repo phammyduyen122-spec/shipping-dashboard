@@ -553,11 +553,26 @@ def parse_excel():
         for r in records:
             code = r.get("itemCode", "")
             if code and code not in item_catalog:
-                item_catalog[code] = [r.get("itemName", ""), r.get("nganhHang", ""), r.get("unit", "")]
+                info = mapping.get(code)
+                path = info.get("categoryPath", "") if info else ""
+                level3 = ""
+                if path:
+                    parts = [p.strip() for p in path.split(">")]
+                    if len(parts) > 2:
+                        level3 = parts[2]
+                item_catalog[code] = [r.get("itemName", ""), r.get("nganhHang", ""), r.get("unit", ""), level3]
         for r in perf_records:
             code = r.get("barcode", "")
             if code and code not in item_catalog:
-                item_catalog[code] = [r.get("tenSanPham", ""), r.get("nganhHang", ""), r.get("donVi", "")]
+                info = mapping.get(code)
+                path = info.get("categoryPath", "") if info else ""
+                level3 = ""
+                if path:
+                    parts = [p.strip() for p in path.split(">")]
+                    if len(parts) > 2:
+                        level3 = parts[2]
+                item_catalog[code] = [r.get("tenSanPham", ""), r.get("nganhHang", ""), r.get("donVi", ""), level3]
+
 
         # 2. Index Mapping: Branches
         branches = []

@@ -6,7 +6,7 @@
         console.log("Decompressing data...");
         window.initialTransfers = window.compressedTransfers.map(row => {
             const itemCode = row[4];
-            const itemInfo = window.itemCatalog[itemCode] || ["", "", ""];
+            const itemInfo = window.itemCatalog[itemCode] || ["", "", "", ""];
             const fromBranch = row[2] === "XL" ? "KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG" : "KHO RAU CỦ";
             const toBranch = window.branchesList[row[3]] || "";
             const nguoiChia = window.usersList[row[10]] || "";
@@ -20,6 +20,7 @@
                 itemName: itemInfo[0],
                 nganhHang: itemInfo[1],
                 unit: itemInfo[2],
+                subCategoryLevel3: itemInfo[3] || "",
                 qtyShipped: row[5],
                 qtyReceived: row[6],
                 transferCode: row[7],
@@ -31,7 +32,7 @@
         
         window.performanceTransfers = window.compressedPerformance.map(row => {
             const barcode = row[3];
-            const itemInfo = window.itemCatalog[barcode] || ["", "", ""];
+            const itemInfo = window.itemCatalog[barcode] || ["", "", "", ""];
             const noiNhan = window.branchesList[row[4]] || "";
             const nguoiChia = window.usersList[row[23]] || "";
             
@@ -43,6 +44,7 @@
                 tenSanPham: itemInfo[0],
                 nganhHang: itemInfo[1],
                 donVi: itemInfo[2],
+                subCategoryLevel3: itemInfo[3] || "",
                 noiNhan: noiNhan,
                 qtyYcBanDau: row[5],
                 qtyHeThong: row[6],
@@ -1753,6 +1755,8 @@ function setupPerfEventListeners() {
     // Inline filters for summary table
     const summaryFilterDate = document.getElementById("perfSummaryFilterDate");
     const summaryFilterUser = document.getElementById("perfSummaryFilterUser");
+    const summaryFilterCategory = document.getElementById("perfSummaryFilterCategory");
+    const summaryFilterStatus = document.getElementById("perfSummaryFilterStatus");
 
     if (summaryFilterDate) {
         summaryFilterDate.addEventListener("input", () => {
@@ -1761,6 +1765,16 @@ function setupPerfEventListeners() {
     }
     if (summaryFilterUser) {
         summaryFilterUser.addEventListener("input", () => {
+            renderPerfSummaryTable();
+        });
+    }
+    if (summaryFilterCategory) {
+        summaryFilterCategory.addEventListener("input", () => {
+            renderPerfSummaryTable();
+        });
+    }
+    if (summaryFilterStatus) {
+        summaryFilterStatus.addEventListener("change", () => {
             renderPerfSummaryTable();
         });
     }
@@ -2368,9 +2382,13 @@ function clearPerfFilters() {
     const summaryFilterDate = document.getElementById("perfSummaryFilterDate");
     const summaryFilterUser = document.getElementById("perfSummaryFilterUser");
     const summaryFilterProduct = document.getElementById("perfSummaryFilterProduct");
+    const summaryFilterCategory = document.getElementById("perfSummaryFilterCategory");
+    const summaryFilterStatus = document.getElementById("perfSummaryFilterStatus");
     if (summaryFilterDate) summaryFilterDate.value = "";
     if (summaryFilterUser) summaryFilterUser.value = "";
     if (summaryFilterProduct) summaryFilterProduct.value = "";
+    if (summaryFilterCategory) summaryFilterCategory.value = "";
+    if (summaryFilterStatus) summaryFilterStatus.value = "";
     
     const tableFilterDate = document.getElementById("perfTableFilterDate");
     const tableFilterUser = document.getElementById("perfTableFilterUser");
@@ -2955,6 +2973,8 @@ function renderPerfSummaryTable() {
     const summaryFilterDate = document.getElementById("perfSummaryFilterDate") ? document.getElementById("perfSummaryFilterDate").value.toLowerCase().trim() : "";
     const summaryFilterUser = document.getElementById("perfSummaryFilterUser") ? document.getElementById("perfSummaryFilterUser").value.toLowerCase().trim() : "";
     const summaryFilterProduct = document.getElementById("perfSummaryFilterProduct") ? document.getElementById("perfSummaryFilterProduct").value.toLowerCase().trim() : "";
+    const summaryFilterCategory = document.getElementById("perfSummaryFilterCategory") ? document.getElementById("perfSummaryFilterCategory").value.toLowerCase().trim() : "";
+    const summaryFilterStatus = document.getElementById("perfSummaryFilterStatus") ? document.getElementById("perfSummaryFilterStatus").value : "";
 
     // Aggregate from the full performance dataset that matches top-level filters (both correct and discrepant)
     if (filteredPerfTransfers.length === 0) {
@@ -3065,6 +3085,22 @@ function renderPerfSummaryTable() {
                 !nameClean.includes(queryClean)) {
                 return false;
             }
+        }
+
+        if (summaryFilterCategory !== "") {
+            const catClean = removeVietnameseTones(item.nganhHang.toLowerCase());
+            const queryClean = removeVietnameseTones(summaryFilterCategory);
+            if (!item.nganhHang.toLowerCase().includes(summaryFilterCategory) && !catClean.includes(queryClean)) {
+                return false;
+            }
+        }
+
+        if (summaryFilterStatus !== "") {
+            const diff = item.chenhLechConLai;
+            if (summaryFilterStatus === "lệch" && diff === 0) return false;
+            if (summaryFilterStatus === "thiếu" && diff >= 0) return false;
+            if (summaryFilterStatus === "dư" && diff <= 0) return false;
+            if (summaryFilterStatus === "đủ" && diff !== 0) return false;
         }
 
         return true;
@@ -3708,6 +3744,97 @@ function renderF1CategoryTable() {
         tbody.appendChild(tr);
     });
     renderF1CategoryDateTable();
+    renderVegetablesLevel3Table(activeTransfers);
+}
+
+// ============================================================
+// Bảng chi tiết hiệu suất nhóm hàng Rau Củ (Level 3 - 2.VEGETABLES)
+// ============================================================
+function renderVegetablesLevel3Table(activeTransfers) {
+    const tbody = document.getElementById("vegLevel3Body");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    const level3Cats = [
+        "3.ROOT VEGGIES",
+        "3.FRUIT VEGGIES",
+        "3.LEAFY VEGGIES",
+        "3.PROCESSED VEGGIES",
+        "3.HERBS",
+        "3.LETTUCE, SNACKABLES",
+        "3.MUSHROOM"
+    ];
+
+    const agg = {};
+    level3Cats.forEach(cat => {
+        agg[cat] = {
+            shipped: 0,
+            diff: 0
+        };
+    });
+
+    activeTransfers.forEach(t => {
+        if (t.nganhHang !== "2.VEGETABLES") {
+            return;
+        }
+        const level3 = t.subCategoryLevel3 || "";
+        if (!level3 || !level3Cats.includes(level3)) {
+            return;
+        }
+
+        const statusInfo = calculateStatus(t);
+        if (statusInfo.statusText === "Đang chuyển") {
+            return;
+        }
+
+        agg[level3].shipped += t.qtyShipped;
+        const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
+        if (isDiscrepant) {
+            agg[level3].diff += Math.abs(statusInfo.chenhLechConLai);
+        }
+    });
+
+    level3Cats.forEach((cat, index) => {
+        const data = agg[cat];
+        const shipped = data.shipped;
+        const diff = data.diff;
+        const errorRate = shipped > 0 ? (diff / shipped) * 100 : 0;
+
+        const tr = document.createElement("tr");
+        
+        let rateStyle = "";
+        if (shipped > 0) {
+            if (errorRate > 0.5) {
+                rateStyle = "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
+            } else if (errorRate < 0.2) {
+                rateStyle = "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
+            } else {
+                rateStyle = "background-color: rgba(245, 158, 11, 0.15); color: var(--color-warning); font-weight: bold; text-align: right;";
+            }
+        } else {
+            rateStyle = "text-align: right; color: var(--text-muted);";
+        }
+
+        tr.innerHTML = `
+            <td style="text-align: center;">${index + 1}</td>
+            <td style="font-weight: 600; color: var(--text-primary);">${cat}</td>
+            <td style="text-align: right; font-weight: 500;">${formatNumber(shipped)}</td>
+            <td style="text-align: right; color: ${diff > 0 ? 'var(--color-danger)' : 'var(--text-muted)'}; font-weight: 500;">${formatDiffNumber(diff)}</td>
+            <td style="${rateStyle}">${shipped > 0 ? errorRate.toFixed(2) + "%" : "0.00%"}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Bind export button click listener
+    const perfVegLevel3BtnExport = document.getElementById("perfVegLevel3BtnExport");
+    if (perfVegLevel3BtnExport) {
+        const newBtn = perfVegLevel3BtnExport.cloneNode(true);
+        perfVegLevel3BtnExport.parentNode.replaceChild(newBtn, perfVegLevel3BtnExport);
+        newBtn.addEventListener("click", () => {
+            const todayStr = new Date().toISOString().split("T")[0];
+            downloadTableToExcel("vegLevel3Table", `BaoCao_HieuSuatRauCu_Level3_${todayStr}.csv`);
+        });
+    }
 }
 
 // ============================================================

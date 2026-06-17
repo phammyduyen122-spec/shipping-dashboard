@@ -34,13 +34,13 @@
 
         <!-- Tab Navigation Bar -->
         <div class="tabs-navigation">
-            <button class="tab-btn active" id="tabTransferMonitor">🚚 Giám sát Điều chuyển</button>
-            <button class="tab-btn" id="tabPerformanceReport">📊 Hiệu suất Chia hàng</button>
+            <button class="tab-btn active" id="tabPerformanceReport">📊 Hiệu suất Chia hàng</button>
             <button class="tab-btn" id="tabCategoryPerformance">🗂️ Hiệu suất Ngành hàng</button>
+            <button class="tab-btn" id="tabTransferMonitor">🚚 Giám sát Điều chuyển</button>
         </div>
 
         <!-- Tab 1: Shipping Transfer Monitor -->
-        <div class="tab-content active" id="contentTransferMonitor">
+        <div class="tab-content" id="contentTransferMonitor">
             <!-- Advanced Filter Controls -->
         <div class="filters-card">
             <div class="filters-header">
@@ -305,7 +305,7 @@
         </div> <!-- End of contentTransferMonitor -->
 
         <!-- Tab 2: Performance Report -->
-        <div class="tab-content" id="contentPerformanceReport">
+        <div class="tab-content active" id="contentPerformanceReport">
             <!-- Advanced Filter Controls for Performance -->
             <div class="filters-card">
                 <div class="filters-header">
@@ -642,7 +642,62 @@
                 </div>
             </div>
 
-
+            <!-- Bảng theo dõi hiệu suất phân loại theo Ngành Hàng -->
+            <div class="table-card" style="margin-bottom: 24px;">
+                <div class="table-header-row" style="background-color: rgba(79, 70, 229, 0.05); border-bottom: 1px solid rgba(79, 70, 229, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <span class="table-title" id="perfF1TableTitle" style="color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0;">
+                        📊 Theo dõi hiệu suất phân loại theo Ngành Hàng
+                    </span>
+                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="text" id="perfF1UserSearch" class="table-filter-input" style="width: 150px; margin: 0; padding: 6px 12px;" placeholder="Tìm nhân sự...">
+                        </div>
+                        <button class="btn btn-secondary" id="perfCatF1BtnExport">
+                            <span>📥 Xuất Excel</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="perfF1CategoryTable">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="text-align: center; vertical-align: middle; width: 60px;">STT</th>
+                                <th rowspan="2" id="perfF1TableHeaderName" style="vertical-align: middle; white-space: nowrap; padding: 8px 12px;">
+                                    <div style="display: inline-flex; align-items: center; gap: 6px; justify-content: center; width: 100%;">
+                                        <span>Nhân sự</span>
+                                        <select id="perfF1GroupFilter" style="padding: 2px 4px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--bg-card); color: var(--text-primary); font-size: 11px; font-weight: 600; cursor: pointer; outline: none; margin: 0; display: inline-block; width: auto; vertical-align: middle;">
+                                            <option value="All" selected>Tất cả</option>
+                                            <option value="F1">F1</option>
+                                            <option value="F2">F2</option>
+                                            <option value="HUYHOANG">HUYHOANG</option>
+                                            <option value="CTV">CTV</option>
+                                        </select>
+                                    </div>
+                                </th>
+                                <th colspan="6" style="text-align: center; border-bottom: 1px solid var(--border-color);">Sản lượng chia</th>
+                                <th colspan="6" style="text-align: center; border-bottom: 1px solid var(--border-color);">Tỷ lệ chia sai</th>
+                            </tr>
+                            <tr>
+                                <th style="text-align: right; white-space: nowrap;">2.VEGETABLES</th>
+                                <th style="text-align: right; white-space: nowrap;">2.FRUITS</th>
+                                <th style="text-align: right; white-space: nowrap;">2.BAKERY</th>
+                                <th style="text-align: right; white-space: nowrap;">2.EGGS</th>
+                                <th style="text-align: right; white-space: nowrap;">2.DELICA</th>
+                                <th style="text-align: right; white-space: nowrap; font-weight: bold; border-left: 1px solid var(--border-color); color: var(--color-primary);">Tổng SL</th>
+                                <th style="text-align: right; white-space: nowrap;">2.VEGETABLES</th>
+                                <th style="text-align: right; white-space: nowrap;">2.FRUITS</th>
+                                <th style="text-align: right; white-space: nowrap;">2.BAKERY</th>
+                                <th style="text-align: right; white-space: nowrap;">2.EGGS</th>
+                                <th style="text-align: right; white-space: nowrap;">2.DELICA</th>
+                                <th style="text-align: right; white-space: nowrap; font-weight: bold; border-left: 1px solid var(--border-color); color: var(--color-primary);">Tổng % chia sai</th>
+                            </tr>
+                        </thead>
+                        <tbody id="perfF1CategoryBody">
+                            <!-- Dynamic aggregate content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
             <!-- Performance Summary Table Card -->
             <div class="table-card" style="margin-bottom: 24px;">
@@ -793,63 +848,6 @@
                         <button class="pagination-btn" id="perfPrevPageBtn" disabled>Trở lại</button>
                         <button class="pagination-btn" id="perfNextPageBtn" disabled>Tiếp theo</button>
                     </div>
-                </div>
-            </div>
-            
-            <!-- Bảng theo dõi hiệu suất phân loại theo Ngành Hàng -->
-            <div class="table-card" style="margin-bottom: 24px;">
-                <div class="table-header-row" style="background-color: rgba(79, 70, 229, 0.05); border-bottom: 1px solid rgba(79, 70, 229, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                    <span class="table-title" id="perfF1TableTitle" style="color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0;">
-                        📊 Theo dõi hiệu suất phân loại theo Ngành Hàng
-                    </span>
-                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <input type="text" id="perfF1UserSearch" class="table-filter-input" style="width: 150px; margin: 0; padding: 6px 12px;" placeholder="Tìm nhân sự...">
-                        </div>
-                        <button class="btn btn-secondary" id="perfCatF1BtnExport">
-                            <span>📥 Xuất Excel</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="table-wrapper">
-                    <table id="perfF1CategoryTable">
-                        <thead>
-                            <tr>
-                                <th rowspan="2" style="text-align: center; vertical-align: middle; width: 60px;">STT</th>
-                                <th rowspan="2" id="perfF1TableHeaderName" style="vertical-align: middle; white-space: nowrap; padding: 8px 12px;">
-                                    <div style="display: inline-flex; align-items: center; gap: 6px; justify-content: center; width: 100%;">
-                                        <span>Nhân sự</span>
-                                        <select id="perfF1GroupFilter" style="padding: 2px 4px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--bg-card); color: var(--text-primary); font-size: 11px; font-weight: 600; cursor: pointer; outline: none; margin: 0; display: inline-block; width: auto; vertical-align: middle;">
-                                            <option value="All" selected>Tất cả</option>
-                                            <option value="F1">F1</option>
-                                            <option value="F2">F2</option>
-                                            <option value="HUYHOANG">HUYHOANG</option>
-                                            <option value="CTV">CTV</option>
-                                        </select>
-                                    </div>
-                                </th>
-                                <th colspan="6" style="text-align: center; border-bottom: 1px solid var(--border-color);">Sản lượng chia</th>
-                                <th colspan="6" style="text-align: center; border-bottom: 1px solid var(--border-color);">Tỷ lệ chia sai</th>
-                            </tr>
-                            <tr>
-                                <th style="text-align: right; white-space: nowrap;">2.VEGETABLES</th>
-                                <th style="text-align: right; white-space: nowrap;">2.FRUITS</th>
-                                <th style="text-align: right; white-space: nowrap;">2.BAKERY</th>
-                                <th style="text-align: right; white-space: nowrap;">2.EGGS</th>
-                                <th style="text-align: right; white-space: nowrap;">2.DELICA</th>
-                                <th style="text-align: right; white-space: nowrap; font-weight: bold; border-left: 1px solid var(--border-color); color: var(--color-primary);">Tổng SL</th>
-                                <th style="text-align: right; white-space: nowrap;">2.VEGETABLES</th>
-                                <th style="text-align: right; white-space: nowrap;">2.FRUITS</th>
-                                <th style="text-align: right; white-space: nowrap;">2.BAKERY</th>
-                                <th style="text-align: right; white-space: nowrap;">2.EGGS</th>
-                                <th style="text-align: right; white-space: nowrap;">2.DELICA</th>
-                                <th style="text-align: right; white-space: nowrap; font-weight: bold; border-left: 1px solid var(--border-color); color: var(--color-primary);">Tổng % chia sai</th>
-                            </tr>
-                        </thead>
-                        <tbody id="perfF1CategoryBody">
-                            <!-- Dynamic aggregate content -->
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
@@ -1011,9 +1009,9 @@
                                 <th>Tên sản phẩm</th>
                                 <th style="text-align: center; width: 80px;">ĐVT</th>
                                 <th>Ngành hàng</th>
-                                <th style="text-align: right;">Tổng SL chuyển</th>
-                                <th style="text-align: right;">Tổng SL nhận</th>
-                                <th style="text-align: right; color: var(--color-danger);">Tổng SL lệch còn lại</th>
+                                <th style="text-align: right;">SL chuyển</th>
+                                <th style="text-align: right;">SL nhận</th>
+                                <th style="text-align: right; color: var(--color-danger);">Chênh lệch</th>
                                 <th style="text-align: right; color: var(--color-danger);">% Lệch (Bộ lọc)</th>
                                 <th style="text-align: right; color: var(--color-warning);">% Lệch (D-1)</th>
                                 <th style="text-align: center; color: var(--text-primary);">So sánh D-1</th>
@@ -1116,7 +1114,9 @@
                                 <th>Nhóm hàng Level 3</th>
                                 <th style="text-align: right;">Tổng số lượng thực tế chia</th>
                                 <th style="text-align: right;">Tổng số lượng chia sai</th>
-                                <th style="text-align: right;">% Chia sai</th>
+                                <th style="text-align: right; color: var(--color-danger);">% Chia sai (Ngày)</th>
+                                <th style="text-align: right; color: var(--color-warning);">% Chia sai (D-1)</th>
+                                <th style="text-align: center; color: var(--text-primary);">So sánh D-1</th>
                             </tr>
                         </thead>
                         <tbody id="vegLevel3Body">

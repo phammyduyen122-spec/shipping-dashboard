@@ -3877,7 +3877,7 @@ function renderVegetablesLevel3Table() {
     const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
 
-    const activeTransfers = transfers.filter(t => {
+    const filteredTransfers = transfers.filter(t => {
         if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") {
             return false;
         }
@@ -3904,10 +3904,7 @@ function renderVegetablesLevel3Table() {
             }
         }
 
-        const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
-        const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;
-
-        return matchStartDate && matchEndDate;
+        return true;
     });
 
     const vegLevel3FilterDate = document.getElementById("vegLevel3FilterDate") ? document.getElementById("vegLevel3FilterDate").value.toLowerCase().trim() : "";
@@ -3922,9 +3919,9 @@ function renderVegetablesLevel3Table() {
         "3.MUSHROOM"
     ];
 
-    // Group by Date + Level 3 category
-    const groupAgg = {};
-    activeTransfers.forEach(t => {
+    // Group by Date + Level 3 category for ALL dates
+    const allGroupAgg = {};
+    filteredTransfers.forEach(t => {
         if (t.nganhHang !== "2.VEGETABLES") {
             return;
         }
@@ -3941,21 +3938,39 @@ function renderVegetablesLevel3Table() {
         const date = t.date || "";
         const key = `${date}_${level3}`;
 
-        if (!groupAgg[key]) {
-            groupAgg[key] = {
-                date,
-                level3,
+        if (!allGroupAgg[key]) {
+            allGroupAgg[key] = {
                 shipped: 0,
                 diff: 0
             };
         }
 
-        groupAgg[key].shipped += t.qtyShipped;
+        allGroupAgg[key].shipped += t.qtyShipped;
         const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
         if (isDiscrepant) {
-            groupAgg[key].diff += Math.abs(statusInfo.chenhLechConLai);
+            allGroupAgg[key].diff += Math.abs(statusInfo.chenhLechConLai);
         }
     });
+
+    // Extract selected period subset
+    const groupAgg = {};
+    for (const key in allGroupAgg) {
+        const parts = key.split("_");
+        const date = parts[0];
+        const level3 = parts[1];
+
+        const matchStartDate = startDateQuery === "" || date >= startDateQuery;
+        const matchEndDate = endDateQuery === "" || date <= endDateQuery;
+
+        if (matchStartDate && matchEndDate) {
+            groupAgg[key] = {
+                date,
+                level3,
+                shipped: allGroupAgg[key].shipped,
+                diff: allGroupAgg[key].diff
+            };
+        }
+    }
 
     let sortedSummary = Object.values(groupAgg);
 
@@ -3974,27 +3989,52 @@ function renderVegetablesLevel3Table() {
     });
 
     if (sortedSummary.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 20px; color: var(--text-muted);">Không có dữ liệu phù hợp</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 20px; color: var(--text-muted);">Không có dữ liệu phù hợp</td></tr>`;
         return;
     }
+
+    const getRateStyle = (rateVal, qtyVal) => {
+        if (qtyVal === 0) return "text-align: right;";
+        if (rateVal > 0.5) {
+            return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
+        } else if (rateVal < 0.2) {
+            return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
+        } else {
+            return "background-color: rgba(245, 158, 11, 0.15); color: var(--color-warning); font-weight: bold; text-align: right;";
+        }
+    };
 
     sortedSummary.forEach((item, index) => {
         const formattedDate = formatDateToVN(item.date);
         const shipped = item.shipped;
         const diff = item.diff;
         const errorRate = shipped > 0 ? (diff / shipped) * 100 : 0;
+        const rateStyle = getRateStyle(errorRate, shipped);
 
-        let rateStyle = "";
-        if (shipped > 0) {
-            if (errorRate > 0.5) {
-                rateStyle = "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
-            } else if (errorRate < 0.2) {
-                rateStyle = "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
+        // D-1 comparison calculations
+        let prevRateText = "—";
+        let prevRateStyle = "text-align: right; color: var(--text-muted);";
+        let statusHtml = `<span style="color: var(--text-muted);">—</span>`;
+
+        const prevDate = getPrevDateStr(item.date);
+        const d1Key = `${prevDate}_${item.level3}`;
+        const prevItem = allGroupAgg[d1Key];
+
+        if (prevItem && prevItem.shipped > 0) {
+            const prevShipped = prevItem.shipped;
+            const prevDiff = prevItem.diff;
+            const prevRateVal = (prevDiff / prevShipped) * 100;
+            prevRateText = prevRateVal.toFixed(2) + "%";
+            prevRateStyle = getRateStyle(prevRateVal, prevShipped);
+
+            const diffRate = errorRate - prevRateVal;
+            if (Math.abs(diffRate) < 0.005) {
+                statusHtml = `<span style="color: var(--text-muted);">—</span>`;
+            } else if (diffRate > 0) {
+                statusHtml = `<span style="color: var(--color-danger); font-weight: 600;">▲ +${diffRate.toFixed(2)}%</span>`;
             } else {
-                rateStyle = "background-color: rgba(245, 158, 11, 0.15); color: var(--color-warning); font-weight: bold; text-align: right;";
+                statusHtml = `<span style="color: var(--color-success); font-weight: 600;">▼ ${diffRate.toFixed(2)}%</span>`;
             }
-        } else {
-            rateStyle = "text-align: right; color: var(--text-muted);";
         }
 
         const tr = document.createElement("tr");
@@ -4005,6 +4045,8 @@ function renderVegetablesLevel3Table() {
             <td style="text-align: right; font-weight: 500;">${formatNumber(shipped)}</td>
             <td style="text-align: right; color: ${diff > 0 ? 'var(--color-danger)' : 'var(--text-muted)'}; font-weight: 500;">${formatDiffNumber(diff)}</td>
             <td style="${rateStyle}">${shipped > 0 ? errorRate.toFixed(2) + "%" : "0.00%"}</td>
+            <td style="${prevRateStyle}">${prevRateText}</td>
+            <td style="text-align: center; font-size: 13px;">${statusHtml}</td>
         `;
         tbody.appendChild(tr);
     });

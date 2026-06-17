@@ -524,14 +524,14 @@
                         <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Tổng lệch thiếu (không tính hao hụt)</div>
                     </div>
                     
-                    <!-- SL Rổ/Kiện -->
+                    <!-- % Lệch chia -->
                     <div class="stat-card du" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px;">
                         <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
-                            <span>TỔNG SỐ RỔ / KIỆN</span>
-                            <span style="color: var(--color-info);">●</span>
+                            <span>% LỆCH CHIA HÀNG</span>
+                            <span style="color: var(--color-warning);">●</span>
                         </div>
-                        <div class="stat-value" id="perfTotalBaskets" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 Rổ / 0 Kiện</div>
-                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Được kiểm đếm thực tế</div>
+                        <div class="stat-value" id="perfTotalErrorRate" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0.00%</div>
+                        <div class="stat-subtitle" id="perfTotalErrorRateD1" style="font-size: 11px; color: var(--text-muted);">So với D-1: —</div>
                     </div>
                 </div>
                 <!-- Breakdown of discrepancy by category -->
@@ -655,6 +655,23 @@
                         <button class="btn btn-secondary" id="perfCatF1BtnExport">
                             <span>📥 Xuất Excel</span>
                         </button>
+                    </div>
+                </div>
+                <div class="table-inline-filters" style="display: flex; gap: 16px; padding: 12px 20px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;">🔍 Bộ lọc nhanh:</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; width: 150px;">
+                        <label for="perfF1CategoryStartDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Từ ngày:</label>
+                        <input type="date" id="perfF1CategoryStartDate" class="input-field" style="padding: 4px 8px; font-size: 12px; height: 30px; margin: 0; width: 100%;">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; width: 150px;">
+                        <label for="perfF1CategoryEndDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Đến ngày:</label>
+                        <input type="date" id="perfF1CategoryEndDate" class="input-field" style="padding: 4px 8px; font-size: 12px; height: 30px; margin: 0; width: 100%;">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 120px;">
+                        <label for="perfF1CategoryFilterDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Tìm ngày:</label>
+                        <input type="text" id="perfF1CategoryFilterDate" class="input-field" placeholder="dd/mm/yyyy..." style="padding: 4px 8px; font-size: 12px; height: 30px; margin: 0; width: 100%;">
                     </div>
                 </div>
                 <div class="table-wrapper">

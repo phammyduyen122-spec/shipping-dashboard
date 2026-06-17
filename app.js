@@ -1816,6 +1816,20 @@ function setupPerfEventListeners() {
         });
     }
 
+    const perfF1CategoryStartDate = document.getElementById("perfF1CategoryStartDate");
+    const perfF1CategoryEndDate = document.getElementById("perfF1CategoryEndDate");
+    const perfF1CategoryFilterDate = document.getElementById("perfF1CategoryFilterDate");
+
+    if (perfF1CategoryStartDate) {
+        perfF1CategoryStartDate.addEventListener("change", renderF1CategoryTable);
+    }
+    if (perfF1CategoryEndDate) {
+        perfF1CategoryEndDate.addEventListener("change", renderF1CategoryTable);
+    }
+    if (perfF1CategoryFilterDate) {
+        perfF1CategoryFilterDate.addEventListener("input", renderF1CategoryTable);
+    }
+
     const tableHeaders = document.querySelectorAll("th[data-perf-sort]");
     tableHeaders.forEach(th => {
         th.addEventListener("click", () => {
@@ -2490,6 +2504,13 @@ function clearPerfFilters() {
     
     const perfF1UserSearch = document.getElementById("perfF1UserSearch");
     if (perfF1UserSearch) perfF1UserSearch.value = "";
+    
+    const perfF1CategoryStartDate = document.getElementById("perfF1CategoryStartDate");
+    const perfF1CategoryEndDate = document.getElementById("perfF1CategoryEndDate");
+    const perfF1CategoryFilterDate = document.getElementById("perfF1CategoryFilterDate");
+    if (perfF1CategoryStartDate) perfF1CategoryStartDate.value = "";
+    if (perfF1CategoryEndDate) perfF1CategoryEndDate.value = "";
+    if (perfF1CategoryFilterDate) perfF1CategoryFilterDate.value = "";
     
     document.querySelectorAll("#perfFilterStatusContainer input[type='checkbox']").forEach(cb => cb.checked = false);
     updateSelectLabel(document.getElementById("perfFilterStatusContainer"), document.querySelector("#perfFilterStatusContainer .multiselect-value"));
@@ -3463,8 +3484,7 @@ function updatePerfSummary() {
     let totalReq = 0;
     let totalShared = 0;
     let totalDiff = 0;
-    let totalBaskets = 0;
-    let totalPackages = 0;
+    let totalDiffAbs = 0;
 
     const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
     const categoryDiffs = {};
@@ -3479,6 +3499,9 @@ function updatePerfSummary() {
         
         const statusInfo = calculateStatus(t);
         const diff = statusInfo.chenhLechConLai;
+        if (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư") {
+            totalDiffAbs += Math.abs(diff);
+        }
         if (diff < 0 && statusInfo.statusText !== "Hao hụt") {
             totalDiff += diff;
             const cat = t.nganhHang || "Khác";
@@ -3488,19 +3511,11 @@ function updatePerfSummary() {
                 categoryDiffs["Khác"] += diff;
             }
         }
-        
-        // Find matching perfRecord for baskets and packages count
-        const perf = performanceTransfersMap[`${t.transferCode}_${t.itemCode}`];
-        if (perf) {
-            totalBaskets += perf.slRo;
-            totalPackages += perf.slKien;
-        }
     });
 
     const perfTotalReqEl = document.getElementById("perfTotalReq");
     const perfTotalSharedEl = document.getElementById("perfTotalShared");
     const perfTotalDiffEl = document.getElementById("perfTotalDiff");
-    const perfTotalBasketsEl = document.getElementById("perfTotalBaskets");
 
     if (perfTotalReqEl) perfTotalReqEl.innerText = formatNumber(totalReq);
     if (perfTotalSharedEl) perfTotalSharedEl.innerText = formatNumber(totalShared);
@@ -3516,8 +3531,121 @@ function updatePerfSummary() {
         }
     }
     
-    if (perfTotalBasketsEl) {
-        perfTotalBasketsEl.innerText = `${formatNumber(totalBaskets)} Rổ / ${formatNumber(totalPackages)} Kiện`;
+    // Calculate D-1 discrepancy rate
+    const startEl = document.getElementById("perfFilterStartDate");
+    const endEl = document.getElementById("perfFilterEndDate");
+    const startVal = (startEl && startEl.value) ? startEl.value : earliestDate;
+    const endVal = (endEl && endEl.value) ? endEl.value : latestDate;
+
+    const prevStartDate = startVal ? getPrevDateStr(startVal) : "";
+    const prevEndDate = endVal ? getPrevDateStr(endVal) : "";
+
+    // Read selected filters for DOM-based D-1 filtering
+    const selectedGroups = Array.from(document.querySelectorAll("#perfFilterGroupContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const selectedUsers = Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const selectedStatuses = Array.from(document.querySelectorAll("#perfFilterStatusContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const selectedToBranches = Array.from(document.querySelectorAll("#perfFilterToBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const selectedUnits = Array.from(document.querySelectorAll("#perfFilterUnitContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const selectedPerfCategories = Array.from(document.querySelectorAll("#perfFilterCategoryContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const inputEl = document.getElementById("perfFilterItemCode");
+    const textQuery = inputEl ? inputEl.value.toLowerCase().trim() : "";
+
+    function calculateErrorRateForRange(startDate, endDate) {
+        let req = 0;
+        let diffAbs = 0;
+        
+        const rangeTransfers = transfers.filter(t => {
+            if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") {
+                return false;
+            }
+            if (!t.nguoiChia) {
+                return false;
+            }
+            const name = t.nguoiChia.trim().toLowerCase().normalize("NFC");
+            const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu"];
+            if (name === "" || excluded.includes(name)) {
+                return false;
+            }
+
+            let matchGroup = true;
+            if (selectedGroups.length > 0) {
+                matchGroup = false;
+                for (const g of selectedGroups) {
+                    if (name.startsWith(g.toLowerCase())) {
+                        matchGroup = true;
+                        break;
+                    }
+                }
+            }
+            if (!matchGroup) return false;
+
+            const statusInfo = calculateStatus(t);
+            const status = statusInfo.statusText;
+
+            const matchItem = (selectedPerfItemCodes.length === 0 && textQuery === "") || 
+                selectedPerfItemCodes.includes(t.itemCode) ||
+                (textQuery !== "" && (t.itemCode.toLowerCase() === textQuery || t.itemName.toLowerCase() === textQuery));
+            
+            const matchUser = selectedUsers.length === 0 || selectedUsers.includes(t.nguoiChia);
+            const matchStatus = selectedStatuses.length === 0 || selectedStatuses.includes(status);
+            const matchToBranch = selectedToBranches.length === 0 || selectedToBranches.includes(t.toBranch);
+            const matchUnit = selectedUnits.length === 0 || selectedUnits.includes(t.unit);
+            const matchCategory = selectedPerfCategories.length === 0 || selectedPerfCategories.includes(t.nganhHang);
+            
+            const matchStartDate = startDate === "" || t.date >= startDate;
+            const matchEndDate = endDate === "" || t.date <= endDate;
+            
+            return matchItem && matchUser && matchStatus && matchToBranch && matchStartDate && matchEndDate && matchUnit && matchCategory;
+        });
+        
+        rangeTransfers.forEach(t => {
+            req += t.qtyShipped;
+            const statusInfo = calculateStatus(t);
+            const diff = statusInfo.chenhLechConLai;
+            if (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư") {
+                diffAbs += Math.abs(diff);
+            }
+        });
+        
+        return req > 0 ? (diffAbs / req) * 100 : 0;
+    }
+
+    const currentErrorRate = totalReq > 0 ? (totalDiffAbs / totalReq) * 100 : 0;
+    const prevErrorRate = calculateErrorRateForRange(prevStartDate, prevEndDate);
+
+    const perfTotalErrorRateEl = document.getElementById("perfTotalErrorRate");
+    const perfTotalErrorRateD1El = document.getElementById("perfTotalErrorRateD1");
+
+    if (perfTotalErrorRateEl) {
+        perfTotalErrorRateEl.innerText = `${currentErrorRate.toFixed(2)}%`;
+    }
+
+    if (perfTotalErrorRateD1El) {
+        if (prevStartDate && prevEndDate) {
+            let hasD1Data = false;
+            for (let i = 0; i < transfers.length; i++) {
+                const t = transfers[i];
+                if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() === "kho rau củ" && t.date >= prevStartDate && t.date <= prevEndDate) {
+                    hasD1Data = true;
+                    break;
+                }
+            }
+            
+            if (hasD1Data) {
+                const diffRate = currentErrorRate - prevErrorRate;
+                if (Math.abs(diffRate) < 0.005) {
+                    perfTotalErrorRateD1El.innerHTML = `So với D-1: <span style="color: var(--text-muted); font-weight: 600;">—</span>`;
+                } else if (diffRate > 0) {
+                    perfTotalErrorRateD1El.innerHTML = `So với D-1: <span style="color: var(--color-danger); font-weight: 600;">▲ +${diffRate.toFixed(2)}%</span>`;
+                } else {
+                    perfTotalErrorRateD1El.innerHTML = `So với D-1: <span style="color: var(--color-success); font-weight: 600;">▼ ${diffRate.toFixed(2)}%</span>`;
+                }
+            } else {
+                perfTotalErrorRateD1El.innerHTML = `So với D-1: <span style="color: var(--text-muted); font-weight: 600;">—</span>`;
+            }
+        } else {
+            perfTotalErrorRateD1El.innerHTML = `So với D-1: <span style="color: var(--text-muted); font-weight: 600;">—</span>`;
+        }
     }
 
     // Render category breakdown
@@ -3656,12 +3784,15 @@ function renderF1CategoryTable() {
         }
     }
 
-    const startDateQuery = isCategoryTabActive ? 
-        (document.getElementById("catFilterStartDate") ? document.getElementById("catFilterStartDate").value : "") :
-        (document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "");
-    const endDateQuery = isCategoryTabActive ? 
-        (document.getElementById("catFilterEndDate") ? document.getElementById("catFilterEndDate").value : "") :
-        (document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "");
+    const tableStartEl = document.getElementById("perfF1CategoryStartDate");
+    const tableEndEl = document.getElementById("perfF1CategoryEndDate");
+    const globalStartEl = document.getElementById(isCategoryTabActive ? "catFilterStartDate" : "perfFilterStartDate");
+    const globalEndEl = document.getElementById(isCategoryTabActive ? "catFilterEndDate" : "perfFilterEndDate");
+
+    const startDateQuery = (tableStartEl && tableStartEl.value) ? tableStartEl.value : (globalStartEl ? globalStartEl.value : "");
+    const endDateQuery = (tableEndEl && tableEndEl.value) ? tableEndEl.value : (globalEndEl ? globalEndEl.value : "");
+    
+    const perfF1CategoryFilterDate = document.getElementById("perfF1CategoryFilterDate") ? document.getElementById("perfF1CategoryFilterDate").value.toLowerCase().trim() : "";
     
     const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
@@ -3698,8 +3829,9 @@ function renderF1CategoryTable() {
         // Match dates
         const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
         const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;
+        const matchFilterDate = perfF1CategoryFilterDate === "" || matchDateQuery(t.date, perfF1CategoryFilterDate);
 
-        return matchStartDate && matchEndDate;
+        return matchStartDate && matchEndDate && matchFilterDate;
     });
     lastActiveTransfers = activeTransfers;
 

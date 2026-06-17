@@ -670,14 +670,14 @@
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 150px;">
                         <label for="perfSummaryFilterCategory" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Ngành hàng:</label>
-                        <input type="text" id="perfSummaryFilterCategory" class="input-field" placeholder="Nhập hoặc chọn..." style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%;" list="perfSummaryCategoryDatalist">
-                        <datalist id="perfSummaryCategoryDatalist">
-                            <option value="2.VEGETABLES"></option>
-                            <option value="2.FRUITS"></option>
-                            <option value="2.BAKERY"></option>
-                            <option value="2.EGGS"></option>
-                            <option value="2.DELICA"></option>
-                        </datalist>
+                        <select id="perfSummaryFilterCategory" class="input-field" style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="">Tất cả ngành hàng</option>
+                            <option value="2.VEGETABLES">2.VEGETABLES</option>
+                            <option value="2.FRUITS">2.FRUITS</option>
+                            <option value="2.BAKERY">2.BAKERY</option>
+                            <option value="2.EGGS">2.EGGS</option>
+                            <option value="2.DELICA">2.DELICA</option>
+                        </select>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 130px;">
                         <label for="perfSummaryFilterStatus" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Trạng thái:</label>

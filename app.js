@@ -1770,7 +1770,7 @@ function setupPerfEventListeners() {
         });
     }
     if (summaryFilterCategory) {
-        summaryFilterCategory.addEventListener("input", () => {
+        summaryFilterCategory.addEventListener("change", () => {
             renderPerfSummaryTable();
         });
     }

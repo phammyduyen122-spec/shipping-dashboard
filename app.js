@@ -3099,6 +3099,9 @@ function renderPerfSummaryTable() {
         if (!t.nguoiChia) {
             return;
         }
+        if (t.qtyReceived === -1) {
+            return; // Skip in transit
+        }
         const user = t.nguoiChia.trim();
         const barcode = t.itemCode || "";
         const unit = t.unit || "";
@@ -3120,6 +3123,11 @@ function renderPerfSummaryTable() {
         const date = row.date || "";
         const key = `${date}_${user}_${barcode}_${unit}`;
 
+        const statusInfo = calculateStatus(row);
+        if (statusInfo.statusText === "Đang chuyển") {
+            return; // Skip in-transit completely
+        }
+
         if (!summaryAgg[key]) {
             summaryAgg[key] = {
                 date,
@@ -3136,7 +3144,6 @@ function renderPerfSummaryTable() {
             };
         }
 
-        const statusInfo = calculateStatus(row);
         const receivedVal = row.qtyReceived === -1 ? 0 : row.qtyReceived;
         const slBoSung = row.matchedCorrectiveQty || 0;
 
@@ -3157,6 +3164,9 @@ function renderPerfSummaryTable() {
 
     // Apply inline summary table filters
     sortedSummary = sortedSummary.filter(item => {
+        const key = `${item.date}_${item.user}_${item.barcode}_${item.unit}`;
+        const totalShared = totalSharedLookup[key] || 0;
+        if (totalShared === 0) return false; // Filter out zero shipped (all in-transit) items
         if (selectedSummaryProductCodes.length > 0 || summaryFilterProduct !== "") {
             const matchSelected = selectedSummaryProductCodes.length > 0 && selectedSummaryProductCodes.includes(item.barcode);
             
@@ -3498,10 +3508,13 @@ function updatePerfSummary() {
     categoryDiffs["Khác"] = 0;
 
     filteredPerfTransfers.forEach(t => {
+        const statusInfo = calculateStatus(t);
+        if (statusInfo.statusText === "Đang chuyển") {
+            return; // Skip in transit
+        }
         totalReq += t.qtyShipped;
         totalShared += t.qtyReceived + (t.matchedCorrectiveQty || 0);
         
-        const statusInfo = calculateStatus(t);
         const diff = statusInfo.chenhLechConLai;
         if (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư") {
             totalDiffAbs += Math.abs(diff);
@@ -3603,8 +3616,11 @@ function updatePerfSummary() {
         });
         
         rangeTransfers.forEach(t => {
-            req += t.qtyShipped;
             const statusInfo = calculateStatus(t);
+            if (statusInfo.statusText === "Đang chuyển") {
+                return; // Skip in transit
+            }
+            req += t.qtyShipped;
             const diff = statusInfo.chenhLechConLai;
             if (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư") {
                 diffAbs += Math.abs(diff);
@@ -3970,6 +3986,68 @@ function renderF1CategoryTable() {
         tr.innerHTML = htmlContent;
         tbody.appendChild(tr);
     });
+
+    // Calculate grand totals across all active users (Toàn bộ nhân sự)
+    let grandShipped = {};
+    let grandReceived = {};
+    let grandDiff = {};
+    categories.forEach(cat => {
+        grandShipped[cat] = 0;
+        grandReceived[cat] = 0;
+        grandDiff[cat] = 0;
+    });
+
+    Object.keys(userAgg).forEach(user => {
+        const uData = userAgg[user];
+        categories.forEach(cat => {
+            grandShipped[cat] += uData.categories[cat].shipped;
+            grandReceived[cat] += uData.categories[cat].received;
+            grandDiff[cat] += uData.categories[cat].diff;
+        });
+    });
+
+    let grandTotalShipped = 0;
+    let grandTotalReceived = 0;
+    let grandTotalDiff = 0;
+    categories.forEach(cat => {
+        grandTotalShipped += grandShipped[cat];
+        grandTotalReceived += grandReceived[cat];
+        grandTotalDiff += grandDiff[cat];
+    });
+
+    if (displayUsers.length > 0) {
+        const trTotal = document.createElement("tr");
+        trTotal.style.fontWeight = "bold";
+        trTotal.style.backgroundColor = "var(--bg-secondary)";
+        trTotal.style.borderTop = "2px solid var(--border-color)";
+
+        let htmlTotal = `
+            <td style="text-align: center;">-</td>
+            <td><strong>TỔNG CỘNG (Toàn bộ nhân sự)</strong></td>
+        `;
+
+        categories.forEach(cat => {
+            htmlTotal += `<td style="text-align: right;">${formatNumber(grandShipped[cat])}</td>`;
+        });
+        htmlTotal += `<td style="text-align: right; border-left: 1px solid var(--border-color); color: var(--color-primary);">${formatNumber(grandTotalShipped)}</td>`;
+
+        categories.forEach(cat => {
+            const sh = grandShipped[cat];
+            const df = grandDiff[cat];
+            const rate = sh > 0 ? (df / sh) * 100 : 0;
+            const style = getStyleForCat(rate, sh);
+            const displayText = sh === 0 ? "" : `${rate.toFixed(2)}%`;
+            htmlTotal += `<td style="${style}">${displayText}</td>`;
+        });
+
+        const grandTotalErrorRate = grandTotalShipped > 0 ? (grandTotalDiff / grandTotalShipped) * 100 : 0;
+        const grandTotalStyle = getStyleForCat(grandTotalErrorRate, grandTotalShipped, true) + " border-left: 1px solid var(--border-color);";
+        const grandTotalDisplayText = grandTotalShipped === 0 ? "" : `${grandTotalErrorRate.toFixed(2)}%`;
+        htmlTotal += `<td style="${grandTotalStyle}">${grandTotalDisplayText}</td>`;
+
+        trTotal.innerHTML = htmlTotal;
+        tbody.appendChild(trTotal);
+    }
     renderF1CategoryDateTable();
     renderVegetablesLevel3DateTable();
     renderVegetablesLevel3Table();
@@ -4378,6 +4456,69 @@ function renderF1CategoryDateTable() {
         tr.innerHTML = htmlContent;
         tbody.appendChild(tr);
     });
+
+    // Calculate grand totals across all dates
+    let grandShipped = {};
+    let grandReceived = {};
+    let grandDiff = {};
+    categories.forEach(cat => {
+        grandShipped[cat] = 0;
+        grandReceived[cat] = 0;
+        grandDiff[cat] = 0;
+    });
+
+    let matchCount = 0;
+    sortedDates.forEach(date => {
+        const formattedDate = formatDateToVN(date);
+        if (localDateSearch !== "" && !formattedDate.includes(localDateSearch)) {
+            return;
+        }
+        matchCount++;
+        const dData = dateAgg[date];
+        categories.forEach(cat => {
+            grandShipped[cat] += dData.categories[cat].shipped;
+            grandReceived[cat] += dData.categories[cat].received;
+            grandDiff[cat] += dData.categories[cat].diff;
+        });
+    });
+
+    let grandTotalShipped = 0;
+    let grandTotalReceived = 0;
+    let grandTotalDiff = 0;
+    categories.forEach(cat => {
+        grandTotalShipped += grandShipped[cat];
+        grandTotalReceived += grandReceived[cat];
+        grandTotalDiff += grandDiff[cat];
+    });
+
+    if (matchCount > 0) {
+        const trTotal = document.createElement("tr");
+        trTotal.style.fontWeight = "bold";
+        trTotal.style.backgroundColor = "var(--bg-secondary)";
+        trTotal.style.borderTop = "2px solid var(--border-color)";
+
+        let htmlTotal = `
+            <td style="text-align: center;">-</td>
+            <td><strong>TỔNG CỘNG</strong></td>
+        `;
+
+        categories.forEach(cat => {
+            const sh = grandShipped[cat];
+            const df = grandDiff[cat];
+            const rate = sh > 0 ? (df / sh) * 100 : 0;
+            const style = getStyleForDailyCat(rate, sh);
+            const displayText = sh === 0 ? "0.00%" : `${rate.toFixed(2)}%`;
+            htmlTotal += `<td style="${style}">${displayText}</td>`;
+        });
+
+        const grandTotalErrorRate = grandTotalShipped > 0 ? (grandTotalDiff / grandTotalShipped) * 100 : 0;
+        const grandTotalStyle = getStyleForDailyCat(grandTotalErrorRate, grandTotalShipped) + " border-left: 1px solid var(--border-color);";
+        const grandTotalDisplayText = grandTotalShipped === 0 ? "0.00%" : `${grandTotalErrorRate.toFixed(2)}%`;
+        htmlTotal += `<td style="${grandTotalStyle}">${grandTotalDisplayText}</td>`;
+
+        trTotal.innerHTML = htmlTotal;
+        tbody.appendChild(trTotal);
+    }
 }
 
 // ============================================================
@@ -4561,6 +4702,69 @@ function renderVegetablesLevel3DateTable() {
         tr.innerHTML = htmlContent;
         tbody.appendChild(tr);
     });
+
+    // Calculate grand totals across all dates
+    let grandShipped = {};
+    let grandReceived = {};
+    let grandDiff = {};
+    level3Cats.forEach(cat => {
+        grandShipped[cat] = 0;
+        grandReceived[cat] = 0;
+        grandDiff[cat] = 0;
+    });
+
+    let matchCount = 0;
+    sortedDates.forEach(date => {
+        const formattedDate = formatDateToVN(date);
+        if (localDateSearch !== "" && !formattedDate.includes(localDateSearch)) {
+            return;
+        }
+        matchCount++;
+        const dData = dateAgg[date];
+        level3Cats.forEach(cat => {
+            grandShipped[cat] += dData.categories[cat].shipped;
+            grandReceived[cat] += dData.categories[cat].received;
+            grandDiff[cat] += dData.categories[cat].diff;
+        });
+    });
+
+    let grandTotalShipped = 0;
+    let grandTotalReceived = 0;
+    let grandTotalDiff = 0;
+    level3Cats.forEach(cat => {
+        grandTotalShipped += grandShipped[cat];
+        grandTotalReceived += grandReceived[cat];
+        grandTotalDiff += grandDiff[cat];
+    });
+
+    if (matchCount > 0) {
+        const trTotal = document.createElement("tr");
+        trTotal.style.fontWeight = "bold";
+        trTotal.style.backgroundColor = "var(--bg-secondary)";
+        trTotal.style.borderTop = "2px solid var(--border-color)";
+
+        let htmlTotal = `
+            <td style="text-align: center;">-</td>
+            <td><strong>TỔNG CỘNG</strong></td>
+        `;
+
+        level3Cats.forEach(cat => {
+            const sh = grandShipped[cat];
+            const df = grandDiff[cat];
+            const rate = sh > 0 ? (df / sh) * 100 : 0;
+            const style = getStyleForDailyCat(rate, sh);
+            const displayText = sh === 0 ? "0.00%" : `${rate.toFixed(2)}%`;
+            htmlTotal += `<td style="${style}">${displayText}</td>`;
+        });
+
+        const grandTotalErrorRate = grandTotalShipped > 0 ? (grandTotalDiff / grandTotalShipped) * 100 : 0;
+        const grandTotalStyle = getStyleForDailyCat(grandTotalErrorRate, grandTotalShipped) + " border-left: 1px solid var(--border-color);";
+        const grandTotalDisplayText = grandTotalShipped === 0 ? "0.00%" : `${grandTotalErrorRate.toFixed(2)}%`;
+        htmlTotal += `<td style="${grandTotalStyle}">${grandTotalDisplayText}</td>`;
+
+        trTotal.innerHTML = htmlTotal;
+        tbody.appendChild(trTotal);
+    }
 }
 
 function getPrevDateStr(dateStr) {

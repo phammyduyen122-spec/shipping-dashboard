@@ -303,6 +303,7 @@ let latestDate = "";
 let performanceTransfers = [];
 let performanceTransfersMap = {};
 let filteredPerfTransfers = [];
+let lastSortedSummary = [];
 let selectedPerfItemCodes = [];
 let selectedSummaryProductCodes = [];
 let currentPerfPage = 1;
@@ -1870,8 +1871,7 @@ function setupPerfEventListeners() {
     const btnExportSummary = document.getElementById("btnExportSummary");
     if (btnExportSummary) {
         btnExportSummary.addEventListener("click", () => {
-            const todayStr = new Date().toISOString().split("T")[0];
-            downloadTableToExcel("perfSummaryTable", `BaoCao_TomTatHieuSuat_${todayStr}.csv`);
+            exportSummaryToCSV();
         });
     }
 }
@@ -3242,6 +3242,8 @@ function renderPerfSummaryTable() {
         return a.barcode.localeCompare(b.barcode);
     });
 
+    lastSortedSummary = sortedSummary;
+
     const displaySummary = sortedSummary.slice(0, 20);
     displaySummary.forEach((item, index) => {
         // Date formatting (timezone-independent)
@@ -3253,13 +3255,8 @@ function renderPerfSummaryTable() {
             ? 'color: var(--color-danger); font-weight: 500;' 
             : (item.chenhLechConLai > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
 
-        const pctLech = totalShared > 0 ? (item.chenhLechConLai / totalShared) * 100 : 0;
-        let pctText = "0.00%";
-        if (pctLech > 0) {
-            pctText = `+${pctLech.toFixed(2)}%`;
-        } else if (pctLech < 0) {
-            pctText = `${pctLech.toFixed(2)}%`;
-        }
+        const pctLech = totalShared > 0 ? (item.absDiff / totalShared) * 100 : 0;
+        const pctText = `${pctLech.toFixed(2)}%`;
 
         const pctStyle = item.chenhLechConLai < 0 
             ? 'color: var(--color-danger); font-weight: 500;' 
@@ -3280,6 +3277,39 @@ function renderPerfSummaryTable() {
         `;
         tbody.appendChild(tr);
     });
+
+    // Append Grand Total row
+    if (sortedSummary.length > 0) {
+        let grandTotalShared = 0;
+        let grandTotalDiff = 0;
+        let grandTotalAbsDiff = 0;
+
+        sortedSummary.forEach(item => {
+            const key = `${item.date}_${item.user}_${item.barcode}_${item.unit}`;
+            const totalShared = totalSharedLookup[key] || 0;
+            grandTotalShared += totalShared;
+            grandTotalDiff += item.chenhLechConLai;
+            grandTotalAbsDiff += item.absDiff;
+        });
+
+        const grandTotalErrorRate = grandTotalShared > 0 ? (grandTotalAbsDiff / grandTotalShared) * 100 : 0;
+        const grandTotalDisplayText = `${grandTotalErrorRate.toFixed(2)}%`;
+
+        const trTotal = document.createElement("tr");
+        trTotal.style.fontWeight = "bold";
+        trTotal.style.backgroundColor = "var(--bg-secondary)";
+        trTotal.style.borderTop = "2px solid var(--border-color)";
+
+        trTotal.innerHTML = `
+            <td style="text-align: center;">-</td>
+            <td><strong>TỔNG CỘNG</strong></td>
+            <td colspan="5"></td>
+            <td style="text-align: right; font-weight: bold; color: var(--color-primary);">${formatNumber(grandTotalShared)}</td>
+            <td style="text-align: right; ${grandTotalDiff < 0 ? 'color: var(--color-danger);' : (grandTotalDiff > 0 ? 'color: var(--color-info);' : '')}">${formatDiffNumber(grandTotalDiff)}</td>
+            <td style="text-align: right; color: var(--color-success);">${grandTotalDisplayText}</td>
+        `;
+        tbody.appendChild(trTotal);
+    }
 }
 
 
@@ -5767,3 +5797,91 @@ function downloadCategoryDateTabular() {
 
     downloadCSV(headers, rows, `BaoCao_HieuSuatNganhHang_Dong_Ngay_${new Date().toISOString().split("T")[0]}.csv`);
 }
+
+// Export the full filtered Performance Summary Table to Excel/CSV with a Grand Total row
+function exportSummaryToCSV() {
+    if (lastSortedSummary.length === 0) {
+        alert("Không có dữ liệu để xuất!");
+        return;
+    }
+
+    const totalSharedLookup = {};
+    transfers.forEach(t => {
+        if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") {
+            return;
+        }
+        if (!t.nguoiChia) {
+            return;
+        }
+        if (t.qtyReceived === -1) {
+            return; // Skip in transit
+        }
+        const user = t.nguoiChia.trim();
+        const barcode = t.itemCode || "";
+        const unit = t.unit || "";
+        const date = t.date || "";
+        const key = `${date}_${user}_${barcode}_${unit}`;
+        
+        if (!totalSharedLookup[key]) {
+            totalSharedLookup[key] = 0;
+        }
+        totalSharedLookup[key] += t.qtyShipped;
+    });
+
+    const headers = ["STT", "Ngày chia hàng", "Nhân sự chia", "Barcode", "Tên sản phẩm", "Đơn vị tính", "Ngành hàng", "SL chia", "SL lệch còn lại", "% Lệch"];
+    const rows = [];
+
+    lastSortedSummary.forEach((item, index) => {
+        const key = `${item.date}_${item.user}_${item.barcode}_${item.unit}`;
+        const totalShared = totalSharedLookup[key] || 0;
+        
+        const pctLech = totalShared > 0 ? (item.absDiff / totalShared) * 100 : 0;
+        const pctText = `${pctLech.toFixed(2)}%`;
+
+        rows.push([
+            index + 1,
+            formatDateToVN(item.date),
+            item.user,
+            item.barcode,
+            item.itemName,
+            item.unit,
+            item.nganhHang || "Khác",
+            totalShared,
+            item.chenhLechConLai,
+            pctText
+        ]);
+    });
+
+    // Append the Grand Total row
+    let grandTotalShared = 0;
+    let grandTotalDiff = 0;
+    let grandTotalAbsDiff = 0;
+
+    lastSortedSummary.forEach(item => {
+        const key = `${item.date}_${item.user}_${item.barcode}_${item.unit}`;
+        const totalShared = totalSharedLookup[key] || 0;
+        grandTotalShared += totalShared;
+        grandTotalDiff += item.chenhLechConLai;
+        grandTotalAbsDiff += item.absDiff;
+    });
+
+    const grandTotalErrorRate = grandTotalShared > 0 ? (grandTotalAbsDiff / grandTotalShared) * 100 : 0;
+    const grandTotalDisplayText = `${grandTotalErrorRate.toFixed(2)}%`;
+
+    rows.push([
+        "-",
+        "TỔNG CỘNG",
+        "",
+        "",
+        "",
+        "",
+        "",
+        grandTotalShared,
+        grandTotalDiff,
+        grandTotalDisplayText
+    ]);
+
+    const todayStr = new Date().toISOString().split("T")[0];
+    downloadCSV(headers, rows, `BaoCao_TomTatHieuSuat_${todayStr}.csv`);
+}
+

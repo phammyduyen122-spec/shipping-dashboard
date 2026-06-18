@@ -3243,8 +3243,13 @@ function renderPerfSummaryTable() {
             ? 'color: var(--color-danger); font-weight: 500;' 
             : (item.chenhLechConLai > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
 
-        const pctLech = totalShared > 0 ? (item.absDiff / totalShared) * 100 : 0;
-        let pctText = `${pctLech.toFixed(2)}%`;
+        const pctLech = totalShared > 0 ? (item.chenhLechConLai / totalShared) * 100 : 0;
+        let pctText = "0.00%";
+        if (pctLech > 0) {
+            pctText = `+${pctLech.toFixed(2)}%`;
+        } else if (pctLech < 0) {
+            pctText = `${pctLech.toFixed(2)}%`;
+        }
 
         const pctStyle = item.chenhLechConLai < 0 
             ? 'color: var(--color-danger); font-weight: 500;' 

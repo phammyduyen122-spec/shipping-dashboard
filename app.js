@@ -1880,6 +1880,19 @@ function setupPerfEventListeners() {
 function setupCategoryEventListeners(earliestDate, latestDate) {
     setupMultiSelectDropdown("catFilterGroupContainer");
     
+    // Set default date range to the latest date for all category tables
+    const defaultDateInputs = [
+        "perfF1CategoryStartDate", "perfF1CategoryEndDate",
+        "catDateTableStartDate", "catDateTableEndDate",
+        "topSkuStartDate", "topSkuEndDate",
+        "vegLevel3DateStartDate", "vegLevel3DateEndDate",
+        "vegLevel3StartDate", "vegLevel3EndDate"
+    ];
+    defaultDateInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = latestDate;
+    });
+
     const catStartDate = document.getElementById("catFilterStartDate");
     const catEndDate = document.getElementById("catFilterEndDate");
     const vegLevel3FilterDate = document.getElementById("vegLevel3FilterDate");

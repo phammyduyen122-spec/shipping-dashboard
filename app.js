@@ -276,8 +276,8 @@ function linkTransfers(rawTransfers) {
                 const match = candidates.find(c => {
                     if (c.isMerged) return false;
                     const cDate = new Date(c.date);
-                    const diffDays = Math.abs(cDate - origDate) / (1000 * 60 * 60 * 24);
-                    return diffDays <= maxDiff && c.qtyShipped > 0;
+                    const diffDays = Math.round((cDate - origDate) / (1000 * 60 * 60 * 24));
+                    return diffDays >= 0 && diffDays <= maxDiff && c.qtyShipped > 0;
                 });
                 if (match) {
                     orig.matchedCorrectiveQty = match.qtyShipped;

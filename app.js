@@ -3131,7 +3131,8 @@ function renderPerfSummaryTable() {
                 qtyReceived: 0,
                 qtyShipped: 0,
                 slBoSung: 0,
-                chenhLechConLai: 0
+                chenhLechConLai: 0,
+                absDiff: 0
             };
         }
 
@@ -3147,6 +3148,9 @@ function renderPerfSummaryTable() {
         const statusText = statusInfo.statusText;
         const diff = (statusText === "Hao hụt" || statusText === "Đang chuyển") ? 0 : statusInfo.chenhLechConLai;
         summaryAgg[key].chenhLechConLai += diff;
+        if (statusText === "Thiếu" || statusText === "Dư") {
+            summaryAgg[key].absDiff += Math.abs(diff);
+        }
     });
 
     let sortedSummary = Object.values(summaryAgg);
@@ -3239,13 +3243,8 @@ function renderPerfSummaryTable() {
             ? 'color: var(--color-danger); font-weight: 500;' 
             : (item.chenhLechConLai > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
 
-        const pctLech = totalShared > 0 ? (item.chenhLechConLai / totalShared) * 100 : 0;
-        let pctText = "0.00%";
-        if (pctLech > 0) {
-            pctText = `+${pctLech.toFixed(2)}%`;
-        } else if (pctLech < 0) {
-            pctText = `${pctLech.toFixed(2)}%`;
-        }
+        const pctLech = totalShared > 0 ? (item.absDiff / totalShared) * 100 : 0;
+        let pctText = `${pctLech.toFixed(2)}%`;
 
         const pctStyle = item.chenhLechConLai < 0 
             ? 'color: var(--color-danger); font-weight: 500;' 
@@ -3884,13 +3883,12 @@ function renderF1CategoryTable() {
         
         const catRates = categories.map(cat => {
             const shipped = uData.categories[cat].shipped;
-            const received = uData.categories[cat].received;
             const diff = uData.categories[cat].diff;
             const errorRate = shipped > 0 ? (diff / shipped) * 100 : 0;
             return {
                 category: cat,
                 errorRate: errorRate,
-                received: received
+                shipped: shipped
             };
         });
 
@@ -3945,23 +3943,23 @@ function renderF1CategoryTable() {
         `;
 
         categories.forEach(cat => {
-            const qtyVal = uData.categories[cat].received;
+            const qtyVal = uData.categories[cat].shipped;
             htmlContent += `<td style="text-align: right;">${formatNumber(qtyVal)}</td>`;
         });
         // Add total quantity column cell (with a left border)
-        htmlContent += `<td style="text-align: right; font-weight: bold; border-left: 1px solid var(--border-color); color: var(--color-primary);">${formatNumber(totalReceived)}</td>`;
+        htmlContent += `<td style="text-align: right; font-weight: bold; border-left: 1px solid var(--border-color); color: var(--color-primary);">${formatNumber(totalShipped)}</td>`;
 
         categories.forEach(cat => {
             const catRateObj = catRates.find(item => item.category === cat);
             const rateVal = catRateObj.errorRate;
-            const qtyVal = catRateObj.received;
+            const qtyVal = catRateObj.shipped;
             const style = getStyleForCat(rateVal, qtyVal);
             const displayText = qtyVal === 0 ? "" : `${rateVal.toFixed(2)}%`;
             htmlContent += `<td style="${style}">${displayText}</td>`;
         });
         // Add total error rate column cell (with a left border and coloring based on thresholds)
-        const totalStyle = getStyleForCat(totalErrorRate, totalReceived, true) + " font-weight: bold; border-left: 1px solid var(--border-color);";
-        const totalDisplayText = totalReceived === 0 ? "" : `${totalErrorRate.toFixed(2)}%`;
+        const totalStyle = getStyleForCat(totalErrorRate, totalShipped, true) + " font-weight: bold; border-left: 1px solid var(--border-color);";
+        const totalDisplayText = totalShipped === 0 ? "" : `${totalErrorRate.toFixed(2)}%`;
         htmlContent += `<td style="${totalStyle}">${totalDisplayText}</td>`;
 
         tr.innerHTML = htmlContent;

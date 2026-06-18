@@ -157,6 +157,27 @@ def load_existing_data(filepath="data.js"):
 def parse_excel():
     print("--- BẮT ĐẦU XỬ LÝ PHÂN TÍCH EXCEL ---")
     
+    # Find the maximum date across both performance and transfer files
+    all_dates = []
+    perf_files = glob.glob(os.path.join("performance dashboard", "chi-tiet-chia-qua-canh_*.xlsx"))
+    for f in perf_files:
+        d = get_date_from_filename(f)
+        if d:
+            all_dates.append(d)
+    trans_files = glob.glob("transfer_*.xlsx")
+    for f in trans_files:
+        d = get_date_from_filename(f)
+        if d:
+            all_dates.append(d)
+            
+    if all_dates:
+        global_max_date = max(all_dates)
+    else:
+        global_max_date = datetime(2026, 6, 17)
+        
+    allowed_dates = [(global_max_date - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(4)]
+    print(f"Rolling 4 days for filtering: {allowed_dates}")
+    
     # Load existing data
     existing_trans, existing_perf = load_existing_data("data.js")
     
@@ -283,8 +304,8 @@ def parse_excel():
             if dfs_perf:
                 df_perf_all = pd.concat(dfs_perf, ignore_index=True)
                 df_perf_all['ngayChuyen'] = df_perf_all['ngayChuyen'].apply(parse_dt)
-                # Filter strictly for 2026-06-14, 2026-06-15, 2026-06-16, 2026-06-17
-                df_perf_all = df_perf_all[df_perf_all['ngayChuyen'].isin(['2026-06-14', '2026-06-15', '2026-06-16', '2026-06-17'])]
+                # Filter strictly for the rolling 4 days
+                df_perf_all = df_perf_all[df_perf_all['ngayChuyen'].isin(allowed_dates)]
                 
                 # Deduplicate performance records based on unique PO line
                 df_perf_all.drop_duplicates(subset=['maPhieuChuyen', 'barcode', 'noiNhan'], keep='last', inplace=True)
@@ -427,8 +448,8 @@ def parse_excel():
                 return str(val)
                 
         df_clean['date'] = df_clean['date'].apply(format_date)
-        # Filter strictly for 2026-06-14, 2026-06-15, 2026-06-16, 2026-06-17
-        df_clean = df_clean[df_clean['date'].isin(['2026-06-14', '2026-06-15', '2026-06-16', '2026-06-17'])]
+        # Filter strictly for the rolling 4 days
+        df_clean = df_clean[df_clean['date'].isin(allowed_dates)]
         
         # Clean strings and normalize Unicode to NFC format using fast unique values map
         for str_col in ['fromBranch', 'toBranch', 'itemCode', 'itemName', 'unit', 'transferCode', 'originalDoc', 'generatedDoc', 'docStatus', 'daHauKiem']:

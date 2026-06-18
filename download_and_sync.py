@@ -8,10 +8,13 @@ import subprocess
 async def main():
     sys.stdout.reconfigure(encoding='utf-8')
     
-    # Calculate dates for the last 3 days (today, yesterday, and day before)
+    # Calculate dates for the last 3 days based on Vietnam Time (ICT, UTC+7)
+    from datetime import timezone
+    now_utc = datetime.now(timezone.utc)
+    now_ict = now_utc + timedelta(hours=7)
     dates = []
     for i in range(3):
-        d = datetime.now() - timedelta(days=i)
+        d = now_ict - timedelta(days=i)
         dates.append((d.strftime("%d/%m/%Y"), d.strftime("%Y-%m-%d")))
         
     print(f"--- START AUTOMATIC DOWNLOAD FOR THE LAST 7 DAYS ---")
@@ -148,7 +151,7 @@ async def main():
                     async with page.expect_download(timeout=120000) as download_info:
                         await trigger_perf_download()
                     download = await download_info.value
-                    perf_dir = "C:/Users/DUYEN/.gemini/antigravity/scratch/performance dashboard"
+                    perf_dir = "performance dashboard"
                     os.makedirs(perf_dir, exist_ok=True)
                     target_path = os.path.join(perf_dir, f"chi-tiet-chia-qua-canh_{d_file}.xlsx")
                     await download.save_as(target_path)

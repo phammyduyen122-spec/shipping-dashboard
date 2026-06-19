@@ -1992,6 +1992,13 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
         });
     }
 
+    const catValuePerfBtnExport = document.getElementById("catValuePerfBtnExport");
+    if (catValuePerfBtnExport) {
+        catValuePerfBtnExport.addEventListener("click", () => {
+            downloadCategoryValueTabular();
+        });
+    }
+
     const perfCatF1BtnExport = document.getElementById("perfCatF1BtnExport");
     if (perfCatF1BtnExport) {
         perfCatF1BtnExport.addEventListener("click", () => {
@@ -4604,6 +4611,197 @@ function renderF1CategoryDateTable() {
         trTotal.innerHTML = htmlTotal;
         tbody.appendChild(trTotal);
     }
+
+    // Render the new Category Value Summary Table
+    renderCategoryValuePerformanceTable(activeTransfers);
+}
+
+function renderCategoryValuePerformanceTable(activeTransfers) {
+    const tbody = document.getElementById("perfCategoryValueBody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+    const catData = {};
+    categories.forEach(cat => {
+        catData[cat] = { shipVal: 0, diffVal: 0 };
+    });
+    catData["Khác"] = { shipVal: 0, diffVal: 0 };
+
+    activeTransfers.forEach(t => {
+        const cat = categories.includes(t.nganhHang) ? t.nganhHang : "Khác";
+        const price = window.productPrices ? (window.productPrices[t.itemCode] || 0) : 0;
+        const shipVal = (t.qtyShipped || 0) * price;
+        
+        const statusInfo = calculateStatus(t);
+        const diff = (statusInfo.statusText === "Hao hụt" || statusInfo.statusText === "Đang chuyển") ? 0 : (statusInfo.chenhLechConLai || 0);
+        const diffVal = diff * price;
+        
+        catData[cat].shipVal += shipVal;
+        catData[cat].diffVal += diffVal;
+    });
+
+    let index = 1;
+    let grandTotalShip = 0;
+    let grandTotalDiff = 0;
+
+    const allCats = [...categories, "Khác"];
+    allCats.forEach(cat => {
+        const data = catData[cat];
+        if (cat === "Khác" && data.shipVal === 0 && data.diffVal === 0) return;
+
+        grandTotalShip += data.shipVal;
+        grandTotalDiff += data.diffVal;
+
+        const pct = data.shipVal > 0 ? (data.diffVal / data.shipVal) * 100 : 0;
+        
+        const diffStyle = data.diffVal < 0 
+            ? 'color: var(--color-danger); font-weight: 500;' 
+            : (data.diffVal > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
+            
+        const pctStyle = data.diffVal < 0 
+            ? 'color: var(--color-danger); font-weight: 500;' 
+            : (data.diffVal > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
+            
+        const pctText = data.shipVal > 0 ? `${pct > 0 ? "+" : ""}${pct.toFixed(2)}%` : "-";
+        
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td style="text-align: center;">${index++}</td>
+            <td><strong>${cat}</strong></td>
+            <td style="text-align: right; font-weight: 500;">${data.shipVal > 0 ? data.shipVal.toLocaleString("vi-VN") + " đ" : "-"}</td>
+            <td style="text-align: right; ${diffStyle}">${formatVND(data.diffVal)}</td>
+            <td style="text-align: right; ${pctStyle}">${pctText}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Add grand total row
+    const trTotal = document.createElement("tr");
+    trTotal.style.fontWeight = "bold";
+    trTotal.style.backgroundColor = "var(--bg-secondary)";
+    trTotal.style.borderTop = "2px solid var(--border-color)";
+
+    const grandPct = grandTotalShip > 0 ? (grandTotalDiff / grandTotalShip) * 100 : 0;
+    const grandDiffStyle = grandTotalDiff < 0 
+        ? 'color: var(--color-danger);' 
+        : (grandTotalDiff > 0 ? 'color: var(--color-info);' : '');
+    const grandPctStyle = grandTotalDiff < 0 
+        ? 'color: var(--color-danger);' 
+        : (grandTotalDiff > 0 ? 'color: var(--color-info);' : '');
+    const grandPctText = grandTotalShip > 0 ? `${grandPct > 0 ? "+" : ""}${grandPct.toFixed(2)}%` : "0.00%";
+
+    trTotal.innerHTML = `
+        <td style="text-align: center;">-</td>
+        <td><strong>TỔNG CỘNG</strong></td>
+        <td style="text-align: right; color: var(--color-primary);">${grandTotalShip > 0 ? grandTotalShip.toLocaleString("vi-VN") + " đ" : "0 đ"}</td>
+        <td style="text-align: right; ${grandDiffStyle}">${formatVND(grandTotalDiff)}</td>
+        <td style="text-align: right; ${grandPctStyle}">${grandPctText}</td>
+    `;
+    tbody.appendChild(trTotal);
+}
+
+function downloadCategoryValueTabular() {
+    const catGroupEl = document.getElementById("catFilterGroupContainer");
+    const groupSelector = catGroupEl ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
+    const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
+    
+    let activeGroups = [];
+    const groupFilterEl = document.getElementById("perfF1GroupFilter");
+    const groupFilterVal = groupFilterEl ? groupFilterEl.value : "All";
+
+    if (selectedGroups.length > 0) {
+        activeGroups = selectedGroups;
+    } else {
+        if (groupFilterVal === "All") {
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV"];
+        } else {
+            activeGroups = [groupFilterVal];
+        }
+    }
+
+    const catStartEl = document.getElementById("catFilterStartDate");
+    const catEndEl = document.getElementById("catFilterEndDate");
+    const startDateQuery = catStartEl ? catStartEl.value : (document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "");
+    const endDateQuery = catEndEl ? catEndEl.value : (document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "");
+
+    const activeTransfers = transfers.filter(t => {
+        if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") return false;
+        if (!t.nguoiChia) return false;
+        const name = t.nguoiChia.trim().toLowerCase();
+        
+        let matchGroupPrefix = false;
+        for (const g of activeGroups) {
+            if (name.startsWith(g.toLowerCase())) {
+                matchGroupPrefix = true;
+                break;
+            }
+        }
+        if (!matchGroupPrefix) return false;
+
+        const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
+        const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;
+        return matchStartDate && matchEndDate;
+    });
+
+    const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+    const catData = {};
+    categories.forEach(cat => {
+        catData[cat] = { shipVal: 0, diffVal: 0 };
+    });
+    catData["Khác"] = { shipVal: 0, diffVal: 0 };
+
+    activeTransfers.forEach(t => {
+        const cat = categories.includes(t.nganhHang) ? t.nganhHang : "Khác";
+        const price = window.productPrices ? (window.productPrices[t.itemCode] || 0) : 0;
+        const shipVal = (t.qtyShipped || 0) * price;
+        
+        const statusInfo = calculateStatus(t);
+        const diff = (statusInfo.statusText === "Hao hụt" || statusInfo.statusText === "Đang chuyển") ? 0 : (statusInfo.chenhLechConLai || 0);
+        const diffVal = diff * price;
+        
+        catData[cat].shipVal += shipVal;
+        catData[cat].diffVal += diffVal;
+    });
+
+    const headers = ["STT", "Ngành hàng", "Tổng giá trị chuyển (đ)", "Giá trị lệch (đ)", "% Giá trị lệch"];
+    const rows = [];
+    
+    let index = 1;
+    let grandTotalShip = 0;
+    let grandTotalDiff = 0;
+    
+    const allCats = [...categories, "Khác"];
+    allCats.forEach(cat => {
+        const data = catData[cat];
+        if (cat === "Khác" && data.shipVal === 0 && data.diffVal === 0) return;
+        
+        grandTotalShip += data.shipVal;
+        grandTotalDiff += data.diffVal;
+        
+        const pct = data.shipVal > 0 ? (data.diffVal / data.shipVal) * 100 : 0;
+        const pctText = data.shipVal > 0 ? `${pct > 0 ? "+" : ""}${pct.toFixed(2)}%` : "0.00%";
+        
+        rows.push([
+            index++,
+            cat,
+            data.shipVal,
+            data.diffVal,
+            pctText
+        ]);
+    });
+    
+    const grandPct = grandTotalShip > 0 ? (grandTotalDiff / grandTotalShip) * 100 : 0;
+    const grandPctText = grandTotalShip > 0 ? `${grandPct > 0 ? "+" : ""}${grandPct.toFixed(2)}%` : "0.00%";
+    rows.push([
+        "-",
+        "TỔNG CỘNG",
+        grandTotalShip,
+        grandTotalDiff,
+        grandPctText
+    ]);
+
+    downloadCSV(headers, rows, `BaoCao_GiaTriLech_NganhHang_${new Date().toISOString().split("T")[0]}.csv`);
 }
 
 // ============================================================
@@ -4981,6 +5179,7 @@ function renderTopSkuDiscrepancyTable() {
         }
 
         if (!skuAgg[itemCode]) {
+            const price = window.productPrices ? (window.productPrices[itemCode] || 0) : 0;
             skuAgg[itemCode] = {
                 itemCode: itemCode,
                 itemName: itemName,
@@ -4988,7 +5187,10 @@ function renderTopSkuDiscrepancyTable() {
                 nganhHang: cat,
                 qtyShipped: 0,
                 qtyReceived: 0,
-                qtyDiff: 0
+                qtyDiff: 0,
+                price: price,
+                valDiff: 0,
+                netValDiff: 0
             };
         }
 
@@ -4997,7 +5199,12 @@ function renderTopSkuDiscrepancyTable() {
         
         const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
         if (isDiscrepant) {
-            skuAgg[itemCode].qtyDiff += Math.abs(statusInfo.chenhLechConLai);
+            const rowDiff = statusInfo.chenhLechConLai;
+            const absRowDiff = Math.abs(rowDiff);
+            const price = skuAgg[itemCode].price;
+            skuAgg[itemCode].qtyDiff += absRowDiff;
+            skuAgg[itemCode].valDiff += absRowDiff * price;
+            skuAgg[itemCode].netValDiff += rowDiff * price;
         }
     });
 
@@ -5078,6 +5285,12 @@ function renderTopSkuDiscrepancyTable() {
             if (rateCmp !== 0) return rateCmp;
             return b.qtyDiff - a.qtyDiff;
         });
+    } else if (sortCriteria === "value") {
+        skuList.sort((a, b) => {
+            const valCmp = b.valDiff - a.valDiff;
+            if (valCmp !== 0) return valCmp;
+            return b.qtyDiff - a.qtyDiff;
+        });
     } else {
         // Sort by absolute discrepancy descending, then by shipped quantity descending
         skuList.sort((a, b) => {
@@ -5091,7 +5304,7 @@ function renderTopSkuDiscrepancyTable() {
     const top10 = skuList.slice(0, 10);
 
     if (top10.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; padding: 20px; color: var(--text-muted);">Không có dữ liệu phù hợp</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="13" style="text-align: center; padding: 20px; color: var(--text-muted);">Không có dữ liệu phù hợp</td></tr>`;
         return;
     }
 
@@ -5111,6 +5324,10 @@ function renderTopSkuDiscrepancyTable() {
         const diff = item.qtyDiff;
         const rateVal = shipped > 0 ? (diff / shipped) * 100 : 0;
         const style = getStyleForDailyCat(rateVal, shipped);
+
+        const valDiffStyle = item.netValDiff < 0 
+            ? 'color: var(--color-danger); font-weight: 500;' 
+            : (item.netValDiff > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
 
         // D-1 comparison calculations
         let prevRateText = "—";
@@ -5142,9 +5359,11 @@ function renderTopSkuDiscrepancyTable() {
             <td style="font-weight: 500;">${item.itemName}</td>
             <td style="text-align: center;">${item.unit}</td>
             <td>${item.nganhHang}</td>
+            <td style="text-align: right; color: var(--text-secondary);">${formatPrice(item.price)}</td>
             <td style="text-align: right; font-weight: 500;">${formatNumber(shipped)}</td>
             <td style="text-align: right; font-weight: 500;">${formatNumber(item.qtyReceived)}</td>
             <td style="text-align: right; color: ${diff > 0 ? 'var(--color-danger)' : 'var(--text-muted)'}; font-weight: bold;">${formatDiffNumber(diff)}</td>
+            <td style="text-align: right; ${valDiffStyle}">${formatVND(item.netValDiff)}</td>
             <td style="${style}">${shipped > 0 ? rateVal.toFixed(2) + "%" : "0.00%"}</td>
             <td style="${prevRateStyle}">${prevRateText}</td>
             <td style="text-align: center; font-size: 13px;">${statusHtml}</td>

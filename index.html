@@ -533,6 +533,16 @@
                         <div class="stat-value" id="perfTotalErrorRate" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0.00%</div>
                         <div class="stat-subtitle" id="perfTotalErrorRateD1" style="font-size: 11px; color: var(--text-muted);">So với D-1: —</div>
                     </div>
+
+                    <!-- Giá trị lệch tổng -->
+                    <div class="stat-card thieu" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px;">
+                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                            <span>GIÁ TRỊ LỆCH TỔNG</span>
+                            <span style="color: var(--color-danger);">●</span>
+                        </div>
+                        <div class="stat-value" id="perfTotalDiffValue" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đ</div>
+                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Tổng giá trị lệch thiếu</div>
+                    </div>
                 </div>
                 <!-- Breakdown of discrepancy by category -->
                 <div id="perfCategoryDiffBreakdown" style="margin-top: 16px; border-top: 1px dashed var(--border-color); padding-top: 16px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center;">
@@ -875,6 +885,141 @@
 
         <!-- Tab 3: Category Performance Report -->
         <div class="tab-content" id="contentCategoryPerformance">
+            <!-- Advanced Filter Controls for Category Performance -->
+            <div class="filters-card" style="margin-bottom: 24px;">
+                <div class="filters-header">
+                    🔍 <span>Bộ lọc hiệu suất ngành hàng</span>
+                </div>
+                <div class="filters-grid">
+                    <!-- Ngành hàng Filter (Multi-select) -->
+                    <div class="filter-group">
+                        <label class="filter-label">Ngành hàng</label>
+                        <div class="multiselect-container" id="catFilterCategoryContainer">
+                            <div class="multiselect-select">
+                                <span class="multiselect-value">-- Tất cả ngành hàng --</span>
+                                <span class="multiselect-arrow">▾</span>
+                            </div>
+                            <div class="multiselect-dropdown">
+                                <div class="multiselect-actions">
+                                    <span class="multiselect-action-btn select-all">Chọn tất cả</span>
+                                    <span class="multiselect-action-btn clear-all">Xóa tất cả</span>
+                                </div>
+                                <div class="multiselect-options-list" id="catFilterCategoryOptions">
+                                    <label class="multiselect-option"><input type="checkbox" value="2.EGGS"> <span>2.EGGS</span></label>
+                                    <label class="multiselect-option"><input type="checkbox" value="2.DELICA"> <span>2.DELICA</span></label>
+                                    <label class="multiselect-option"><input type="checkbox" value="2.VEGETABLES"> <span>2.VEGETABLES</span></label>
+                                    <label class="multiselect-option"><input type="checkbox" value="2.BAKERY"> <span>2.BAKERY</span></label>
+                                    <label class="multiselect-option"><input type="checkbox" value="2.FRUITS"> <span>2.FRUITS</span></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Siêu thị Filter (Multi-select) -->
+                    <div class="filter-group">
+                        <label class="filter-label">Siêu thị nhận</label>
+                        <div class="multiselect-container" id="catFilterBranchContainer">
+                            <div class="multiselect-select">
+                                <span class="multiselect-value">-- Tất cả siêu thị --</span>
+                                <span class="multiselect-arrow">▾</span>
+                            </div>
+                            <div class="multiselect-dropdown">
+                                <div class="multiselect-actions">
+                                    <span class="multiselect-action-btn select-all">Chọn tất cả</span>
+                                    <span class="multiselect-action-btn clear-all">Xóa tất cả</span>
+                                </div>
+                                <div class="multiselect-options-list" id="catFilterBranchOptions">
+                                    <!-- Dynamic -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Date Range Filters -->
+                    <div class="filter-group">
+                        <label class="filter-label">Từ ngày</label>
+                        <input type="date" id="catFilterStartDate" class="input-field">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Đến ngày</label>
+                        <input type="date" id="catFilterEndDate" class="input-field">
+                    </div>
+                </div>
+                <div style="margin-top: 16px; display: flex; justify-content: flex-end;">
+                    <button class="btn btn-secondary" id="catClearFiltersBtn">
+                        <span>🧹 Xóa bộ lọc</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Category Value Stats Grid -->
+            <div class="filters-card" style="background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%); margin-bottom: 24px;">
+                <div class="filters-header" style="margin-bottom: 12px; color: var(--color-primary); font-weight: 700;">
+                    📊 <span>Thống kê giá trị chênh lệch chia hàng</span>
+                </div>
+                <div class="stats-grid" style="margin-bottom: 0;">
+                    <!-- Tổng giá trị lệch -->
+                    <div class="stat-card total" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; --color-primary: #4f46e5;">
+                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                            <span>TỔNG GIÁ TRỊ LỆCH</span>
+                            <span style="color: #4f46e5;">●</span>
+                        </div>
+                        <div class="stat-value" id="catTotalDiffValue" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đ</div>
+                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Tổng chênh lệch tất cả ngành hàng</div>
+                    </div>
+
+                    <!-- Vegetables -->
+                    <div class="stat-card" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; border-left: 4px solid var(--color-primary);">
+                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                            <span>LỆCH VEGETABLES</span>
+                            <span style="color: var(--color-primary);">●</span>
+                        </div>
+                        <div class="stat-value" id="catVegDiffValue" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đ</div>
+                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Ngành hàng Rau Củ</div>
+                    </div>
+
+                    <!-- Fruits -->
+                    <div class="stat-card" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; border-left: 4px solid var(--color-success);">
+                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                            <span>LỆCH FRUITS</span>
+                            <span style="color: var(--color-success);">●</span>
+                        </div>
+                        <div class="stat-value" id="catFruitDiffValue" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đ</div>
+                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Ngành hàng Trái Cây</div>
+                    </div>
+
+                    <!-- Bakery -->
+                    <div class="stat-card" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; border-left: 4px solid var(--color-warning);">
+                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                            <span>LỆCH BAKERY</span>
+                            <span style="color: var(--color-warning);">●</span>
+                        </div>
+                        <div class="stat-value" id="catBakeryDiffValue" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đ</div>
+                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Ngành hàng Bánh Mì</div>
+                    </div>
+
+                    <!-- Eggs -->
+                    <div class="stat-card" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; border-left: 4px solid var(--color-info);">
+                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                            <span>LỆCH EGGS</span>
+                            <span style="color: var(--color-info);">●</span>
+                        </div>
+                        <div class="stat-value" id="catEggsDiffValue" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đ</div>
+                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Ngành hàng Trứng</div>
+                    </div>
+
+                    <!-- Delica -->
+                    <div class="stat-card" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; border-left: 4px solid #ec4899;">
+                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                            <span>LỆCH DELICA</span>
+                            <span style="color: #ec4899;">●</span>
+                        </div>
+                        <div class="stat-value" id="catDelicaDiffValue" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đ</div>
+                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Ngành hàng Delica</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Bảng tổng hợp giá trị chênh lệch theo Ngành Hàng -->
             <div class="table-card" style="margin-bottom: 24px;">
                 <div class="table-header-row" style="background-color: rgba(79, 70, 229, 0.05); border-bottom: 1px solid rgba(79, 70, 229, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
@@ -896,6 +1041,8 @@
                                 <th style="text-align: right;">Tổng giá trị chuyển</th>
                                 <th style="text-align: right;">Giá trị lệch</th>
                                 <th style="text-align: right;">% Giá trị lệch</th>
+                                <th style="text-align: right;">Giá trị lệch (D-1)</th>
+                                <th style="text-align: right;">% so với D-1</th>
                             </tr>
                         </thead>
                         <tbody id="perfCategoryValueBody">
@@ -923,14 +1070,6 @@
                 <div class="table-inline-filters" style="display: flex; gap: 16px; padding: 12px 20px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; align-items: center;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;">🔍 Bộ lọc nhanh:</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; width: 150px;">
-                        <label for="catDateTableStartDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Từ ngày:</label>
-                        <input type="date" id="catDateTableStartDate" class="input-field" style="padding: 4px 8px; font-size: 12px; height: 30px; margin: 0; width: 100%;">
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; width: 150px;">
-                        <label for="catDateTableEndDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Đến ngày:</label>
-                        <input type="date" id="catDateTableEndDate" class="input-field" style="padding: 4px 8px; font-size: 12px; height: 30px; margin: 0; width: 100%;">
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 120px;">
                         <label for="catDateTableFilterDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Tìm ngày:</label>
@@ -992,19 +1131,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="table-inline-filters" style="display: flex; gap: 16px; padding: 12px 20px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;">🔍 Bộ lọc nhanh:</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; width: 150px;">
-                        <label for="topSkuStartDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Từ ngày:</label>
-                        <input type="date" id="topSkuStartDate" class="input-field" style="padding: 4px 8px; font-size: 12px; height: 30px; margin: 0; width: 100%;">
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; width: 150px;">
-                        <label for="topSkuEndDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Đến ngày:</label>
-                        <input type="date" id="topSkuEndDate" class="input-field" style="padding: 4px 8px; font-size: 12px; height: 30px; margin: 0; width: 100%;">
-                    </div>
-                </div>
+
                 <div class="table-wrapper">
                     <table id="topSkuDiscrepancyTable">
                         <thead>
@@ -1046,14 +1173,6 @@
                 <div class="table-inline-filters" style="display: flex; gap: 16px; padding: 12px 20px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; align-items: center;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;">🔍 Bộ lọc nhanh:</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; width: 150px;">
-                        <label for="vegLevel3DateStartDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Từ ngày:</label>
-                        <input type="date" id="vegLevel3DateStartDate" class="input-field" style="padding: 4px 8px; font-size: 12px; height: 30px; margin: 0; width: 100%;">
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; width: 150px;">
-                        <label for="vegLevel3DateEndDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Đến ngày:</label>
-                        <input type="date" id="vegLevel3DateEndDate" class="input-field" style="padding: 4px 8px; font-size: 12px; height: 30px; margin: 0; width: 100%;">
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 120px;">
                         <label for="vegLevel3DateFilterDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Tìm ngày:</label>
@@ -1098,14 +1217,6 @@
                 <div class="table-inline-filters" style="display: flex; gap: 16px; padding: 12px 20px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; align-items: center;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;">🔍 Bộ lọc nhanh:</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; width: 150px;">
-                        <label for="vegLevel3StartDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Từ ngày:</label>
-                        <input type="date" id="vegLevel3StartDate" class="input-field" style="padding: 4px 8px; font-size: 12px; height: 30px; margin: 0; width: 100%;">
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; width: 150px;">
-                        <label for="vegLevel3EndDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Đến ngày:</label>
-                        <input type="date" id="vegLevel3EndDate" class="input-field" style="padding: 4px 8px; font-size: 12px; height: 30px; margin: 0; width: 100%;">
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 120px;">
                         <label for="vegLevel3FilterDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Tìm ngày:</label>

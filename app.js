@@ -133,7 +133,8 @@ function formatPrice(val) {
 // Helper function to format discrepancy values with + or - prefixes
 function formatVND(val) {
     if (val === undefined || val === null || isNaN(val) || val === "" || Number(val) === 0) return "-";
-    const num = Number(val);
+    const num = Math.round(Number(val));
+    if (num === 0) return "-";
     const prefix = num > 0 ? "+" : "";
     return `${prefix}${num.toLocaleString("vi-VN")} đ`;
 }
@@ -671,6 +672,19 @@ function populateFilterOptions() {
     if (toBranchOptions) {
         toBranches.forEach(branch => {
             toBranchOptions.innerHTML += `
+                <label class="multiselect-option">
+                    <input type="checkbox" value="${branch}"> <span>${branch}</span>
+                </label>
+            `;
+        });
+    }
+
+    // Populate Tab 3 Category Supermarket filter
+    const catBranchOptions = document.getElementById("catFilterBranchOptions");
+    if (catBranchOptions) {
+        catBranchOptions.innerHTML = '';
+        toBranches.forEach(branch => {
+            catBranchOptions.innerHTML += `
                 <label class="multiselect-option">
                     <input type="checkbox" value="${branch}"> <span>${branch}</span>
                 </label>
@@ -1894,6 +1908,8 @@ function setupPerfEventListeners() {
 // Bind Category tab filters event listeners
 function setupCategoryEventListeners(earliestDate, latestDate) {
     setupMultiSelectDropdown("catFilterGroupContainer");
+    setupMultiSelectDropdown("catFilterCategoryContainer");
+    setupMultiSelectDropdown("catFilterBranchContainer");
     
     // Set default date range to the latest date for all category tables
     const defaultDateInputs = [
@@ -1910,6 +1926,9 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
 
     const catStartDate = document.getElementById("catFilterStartDate");
     const catEndDate = document.getElementById("catFilterEndDate");
+    if (catStartDate) catStartDate.value = latestDate;
+    if (catEndDate) catEndDate.value = latestDate;
+
     const vegLevel3FilterDate = document.getElementById("vegLevel3FilterDate");
     const vegLevel3DateFilterDate = document.getElementById("vegLevel3DateFilterDate");
     if (catStartDate) catStartDate.addEventListener("change", renderF1CategoryTable);
@@ -1957,6 +1976,18 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
             if (groupContainer) {
                 groupContainer.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = true);
                 updateSelectLabel(groupContainer, groupContainer.querySelector(".multiselect-value"));
+            }
+
+            const catFilterCategoryContainer = document.getElementById("catFilterCategoryContainer");
+            if (catFilterCategoryContainer) {
+                catFilterCategoryContainer.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = true);
+                updateSelectLabel(catFilterCategoryContainer, catFilterCategoryContainer.querySelector(".multiselect-value"));
+            }
+
+            const catFilterBranchContainer = document.getElementById("catFilterBranchContainer");
+            if (catFilterBranchContainer) {
+                catFilterBranchContainer.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = true);
+                updateSelectLabel(catFilterBranchContainer, catFilterBranchContainer.querySelector(".multiselect-value"));
             }
             
             const searchInput = document.getElementById("perfF1UserSearch");
@@ -3909,6 +3940,9 @@ function renderF1CategoryTable() {
     const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
 
+    const selectedCats = Array.from(document.querySelectorAll("#catFilterCategoryContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
+
     const activeTransfers = transfers.filter(t => {
         if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") {
             return false;
@@ -3937,6 +3971,14 @@ function renderF1CategoryTable() {
                 return false;
             }
         }
+
+        // Match global category selection
+        const matchCategory = selectedCats.length === 0 || selectedCats.includes(t.nganhHang);
+        if (!matchCategory) return false;
+
+        // Match global branch selection
+        const matchBranch = selectedBranches.length === 0 || selectedBranches.includes(t.toBranch);
+        if (!matchBranch) return false;
 
         // Match dates
         const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
@@ -4194,6 +4236,9 @@ function renderVegetablesLevel3Table() {
     const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
 
+    const selectedCats = Array.from(document.querySelectorAll("#catFilterCategoryContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
+
     const filteredTransfers = transfers.filter(t => {
         if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") {
             return false;
@@ -4220,6 +4265,14 @@ function renderVegetablesLevel3Table() {
                 return false;
             }
         }
+
+        // Match global category selection
+        const matchCategory = selectedCats.length === 0 || selectedCats.includes(t.nganhHang);
+        if (!matchCategory) return false;
+
+        // Match global branch selection
+        const matchBranch = selectedBranches.length === 0 || selectedBranches.includes(t.toBranch);
+        if (!matchBranch) return false;
 
         return true;
     });
@@ -4419,6 +4472,9 @@ function renderF1CategoryDateTable() {
     const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
 
+    const selectedCats = Array.from(document.querySelectorAll("#catFilterCategoryContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
+
     const activeTransfers = transfers.filter(t => {
         if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") {
             return false;
@@ -4445,6 +4501,14 @@ function renderF1CategoryDateTable() {
                 return false;
             }
         }
+
+        // Match global category selection
+        const matchCategory = selectedCats.length === 0 || selectedCats.includes(t.nganhHang);
+        if (!matchCategory) return false;
+
+        // Match global branch selection
+        const matchBranch = selectedBranches.length === 0 || selectedBranches.includes(t.toBranch);
+        if (!matchBranch) return false;
 
         const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
         const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;
@@ -4621,6 +4685,44 @@ function renderCategoryValuePerformanceTable(activeTransfers) {
     if (!tbody) return;
     tbody.innerHTML = "";
 
+    const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
+    const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
+
+    const groupSelector = isCategoryTabActive ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
+    const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
+    
+    let activeGroups = [];
+    const groupFilterEl = document.getElementById("perfF1GroupFilter");
+    const groupFilterVal = groupFilterEl ? groupFilterEl.value : "All";
+
+    if (selectedGroups.length > 0) {
+        activeGroups = selectedGroups;
+    } else {
+        if (groupFilterVal === "All") {
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV"];
+        } else {
+            activeGroups = [groupFilterVal];
+        }
+    }
+
+    const tableStartEl = document.getElementById("perfF1CategoryStartDate");
+    const tableEndEl = document.getElementById("perfF1CategoryEndDate");
+    const globalStartEl = document.getElementById(isCategoryTabActive ? "catFilterStartDate" : "perfFilterStartDate");
+    const globalEndEl = document.getElementById(isCategoryTabActive ? "catFilterEndDate" : "perfFilterEndDate");
+
+    const startDateQuery = (tableStartEl && tableStartEl.value) ? tableStartEl.value : (globalStartEl ? globalStartEl.value : "");
+    const endDateQuery = (tableEndEl && tableEndEl.value) ? tableEndEl.value : (globalEndEl ? globalEndEl.value : "");
+
+    const prevStartDateQuery = startDateQuery ? getPrevDateStr(startDateQuery) : "";
+    const prevEndDateQuery = endDateQuery ? getPrevDateStr(endDateQuery) : "";
+
+    const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
+
+    const selectedCats = Array.from(document.querySelectorAll("#catFilterCategoryContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
+
+    // Compute current period data
     const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
     const catData = {};
     categories.forEach(cat => {
@@ -4641,37 +4743,137 @@ function renderCategoryValuePerformanceTable(activeTransfers) {
         catData[cat].diffVal += diffVal;
     });
 
+    // Compute D-1 period data
+    const prevActiveTransfers = transfers.filter(t => {
+        if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") {
+            return false;
+        }
+        if (!t.nguoiChia) {
+            return false;
+        }
+        const name = t.nguoiChia.trim().toLowerCase();
+        
+        let matchGroupPrefix = false;
+        for (const g of activeGroups) {
+            if (name.startsWith(g.toLowerCase())) {
+                matchGroupPrefix = true;
+                break;
+            }
+        }
+        if (!matchGroupPrefix) return false;
+
+        const matchUser = selectedUsers.length === 0 || selectedUsers.includes(t.nguoiChia);
+        if (!matchUser) return false;
+
+        if (localUserSearch !== "") {
+            if (!name.includes(localUserSearch)) {
+                return false;
+            }
+        }
+
+        // Match global category selection
+        const matchCategory = selectedCats.length === 0 || selectedCats.includes(t.nganhHang);
+        if (!matchCategory) return false;
+
+        // Match global branch selection
+        const matchBranch = selectedBranches.length === 0 || selectedBranches.includes(t.toBranch);
+        if (!matchBranch) return false;
+
+        // Match prev dates
+        const matchStartDate = prevStartDateQuery === "" || t.date >= prevStartDateQuery;
+        const matchEndDate = prevEndDateQuery === "" || t.date <= prevEndDateQuery;
+
+        return matchStartDate && matchEndDate;
+    });
+
+    const prevCatData = {};
+    categories.forEach(cat => {
+        prevCatData[cat] = { shipVal: 0, diffVal: 0 };
+    });
+    prevCatData["Khác"] = { shipVal: 0, diffVal: 0 };
+
+    prevActiveTransfers.forEach(t => {
+        const cat = categories.includes(t.nganhHang) ? t.nganhHang : "Khác";
+        const price = window.productPrices ? (window.productPrices[t.itemCode] || 0) : 0;
+        const shipVal = (t.qtyShipped || 0) * price;
+        
+        const statusInfo = calculateStatus(t);
+        const diff = (statusInfo.statusText === "Hao hụt" || statusInfo.statusText === "Đang chuyển") ? 0 : (statusInfo.chenhLechConLai || 0);
+        const diffVal = diff * price;
+        
+        prevCatData[cat].shipVal += shipVal;
+        prevCatData[cat].diffVal += diffVal;
+    });
+
     let index = 1;
     let grandTotalShip = 0;
     let grandTotalDiff = 0;
+    let grandTotalPrevDiff = 0;
 
     const allCats = [...categories, "Khác"];
     allCats.forEach(cat => {
         const data = catData[cat];
-        if (cat === "Khác" && data.shipVal === 0 && data.diffVal === 0) return;
+        const prevData = prevCatData[cat];
+        if (cat === "Khác" && data.shipVal === 0 && data.diffVal === 0 && prevData.shipVal === 0 && prevData.diffVal === 0) return;
 
-        grandTotalShip += data.shipVal;
-        grandTotalDiff += data.diffVal;
+        // Round current values to integers
+        const roundedShipVal = Math.round(data.shipVal);
+        const roundedDiffVal = Math.round(data.diffVal);
+        const roundedPrevDiffVal = Math.round(prevData.diffVal);
 
-        const pct = data.shipVal > 0 ? (data.diffVal / data.shipVal) * 100 : 0;
+        grandTotalShip += roundedShipVal;
+        grandTotalDiff += roundedDiffVal;
+        grandTotalPrevDiff += roundedPrevDiffVal;
+
+        const pct = roundedShipVal > 0 ? (roundedDiffVal / roundedShipVal) * 100 : 0;
         
-        const diffStyle = data.diffVal < 0 
+        const diffStyle = roundedDiffVal < 0 
             ? 'color: var(--color-danger); font-weight: 500;' 
-            : (data.diffVal > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
+            : (roundedDiffVal > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
             
-        const pctStyle = data.diffVal < 0 
+        const pctStyle = roundedDiffVal < 0 
             ? 'color: var(--color-danger); font-weight: 500;' 
-            : (data.diffVal > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
+            : (roundedDiffVal > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
             
-        const pctText = data.shipVal > 0 ? `${pct > 0 ? "+" : ""}${pct.toFixed(2)}%` : "-";
+        const pctText = roundedShipVal > 0 ? `${pct > 0 ? "+" : ""}${pct.toFixed(2)}%` : "-";
+
+        // D-1 values
+        const d1DiffText = formatVND(roundedPrevDiffVal);
+        const d1DiffStyle = roundedPrevDiffVal < 0 
+            ? 'color: var(--color-danger);' 
+            : (roundedPrevDiffVal > 0 ? 'color: var(--color-info);' : '');
+
+        // % change compared to D-1
+        const currentAbs = Math.abs(roundedDiffVal);
+        const prevAbs = Math.abs(roundedPrevDiffVal);
+        
+        let pctChangeText = "—";
+        let pctChangeStyle = "color: var(--text-muted); font-weight: 600; text-align: center;";
+        if (prevAbs > 0) {
+            const pctChange = ((currentAbs - prevAbs) / prevAbs) * 100;
+            if (Math.abs(pctChange) < 0.005) {
+                pctChangeText = "—";
+            } else if (pctChange > 0) {
+                pctChangeText = `▲ +${pctChange.toFixed(2)}%`;
+                pctChangeStyle = "color: var(--color-danger); font-weight: 600; text-align: right;";
+            } else {
+                pctChangeText = `▼ ${pctChange.toFixed(2)}%`;
+                pctChangeStyle = "color: var(--color-success); font-weight: 600; text-align: right;";
+            }
+        } else if (currentAbs > 0) {
+            pctChangeText = "▲ +100.00%";
+            pctChangeStyle = "color: var(--color-danger); font-weight: 600; text-align: right;";
+        }
         
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td style="text-align: center;">${index++}</td>
             <td><strong>${cat}</strong></td>
-            <td style="text-align: right; font-weight: 500;">${data.shipVal > 0 ? data.shipVal.toLocaleString("vi-VN") + " đ" : "-"}</td>
-            <td style="text-align: right; ${diffStyle}">${formatVND(data.diffVal)}</td>
+            <td style="text-align: right; font-weight: 500;">${roundedShipVal > 0 ? roundedShipVal.toLocaleString("vi-VN") + " đ" : "-"}</td>
+            <td style="text-align: right; ${diffStyle}">${formatVND(roundedDiffVal)}</td>
             <td style="text-align: right; ${pctStyle}">${pctText}</td>
+            <td style="text-align: right; ${d1DiffStyle}">${d1DiffText}</td>
+            <td style="text-align: right; ${pctChangeStyle}">${pctChangeText}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -4691,19 +4893,76 @@ function renderCategoryValuePerformanceTable(activeTransfers) {
         : (grandTotalDiff > 0 ? 'color: var(--color-info);' : '');
     const grandPctText = grandTotalShip > 0 ? `${grandPct > 0 ? "+" : ""}${grandPct.toFixed(2)}%` : "0.00%";
 
+    // D-1 grand total comparison
+    const grandTotalPrevAbs = Math.abs(grandTotalPrevDiff);
+    const grandTotalCurrAbs = Math.abs(grandTotalDiff);
+    let grandPctChangeText = "—";
+    let grandPctChangeStyle = "color: var(--text-muted); font-weight: bold; text-align: center;";
+    if (grandTotalPrevAbs > 0) {
+        const grandPctChange = ((grandTotalCurrAbs - grandTotalPrevAbs) / grandTotalPrevAbs) * 100;
+        if (Math.abs(grandPctChange) < 0.005) {
+            grandPctChangeText = "—";
+        } else if (grandPctChange > 0) {
+            grandPctChangeText = `▲ +${grandPctChange.toFixed(2)}%`;
+            grandPctChangeStyle = "color: var(--color-danger); font-weight: bold; text-align: right;";
+        } else {
+            grandPctChangeText = `▼ ${grandPctChange.toFixed(2)}%`;
+            grandPctChangeStyle = "color: var(--color-success); font-weight: bold; text-align: right;";
+        }
+    } else if (grandTotalCurrAbs > 0) {
+        grandPctChangeText = "▲ +100.00%";
+        grandPctChangeStyle = "color: var(--color-danger); font-weight: bold; text-align: right;";
+    }
+
+    const d1GrandDiffText = formatVND(grandTotalPrevDiff);
+    const d1GrandDiffStyle = grandTotalPrevDiff < 0 
+        ? 'color: var(--color-danger);' 
+        : (grandTotalPrevDiff > 0 ? 'color: var(--color-info);' : '');
+
     trTotal.innerHTML = `
         <td style="text-align: center;">-</td>
         <td><strong>TỔNG CỘNG</strong></td>
         <td style="text-align: right; color: var(--color-primary);">${grandTotalShip > 0 ? grandTotalShip.toLocaleString("vi-VN") + " đ" : "0 đ"}</td>
         <td style="text-align: right; ${grandDiffStyle}">${formatVND(grandTotalDiff)}</td>
         <td style="text-align: right; ${grandPctStyle}">${grandPctText}</td>
+        <td style="text-align: right; ${d1GrandDiffStyle}">${d1GrandDiffText}</td>
+        <td style="text-align: right; ${grandPctChangeStyle}">${grandPctChangeText}</td>
     `;
     tbody.appendChild(trTotal);
+
+    // Update the Category Value Stats Cards
+    const elTotal = document.getElementById("catTotalDiffValue");
+    const elVeg = document.getElementById("catVegDiffValue");
+    const elFruit = document.getElementById("catFruitDiffValue");
+    const elBakery = document.getElementById("catBakeryDiffValue");
+    const elEggs = document.getElementById("catEggsDiffValue");
+    const elDelica = document.getElementById("catDelicaDiffValue");
+
+    const setCardValueAndStyle = (el, val) => {
+        if (!el) return;
+        el.innerText = formatVND(val);
+        if (val < 0) {
+            el.style.color = "var(--color-danger)";
+        } else if (val > 0) {
+            el.style.color = "var(--color-info)";
+        } else {
+            el.style.color = "var(--text-primary)";
+        }
+    };
+
+    setCardValueAndStyle(elTotal, grandTotalDiff);
+    setCardValueAndStyle(elVeg, Math.round(catData["2.VEGETABLES"] ? catData["2.VEGETABLES"].diffVal : 0));
+    setCardValueAndStyle(elFruit, Math.round(catData["2.FRUITS"] ? catData["2.FRUITS"].diffVal : 0));
+    setCardValueAndStyle(elBakery, Math.round(catData["2.BAKERY"] ? catData["2.BAKERY"].diffVal : 0));
+    setCardValueAndStyle(elEggs, Math.round(catData["2.EGGS"] ? catData["2.EGGS"].diffVal : 0));
+    setCardValueAndStyle(elDelica, Math.round(catData["2.DELICA"] ? catData["2.DELICA"].diffVal : 0));
 }
 
 function downloadCategoryValueTabular() {
-    const catGroupEl = document.getElementById("catFilterGroupContainer");
-    const groupSelector = catGroupEl ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
+    const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
+    const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
+
+    const groupSelector = isCategoryTabActive ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
     const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
     
     let activeGroups = [];
@@ -4720,14 +4979,38 @@ function downloadCategoryValueTabular() {
         }
     }
 
-    const catStartEl = document.getElementById("catFilterStartDate");
-    const catEndEl = document.getElementById("catFilterEndDate");
-    const startDateQuery = catStartEl ? catStartEl.value : (document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "");
-    const endDateQuery = catEndEl ? catEndEl.value : (document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "");
+    const tableStartEl = document.getElementById("perfF1CategoryStartDate");
+    const tableEndEl = document.getElementById("perfF1CategoryEndDate");
+    const globalStartEl = document.getElementById(isCategoryTabActive ? "catFilterStartDate" : "perfFilterStartDate");
+    const globalEndEl = document.getElementById(isCategoryTabActive ? "catFilterEndDate" : "perfFilterEndDate");
+
+    const startDateQuery = (tableStartEl && tableStartEl.value) ? tableStartEl.value : (globalStartEl ? globalStartEl.value : "");
+    const endDateQuery = (tableEndEl && tableEndEl.value) ? tableEndEl.value : (globalEndEl ? globalEndEl.value : "");
+
+    const prevStartDateQuery = startDateQuery ? getPrevDateStr(startDateQuery) : "";
+    const prevEndDateQuery = endDateQuery ? getPrevDateStr(endDateQuery) : "";
+
+    const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
+
+    const selectedCats = Array.from(document.querySelectorAll("#catFilterCategoryContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
+
+    // Compute current period data
+    const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+    const catData = {};
+    categories.forEach(cat => {
+        catData[cat] = { shipVal: 0, diffVal: 0 };
+    });
+    catData["Khác"] = { shipVal: 0, diffVal: 0 };
 
     const activeTransfers = transfers.filter(t => {
-        if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") return false;
-        if (!t.nguoiChia) return false;
+        if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") {
+            return false;
+        }
+        if (!t.nguoiChia) {
+            return false;
+        }
         const name = t.nguoiChia.trim().toLowerCase();
         
         let matchGroupPrefix = false;
@@ -4739,17 +5022,28 @@ function downloadCategoryValueTabular() {
         }
         if (!matchGroupPrefix) return false;
 
+        const matchUser = selectedUsers.length === 0 || selectedUsers.includes(t.nguoiChia);
+        if (!matchUser) return false;
+
+        if (localUserSearch !== "") {
+            if (!name.includes(localUserSearch)) {
+                return false;
+            }
+        }
+
+        // Match global category selection
+        const matchCategory = selectedCats.length === 0 || selectedCats.includes(t.nganhHang);
+        if (!matchCategory) return false;
+
+        // Match global branch selection
+        const matchBranch = selectedBranches.length === 0 || selectedBranches.includes(t.toBranch);
+        if (!matchBranch) return false;
+
         const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
         const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;
+
         return matchStartDate && matchEndDate;
     });
-
-    const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
-    const catData = {};
-    categories.forEach(cat => {
-        catData[cat] = { shipVal: 0, diffVal: 0 };
-    });
-    catData["Khác"] = { shipVal: 0, diffVal: 0 };
 
     activeTransfers.forEach(t => {
         const cat = categories.includes(t.nganhHang) ? t.nganhHang : "Khác";
@@ -4764,41 +5058,140 @@ function downloadCategoryValueTabular() {
         catData[cat].diffVal += diffVal;
     });
 
-    const headers = ["STT", "Ngành hàng", "Tổng giá trị chuyển (đ)", "Giá trị lệch (đ)", "% Giá trị lệch"];
+    // Compute D-1 period data
+    const prevActiveTransfers = transfers.filter(t => {
+        if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") {
+            return false;
+        }
+        if (!t.nguoiChia) {
+            return false;
+        }
+        const name = t.nguoiChia.trim().toLowerCase();
+        
+        let matchGroupPrefix = false;
+        for (const g of activeGroups) {
+            if (name.startsWith(g.toLowerCase())) {
+                matchGroupPrefix = true;
+                break;
+            }
+        }
+        if (!matchGroupPrefix) return false;
+
+        const matchUser = selectedUsers.length === 0 || selectedUsers.includes(t.nguoiChia);
+        if (!matchUser) return false;
+
+        if (localUserSearch !== "") {
+            if (!name.includes(localUserSearch)) {
+                return false;
+            }
+        }
+
+        // Match global category selection
+        const matchCategory = selectedCats.length === 0 || selectedCats.includes(t.nganhHang);
+        if (!matchCategory) return false;
+
+        // Match global branch selection
+        const matchBranch = selectedBranches.length === 0 || selectedBranches.includes(t.toBranch);
+        if (!matchBranch) return false;
+
+        // Match prev dates
+        const matchStartDate = prevStartDateQuery === "" || t.date >= prevStartDateQuery;
+        const matchEndDate = prevEndDateQuery === "" || t.date <= prevEndDateQuery;
+
+        return matchStartDate && matchEndDate;
+    });
+
+    const prevCatData = {};
+    categories.forEach(cat => {
+        prevCatData[cat] = { shipVal: 0, diffVal: 0 };
+    });
+    prevCatData["Khác"] = { shipVal: 0, diffVal: 0 };
+
+    prevActiveTransfers.forEach(t => {
+        const cat = categories.includes(t.nganhHang) ? t.nganhHang : "Khác";
+        const price = window.productPrices ? (window.productPrices[t.itemCode] || 0) : 0;
+        const shipVal = (t.qtyShipped || 0) * price;
+        
+        const statusInfo = calculateStatus(t);
+        const diff = (statusInfo.statusText === "Hao hụt" || statusInfo.statusText === "Đang chuyển") ? 0 : (statusInfo.chenhLechConLai || 0);
+        const diffVal = diff * price;
+        
+        prevCatData[cat].shipVal += shipVal;
+        prevCatData[cat].diffVal += diffVal;
+    });
+
+    const headers = ["STT", "Ngành hàng", "Tổng giá trị chuyển (đ)", "Giá trị lệch (đ)", "% Giá trị lệch", "Giá trị lệch (D-1) (đ)", "% so với D-1"];
     const rows = [];
     
     let index = 1;
     let grandTotalShip = 0;
     let grandTotalDiff = 0;
+    let grandTotalPrevDiff = 0;
     
     const allCats = [...categories, "Khác"];
     allCats.forEach(cat => {
         const data = catData[cat];
-        if (cat === "Khác" && data.shipVal === 0 && data.diffVal === 0) return;
+        const prevData = prevCatData[cat];
+        if (cat === "Khác" && data.shipVal === 0 && data.diffVal === 0 && prevData.shipVal === 0 && prevData.diffVal === 0) return;
         
-        grandTotalShip += data.shipVal;
-        grandTotalDiff += data.diffVal;
+        const roundedShipVal = Math.round(data.shipVal);
+        const roundedDiffVal = Math.round(data.diffVal);
+        const roundedPrevDiffVal = Math.round(prevData.diffVal);
+
+        grandTotalShip += roundedShipVal;
+        grandTotalDiff += roundedDiffVal;
+        grandTotalPrevDiff += roundedPrevDiffVal;
         
-        const pct = data.shipVal > 0 ? (data.diffVal / data.shipVal) * 100 : 0;
-        const pctText = data.shipVal > 0 ? `${pct > 0 ? "+" : ""}${pct.toFixed(2)}%` : "0.00%";
+        const pct = roundedShipVal > 0 ? (roundedDiffVal / roundedShipVal) * 100 : 0;
+        const pctText = roundedShipVal > 0 ? `${pct > 0 ? "+" : ""}${pct.toFixed(2)}%` : "0.00%";
         
+        const currentAbs = Math.abs(roundedDiffVal);
+        const prevAbs = Math.abs(roundedPrevDiffVal);
+        
+        let pctChangeText = "—";
+        if (prevAbs > 0) {
+            const pctChange = ((currentAbs - prevAbs) / prevAbs) * 100;
+            if (Math.abs(pctChange) >= 0.005) {
+                pctChangeText = `${pctChange > 0 ? "+" : ""}${pctChange.toFixed(2)}%`;
+            }
+        } else if (currentAbs > 0) {
+            pctChangeText = "+100.00%";
+        }
+
         rows.push([
             index++,
             cat,
-            data.shipVal,
-            data.diffVal,
-            pctText
+            roundedShipVal,
+            roundedDiffVal,
+            pctText,
+            roundedPrevDiffVal,
+            pctChangeText
         ]);
     });
     
     const grandPct = grandTotalShip > 0 ? (grandTotalDiff / grandTotalShip) * 100 : 0;
     const grandPctText = grandTotalShip > 0 ? `${grandPct > 0 ? "+" : ""}${grandPct.toFixed(2)}%` : "0.00%";
+    
+    const grandTotalPrevAbs = Math.abs(grandTotalPrevDiff);
+    const grandTotalCurrAbs = Math.abs(grandTotalDiff);
+    let grandPctChangeText = "—";
+    if (grandTotalPrevAbs > 0) {
+        const grandPctChange = ((grandTotalCurrAbs - grandTotalPrevAbs) / grandTotalPrevAbs) * 100;
+        if (Math.abs(grandPctChange) >= 0.005) {
+            grandPctChangeText = `${grandPctChange > 0 ? "+" : ""}${grandPctChange.toFixed(2)}%`;
+        }
+    } else if (grandTotalCurrAbs > 0) {
+        grandPctChangeText = "+100.00%";
+    }
+
     rows.push([
         "-",
         "TỔNG CỘNG",
         grandTotalShip,
         grandTotalDiff,
-        grandPctText
+        grandPctText,
+        grandTotalPrevDiff,
+        grandPctChangeText
     ]);
 
     downloadCSV(headers, rows, `BaoCao_GiaTriLech_NganhHang_${new Date().toISOString().split("T")[0]}.csv`);
@@ -4843,6 +5236,9 @@ function renderVegetablesLevel3DateTable() {
     const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
 
+    const selectedCats = Array.from(document.querySelectorAll("#catFilterCategoryContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
+
     const activeTransfers = transfers.filter(t => {
         if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") {
             return false;
@@ -4869,6 +5265,14 @@ function renderVegetablesLevel3DateTable() {
                 return false;
             }
         }
+
+        // Match global category selection
+        const matchCategory = selectedCats.length === 0 || selectedCats.includes(t.nganhHang);
+        if (!matchCategory) return false;
+
+        // Match global branch selection
+        const matchBranch = selectedBranches.length === 0 || selectedBranches.includes(t.toBranch);
+        if (!matchBranch) return false;
 
         const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
         const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;
@@ -5112,6 +5516,9 @@ function renderTopSkuDiscrepancyTable() {
     const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
 
+    const selectedCats = Array.from(document.querySelectorAll("#catFilterCategoryContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
+
     const activeTransfers = transfers.filter(t => {
         if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") {
             return false;
@@ -5138,6 +5545,14 @@ function renderTopSkuDiscrepancyTable() {
                 return false;
             }
         }
+
+        // Match global category selection
+        const matchCategory = selectedCats.length === 0 || selectedCats.includes(t.nganhHang);
+        if (!matchCategory) return false;
+
+        // Match global branch selection
+        const matchBranch = selectedBranches.length === 0 || selectedBranches.includes(t.toBranch);
+        if (!matchBranch) return false;
 
         const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
         const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;

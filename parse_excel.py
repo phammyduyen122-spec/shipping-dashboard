@@ -684,6 +684,22 @@ def parse_excel():
             
             f.write("window.compressedPerformance = ")
             json.dump(compressed_perf, f, ensure_ascii=False)
+            f.write(";\n\n")
+            
+            # Load price map and write it to data.js
+            price_map = {}
+            price_map_path = "scratch/price_map.json"
+            if os.path.exists(price_map_path):
+                try:
+                    with open(price_map_path, "r", encoding="utf-8") as f_price:
+                        raw_price_map = json.load(f_price)
+                        price_map = {bc: details["price"] for bc, details in raw_price_map.items()}
+                    print(f"Đã tải {len(price_map)} giá từ price_map.json")
+                except Exception as e_price:
+                    print(f"Lỗi khi tải price_map.json: {e_price}")
+            
+            f.write("window.productPrices = ")
+            json.dump(price_map, f, ensure_ascii=False)
             f.write(";\n")
             
         print("✅ Thành công: Đã ghi dữ liệu vào data.js")

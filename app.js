@@ -123,6 +123,21 @@ function formatDiffNumber(val) {
     return num > 0 ? `+${formatted}` : formatted;
 }
 
+// Helper function to format purchase prices
+function formatPrice(val) {
+    if (val === undefined || val === null || isNaN(val) || val === "" || Number(val) === 0) return "-";
+    const num = Number(val);
+    return `${num.toLocaleString("vi-VN")} đ`;
+}
+
+// Helper function to format discrepancy values with + or - prefixes
+function formatVND(val) {
+    if (val === undefined || val === null || isNaN(val) || val === "" || Number(val) === 0) return "-";
+    const num = Number(val);
+    const prefix = num > 0 ? "+" : "";
+    return `${prefix}${num.toLocaleString("vi-VN")} đ`;
+}
+
 
 // Helper function for flexible date matching (e.g. "6/6", "06/06", "6/6/2026")
 function matchDateQuery(dateStr, query) {
@@ -3275,6 +3290,12 @@ function renderPerfSummaryTable() {
             ? 'color: var(--color-danger); font-weight: 500;' 
             : (item.chenhLechConLai > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
 
+        const price = window.productPrices ? (window.productPrices[item.barcode] || 0) : 0;
+        const valLech = price * item.chenhLechConLai;
+        const valLechStyle = valLech < 0 
+            ? 'color: var(--color-danger); font-weight: 500;' 
+            : (valLech > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
+
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td style="text-align: center;">${index + 1}</td>
@@ -3284,8 +3305,10 @@ function renderPerfSummaryTable() {
             <td>${item.itemName}</td>
             <td>${item.unit}</td>
             <td>${item.nganhHang || "Khác"}</td>
+            <td style="text-align: right; color: var(--text-secondary);">${formatPrice(price)}</td>
             <td style="text-align: right; font-weight: 500;">${formatNumber(totalShared)}</td>
             <td style="text-align: right; ${diffStyle}">${formatDiffNumber(item.chenhLechConLai)}</td>
+            <td style="text-align: right; ${valLechStyle}">${formatVND(valLech)}</td>
             <td style="text-align: right; ${pctStyle}">${pctText}</td>
         `;
         tbody.appendChild(tr);
@@ -3296,6 +3319,7 @@ function renderPerfSummaryTable() {
         let grandTotalShared = 0;
         let grandTotalDiff = 0;
         let grandTotalAbsDiff = 0;
+        let grandTotalVal = 0;
 
         sortedSummary.forEach(item => {
             const key = `${item.date}_${item.user}_${item.barcode}_${item.unit}`;
@@ -3303,6 +3327,9 @@ function renderPerfSummaryTable() {
             grandTotalShared += totalShared;
             grandTotalDiff += item.chenhLechConLai;
             grandTotalAbsDiff += item.absDiff;
+
+            const price = window.productPrices ? (window.productPrices[item.barcode] || 0) : 0;
+            grandTotalVal += price * item.chenhLechConLai;
         });
 
         const grandTotalErrorRate = grandTotalShared > 0 ? (grandTotalAbsDiff / grandTotalShared) * 100 : 0;
@@ -3317,8 +3344,10 @@ function renderPerfSummaryTable() {
             <td style="text-align: center;">-</td>
             <td><strong>TỔNG CỘNG</strong></td>
             <td colspan="5"></td>
+            <td style="text-align: right; color: var(--text-muted);">-</td>
             <td style="text-align: right; font-weight: bold; color: var(--color-primary);">${formatNumber(grandTotalShared)}</td>
             <td style="text-align: right; ${grandTotalDiff < 0 ? 'color: var(--color-danger);' : (grandTotalDiff > 0 ? 'color: var(--color-info);' : '')}">${formatDiffNumber(grandTotalDiff)}</td>
+            <td style="text-align: right; ${grandTotalVal < 0 ? 'color: var(--color-danger);' : (grandTotalVal > 0 ? 'color: var(--color-info);' : '')}">${formatVND(grandTotalVal)}</td>
             <td style="text-align: right; color: var(--color-success);">${grandTotalDisplayText}</td>
         `;
         tbody.appendChild(trTotal);
@@ -3450,7 +3479,7 @@ function renderPerfTable() {
     const discrepantData = getFilteredPerfDiscrepantData();
 
     if (discrepantData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 40px; color: var(--text-muted);">Không có dòng lệch chia hàng phù hợp</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="16" style="text-align: center; padding: 40px; color: var(--text-muted);">Không có dòng lệch chia hàng phù hợp</td></tr>`;
         updatePerfPaginationUI(0);
         return;
     }
@@ -3494,6 +3523,12 @@ function renderPerfTable() {
         const rawDiffText = formatDiffNumber(rawDiff);
         const slBoSung = row.matchedCorrectiveQty || 0;
 
+        const price = window.productPrices ? (window.productPrices[row.itemCode] || 0) : 0;
+        const valLech = price * diff;
+        const valLechStyle = valLech < 0 
+            ? 'color: var(--color-danger); font-weight: 500;' 
+            : (valLech > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
+
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td>${formattedDate}</td>
@@ -3503,11 +3538,13 @@ function renderPerfTable() {
             <td>${row.itemName}</td>
             <td>${row.unit}</td>
             <td>${row.nganhHang || "Khác"}</td>
+            <td style="text-align: right; color: var(--text-secondary);">${formatPrice(price)}</td>
             <td style="text-align: right; font-weight: 500;">${formatNumber(row.qtyShipped)}</td>
             <td style="text-align: right; font-weight: 500;">${formatNumber(row.qtyReceived)}</td>
             <td style="text-align: right; font-weight: 500;">${rawDiffText}</td>
             <td style="text-align: right; font-weight: 500; color: var(--color-primary);">${formatNumber(slBoSung)}</td>
             <td style="text-align: right; ${diffStyle}">${diffText}</td>
+            <td style="text-align: right; ${valLechStyle}">${formatVND(valLech)}</td>
             <td><span style="font-weight:500;">${row.nguoiChia || "Không rõ"}</span></td>
             <td><span class="badge ${badgeClass}">${status}</span></td>
         `;
@@ -3756,13 +3793,16 @@ function exportPerfToCSV() {
     }
 
     let csvContent = "\uFEFF"; // UTF-8 BOM representation
-    csvContent += "Ngày chuyển,Mã Phiếu,Nơi nhận,Barcode,Tên sản phẩm,Đơn vị,Ngành hàng,SL chuyển,SL nhận,Chênh lệch,Bổ sung,CL còn lại,Người chia hàng,Trạng thái\n";
+    csvContent += "Ngày chuyển,Mã Phiếu,Nơi nhận,Barcode,Tên sản phẩm,Đơn vị,Ngành hàng,Giá mua,SL chuyển,SL nhận,Chênh lệch,Bổ sung,CL còn lại,Giá trị lệch,Người chia hàng,Trạng thái\n";
 
     discrepantData.forEach(t => {
         const statusInfo = calculateStatus(t);
         const diff = statusInfo.chenhLechConLai;
         const rawDiff = t.qtyReceived - t.qtyShipped;
         const slBoSung = t.matchedCorrectiveQty || 0;
+        
+        const price = window.productPrices ? (window.productPrices[t.itemCode] || 0) : 0;
+        const valLech = price * diff;
 
         const row = [
             t.date,
@@ -3772,11 +3812,13 @@ function exportPerfToCSV() {
             `"${t.itemName.replace(/"/g, '""')}"`,
             `"${t.unit.replace(/"/g, '""')}"`,
             `"${(t.nganhHang || "Khác").replace(/"/g, '""')}"`,
+            price,
             t.qtyShipped,
             t.qtyReceived,
             rawDiff,
             slBoSung,
             diff,
+            valLech,
             `"${(t.nguoiChia || "").replace(/"/g, '""')}"`,
             `"${getPerfStatus(t)}"`
         ];
@@ -3942,6 +3984,39 @@ function renderF1CategoryTable() {
     const sortedUsers = Object.keys(userAgg).sort((a, b) => a.localeCompare(b, "vi"));
     const displayUsers = sortedUsers.slice(0, 20);
 
+    const getStyleForCat = (rateVal, qtyVal, isTotal = false) => {
+        if (qtyVal === 0) {
+            return "text-align: right;";
+        }
+        if (isTotal) {
+            // Total column threshold: > 2000 -> 0.5% tolerance, <= 2000 -> 0.2% tolerance
+            // (low error < tolerance is green, high error >= tolerance is red)
+            const limit = qtyVal > 2000 ? 0.5 : 0.2;
+            if (rateVal < limit) {
+                return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
+            } else {
+                return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
+            }
+        } else {
+            // Category-wise threshold: > 500 -> 0.2%/0.5% thresholds, <= 500 -> 0.1% threshold
+            if (qtyVal > 500) {
+                if (rateVal < 0.2) {
+                    return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
+                } else if (rateVal <= 0.5) {
+                    return "background-color: rgba(245, 158, 11, 0.15); color: var(--color-warning); font-weight: bold; text-align: right;";
+                } else {
+                    return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
+                }
+            } else {
+                if (rateVal < 0.1) {
+                    return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
+                } else {
+                    return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
+                }
+            }
+        }
+    };
+
     displayUsers.forEach((user, index) => {
         const uData = userAgg[user];
         
@@ -3966,39 +4041,6 @@ function renderF1CategoryTable() {
             totalDiff += uData.categories[cat].diff;
         });
         const totalErrorRate = totalShipped > 0 ? (totalDiff / totalShipped) * 100 : 0;
-
-        const getStyleForCat = (rateVal, qtyVal, isTotal = false) => {
-            if (qtyVal === 0) {
-                return "text-align: right;";
-            }
-            if (isTotal) {
-                // Total column threshold: > 2000 -> 0.5% tolerance, <= 2000 -> 0.2% tolerance
-                // (low error < tolerance is green, high error >= tolerance is red)
-                const limit = qtyVal > 2000 ? 0.5 : 0.2;
-                if (rateVal < limit) {
-                    return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
-                } else {
-                    return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
-                }
-            } else {
-                // Category-wise threshold: > 500 -> 0.2%/0.5% thresholds, <= 500 -> 0.1% threshold
-                if (qtyVal > 500) {
-                    if (rateVal < 0.2) {
-                        return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
-                    } else if (rateVal <= 0.5) {
-                        return "background-color: rgba(245, 158, 11, 0.15); color: var(--color-warning); font-weight: bold; text-align: right;";
-                    } else {
-                        return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
-                    }
-                } else {
-                    if (rateVal < 0.1) {
-                        return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
-                    } else {
-                        return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
-                    }
-                }
-            }
-        };
 
         const tr = document.createElement("tr");
         let htmlContent = `
@@ -5841,7 +5883,7 @@ function exportSummaryToCSV() {
         totalSharedLookup[key] += t.qtyShipped;
     });
 
-    const headers = ["STT", "Ngày chia hàng", "Nhân sự chia", "Barcode", "Tên sản phẩm", "Đơn vị tính", "Ngành hàng", "SL chia", "SL lệch còn lại", "% Lệch"];
+    const headers = ["STT", "Ngày chia hàng", "Nhân sự chia", "Barcode", "Tên sản phẩm", "Đơn vị tính", "Ngành hàng", "Giá mua", "SL chia", "SL lệch còn lại", "Giá trị lệch", "% Lệch"];
     const rows = [];
 
     lastSortedSummary.forEach((item, index) => {
@@ -5851,6 +5893,9 @@ function exportSummaryToCSV() {
         const pctLech = totalShared > 0 ? (item.absDiff / totalShared) * 100 : 0;
         const pctText = `${pctLech.toFixed(2)}%`;
 
+        const price = window.productPrices ? (window.productPrices[item.barcode] || 0) : 0;
+        const valLech = price * item.chenhLechConLai;
+
         rows.push([
             index + 1,
             formatDateToVN(item.date),
@@ -5859,8 +5904,10 @@ function exportSummaryToCSV() {
             item.itemName,
             item.unit,
             item.nganhHang || "Khác",
+            price,
             totalShared,
             item.chenhLechConLai,
+            valLech,
             pctText
         ]);
     });
@@ -5869,6 +5916,7 @@ function exportSummaryToCSV() {
     let grandTotalShared = 0;
     let grandTotalDiff = 0;
     let grandTotalAbsDiff = 0;
+    let grandTotalVal = 0;
 
     lastSortedSummary.forEach(item => {
         const key = `${item.date}_${item.user}_${item.barcode}_${item.unit}`;
@@ -5876,6 +5924,9 @@ function exportSummaryToCSV() {
         grandTotalShared += totalShared;
         grandTotalDiff += item.chenhLechConLai;
         grandTotalAbsDiff += item.absDiff;
+
+        const price = window.productPrices ? (window.productPrices[item.barcode] || 0) : 0;
+        grandTotalVal += price * item.chenhLechConLai;
     });
 
     const grandTotalErrorRate = grandTotalShared > 0 ? (grandTotalAbsDiff / grandTotalShared) * 100 : 0;
@@ -5889,8 +5940,10 @@ function exportSummaryToCSV() {
         "",
         "",
         "",
+        "",
         grandTotalShared,
         grandTotalDiff,
+        grandTotalVal,
         grandTotalDisplayText
     ]);
 

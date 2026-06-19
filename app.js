@@ -3206,7 +3206,8 @@ function renderPerfSummaryTable() {
                 qtyShipped: 0,
                 slBoSung: 0,
                 chenhLechConLai: 0,
-                absDiff: 0
+                absDiff: 0,
+                valLech: 0
             };
         }
 
@@ -3224,6 +3225,11 @@ function renderPerfSummaryTable() {
         if (statusText === "Thiếu" || statusText === "Dư") {
             summaryAgg[key].absDiff += Math.abs(diff);
         }
+
+        // Financial discrepancy value including "Hao hụt"
+        const price = window.productPrices ? (window.productPrices[row.itemCode] || 0) : 0;
+        const actualDiffForValue = (statusText === "Đang chuyển") ? 0 : statusInfo.chenhLechConLai;
+        summaryAgg[key].valLech += price * actualDiffForValue;
     });
 
     let sortedSummary = Object.values(summaryAgg);
@@ -3329,7 +3335,7 @@ function renderPerfSummaryTable() {
             : (item.chenhLechConLai > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
 
         const price = window.productPrices ? (window.productPrices[item.barcode] || 0) : 0;
-        const valLech = price * item.chenhLechConLai;
+        const valLech = item.valLech;
         const valLechStyle = valLech < 0 
             ? 'color: var(--color-danger); font-weight: 500;' 
             : (valLech > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
@@ -3366,8 +3372,7 @@ function renderPerfSummaryTable() {
             grandTotalDiff += item.chenhLechConLai;
             grandTotalAbsDiff += item.absDiff;
 
-            const price = window.productPrices ? (window.productPrices[item.barcode] || 0) : 0;
-            grandTotalVal += price * item.chenhLechConLai;
+            grandTotalVal += item.valLech;
         });
 
         const grandTotalErrorRate = grandTotalShared > 0 ? (grandTotalAbsDiff / grandTotalShared) * 100 : 0;
@@ -4736,8 +4741,7 @@ function renderCategoryValuePerformanceTable(activeTransfers) {
         const shipVal = (t.qtyShipped || 0) * price;
         
         const statusInfo = calculateStatus(t);
-        const diff = (statusInfo.statusText === "Hao hụt" || statusInfo.statusText === "Đang chuyển") ? 0 : (statusInfo.chenhLechConLai || 0);
-        const diffVal = diff * price;
+        const diffVal = (statusInfo.statusText === "Đang chuyển") ? 0 : (statusInfo.chenhLechConLai || 0) * price;
         
         catData[cat].shipVal += shipVal;
         catData[cat].diffVal += diffVal;
@@ -4798,8 +4802,7 @@ function renderCategoryValuePerformanceTable(activeTransfers) {
         const shipVal = (t.qtyShipped || 0) * price;
         
         const statusInfo = calculateStatus(t);
-        const diff = (statusInfo.statusText === "Hao hụt" || statusInfo.statusText === "Đang chuyển") ? 0 : (statusInfo.chenhLechConLai || 0);
-        const diffVal = diff * price;
+        const diffVal = (statusInfo.statusText === "Đang chuyển") ? 0 : (statusInfo.chenhLechConLai || 0) * price;
         
         prevCatData[cat].shipVal += shipVal;
         prevCatData[cat].diffVal += diffVal;
@@ -5051,8 +5054,7 @@ function downloadCategoryValueTabular() {
         const shipVal = (t.qtyShipped || 0) * price;
         
         const statusInfo = calculateStatus(t);
-        const diff = (statusInfo.statusText === "Hao hụt" || statusInfo.statusText === "Đang chuyển") ? 0 : (statusInfo.chenhLechConLai || 0);
-        const diffVal = diff * price;
+        const diffVal = (statusInfo.statusText === "Đang chuyển") ? 0 : (statusInfo.chenhLechConLai || 0) * price;
         
         catData[cat].shipVal += shipVal;
         catData[cat].diffVal += diffVal;
@@ -5113,8 +5115,7 @@ function downloadCategoryValueTabular() {
         const shipVal = (t.qtyShipped || 0) * price;
         
         const statusInfo = calculateStatus(t);
-        const diff = (statusInfo.statusText === "Hao hụt" || statusInfo.statusText === "Đang chuyển") ? 0 : (statusInfo.chenhLechConLai || 0);
-        const diffVal = diff * price;
+        const diffVal = (statusInfo.statusText === "Đang chuyển") ? 0 : (statusInfo.chenhLechConLai || 0) * price;
         
         prevCatData[cat].shipVal += shipVal;
         prevCatData[cat].diffVal += diffVal;

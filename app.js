@@ -2140,6 +2140,14 @@ function setupSupermarketEventListeners(earliestDate, latestDate) {
     if (superStartDate) superStartDate.addEventListener("change", renderSupermarketPerformanceTable);
     if (superEndDate) superEndDate.addEventListener("change", renderSupermarketPerformanceTable);
 
+    const superFilterMinQty = document.getElementById("superFilterMinQty");
+    const superFilterMinVal = document.getElementById("superFilterMinVal");
+    const superFilterMinPct = document.getElementById("superFilterMinPct");
+
+    if (superFilterMinQty) superFilterMinQty.addEventListener("input", renderSupermarketPerformanceTable);
+    if (superFilterMinVal) superFilterMinVal.addEventListener("input", renderSupermarketPerformanceTable);
+    if (superFilterMinPct) superFilterMinPct.addEventListener("input", renderSupermarketPerformanceTable);
+
     const superSortCriteria = document.getElementById("superSortCriteria");
     if (superSortCriteria) {
         superSortCriteria.addEventListener("change", () => {
@@ -2152,6 +2160,10 @@ function setupSupermarketEventListeners(earliestDate, latestDate) {
         superClearFiltersBtn.addEventListener("click", () => {
             if (superStartDate) superStartDate.value = earliestDate;
             if (superEndDate) superEndDate.value = latestDate;
+
+            if (superFilterMinQty) superFilterMinQty.value = "";
+            if (superFilterMinVal) superFilterMinVal.value = "";
+            if (superFilterMinPct) superFilterMinPct.value = "";
 
             const catContainer = document.getElementById("superFilterCategoryContainer");
             if (catContainer) {
@@ -6729,6 +6741,15 @@ function renderSupermarketPerformanceTable() {
         selectedGroups = Array.from(groupContainer.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
     }
 
+    // Get threshold filters
+    const minQtyInput = document.getElementById("superFilterMinQty");
+    const minValInput = document.getElementById("superFilterMinVal");
+    const minPctInput = document.getElementById("superFilterMinPct");
+
+    const minQty = minQtyInput && minQtyInput.value ? parseFloat(minQtyInput.value) : 0;
+    const minVal = minValInput && minValInput.value ? parseFloat(minValInput.value) : 0;
+    const minPct = minPctInput && minPctInput.value ? parseFloat(minPctInput.value) : 0;
+
     // Parse product price maps
     const priceMap = window.productPrices || {};
 
@@ -6761,12 +6782,17 @@ function renderSupermarketPerformanceTable() {
             const toBranch = (t.toBranch || "").trim();
             if (!toBranch) return;
 
+            // Exclude "KHO RAU CỦ XỬ LÝ THẤT THOÁT"
+            const normToBranch = toBranch.toLowerCase().normalize("NFC");
+            if (normToBranch.includes("xử lý thất thoát") || normToBranch.includes("kho rau củ")) return;
+
             if (!aggregated[toBranch]) {
                 aggregated[toBranch] = {
                     toBranch: toBranch,
                     shippedValue: 0,
                     netDiffValue: 0,
                     shortageValue: 0,
+                    shortageQty: 0,
                     skuShortages: new Set(),
                     totalCount: 0
                 };
@@ -6786,6 +6812,7 @@ function renderSupermarketPerformanceTable() {
 
             if (diffQty < 0) {
                 aggregated[toBranch].shortageValue += diffVal; // negative
+                aggregated[toBranch].shortageQty += Math.abs(diffQty);
                 aggregated[toBranch].skuShortages.add(t.itemCode);
             }
             aggregated[toBranch].totalCount++;
@@ -6802,8 +6829,22 @@ function renderSupermarketPerformanceTable() {
     const prevEndDate = endDate ? getPrevDateStr(endDate) : "";
     const prevStats = aggregateData(prevStartDate, prevEndDate);
 
-    // Convert currentStats object to array
-    const dataList = Object.values(currentStats);
+    // Convert currentStats object to array and only keep those with actual shortages (shortageValue < 0)
+    let dataList = Object.values(currentStats).filter(item => item.shortageValue < 0);
+
+    // Apply threshold filters (SL, Giá trị, % SL)
+    if (minQty > 0) {
+        dataList = dataList.filter(item => item.shortageQty >= minQty);
+    }
+    if (minVal > 0) {
+        dataList = dataList.filter(item => Math.abs(item.shortageValue) >= minVal);
+    }
+    if (minPct > 0) {
+        dataList = dataList.filter(item => {
+            const shortagePct = item.shippedValue > 0 ? (Math.abs(item.shortageValue) / item.shippedValue) * 100 : 0;
+            return shortagePct >= minPct;
+        });
+    }
 
     // Sort currentStats
     dataList.sort((a, b) => {
@@ -6819,10 +6860,13 @@ function renderSupermarketPerformanceTable() {
         return 0;
     });
 
+    // Take Top 10 supermarkets only
+    const top10 = dataList.slice(0, 10);
+
     // Render table rows
     tableBody.innerHTML = "";
 
-    if (dataList.length === 0) {
+    if (top10.length === 0) {
         tableBody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted);">Không có dữ liệu phù hợp bộ lọc</td></tr>`;
         return;
     }
@@ -6834,7 +6878,7 @@ function renderSupermarketPerformanceTable() {
 
     let grandTotalPrevShortage = 0;
 
-    dataList.forEach((item, idx) => {
+    top10.forEach((item, idx) => {
         grandTotalShipped += item.shippedValue;
         grandTotalNetDiff += item.netDiffValue;
         grandTotalShortage += item.shortageValue;

@@ -6821,147 +6821,178 @@ function renderSupermarketPerformanceTable() {
         return aggregated;
     };
 
-    // Calculate current period stats
-    const currentStats = aggregateData(startDate, endDate);
+    // Get the 3 most recent dates dynamically
+    const allDatesSet = new Set();
+    transfers.forEach(t => {
+        if (t.date) allDatesSet.add(t.date);
+    });
+    const sortedAllDates = Array.from(allDatesSet).sort();
+    const last3Dates = sortedAllDates.slice(-3); // e.g. ["2026-06-17", "2026-06-18", "2026-06-19"]
 
-    // Calculate D-1 period stats
-    const prevStartDate = startDate ? getPrevDateStr(startDate) : "";
-    const prevEndDate = endDate ? getPrevDateStr(endDate) : "";
-    const prevStats = aggregateData(prevStartDate, prevEndDate);
-
-    // Convert currentStats object to array and only keep those with actual shortages (shortageValue < 0)
-    let dataList = Object.values(currentStats).filter(item => item.shortageValue < 0);
-
-    // Apply threshold filters (SL, Giá trị, % SL)
-    if (minQty > 0) {
-        dataList = dataList.filter(item => item.shortageQty >= minQty);
-    }
-    if (minVal > 0) {
-        dataList = dataList.filter(item => Math.abs(item.shortageValue) >= minVal);
-    }
-    if (minPct > 0) {
-        dataList = dataList.filter(item => {
-            const shortagePct = item.shippedValue > 0 ? (Math.abs(item.shortageValue) / item.shippedValue) * 100 : 0;
-            return shortagePct >= minPct;
-        });
-    }
-
-    // Sort currentStats
-    dataList.sort((a, b) => {
-        if (sortCriteria === "shortageValue") {
-            return Math.abs(b.shortageValue) - Math.abs(a.shortageValue);
-        } else if (sortCriteria === "netValue") {
-            return Math.abs(b.netDiffValue) - Math.abs(a.netDiffValue);
-        } else if (sortCriteria === "shippedValue") {
-            return b.shippedValue - a.shippedValue;
-        } else if (sortCriteria === "skuCount") {
-            return b.skuShortages.size - a.skuShortages.size;
+    // Update header labels dynamically
+    const formatHeaderDate = (dateStr) => {
+        if (!dateStr) return "N/A";
+        const parts = dateStr.split("-");
+        if (parts.length === 3) {
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
         }
-        return 0;
+        return dateStr;
+    };
+
+    const col1 = document.getElementById("superColDate1");
+    const col2 = document.getElementById("superColDate2");
+    const col3 = document.getElementById("superColDate3");
+    if (col1) col1.innerText = formatHeaderDate(last3Dates[0] || "");
+    if (col2) col2.innerText = formatHeaderDate(last3Dates[1] || "");
+    if (col3) col3.innerText = formatHeaderDate(last3Dates[2] || "");
+
+    // Helper to calculate daily stats per branch
+    const getStatsForBranchAndDate = (branch, date) => {
+        let shippedValue = 0;
+        let shortageQty = 0;
+        let shortageValue = 0;
+
+        transfers.forEach(t => {
+            if (t.date !== date) return;
+            const toBranch = (t.toBranch || "").trim();
+            if (toBranch !== branch) return;
+
+            // Filter by category
+            const category = t.nganhHang || "Khác";
+            if (selectedCats.length > 0 && !selectedCats.includes(category)) return;
+
+            // Filter by personnel group
+            if (selectedGroups.length > 0) {
+                const lowerName = (t.nguoiChia || "").trim().toLowerCase();
+                let group = "CTV";
+                if (lowerName.startsWith("f1")) group = "F1";
+                else if (lowerName.startsWith("f2")) group = "F2";
+                else if (lowerName.startsWith("huyhoang")) group = "HUYHOANG";
+
+                if (!selectedGroups.includes(group)) return;
+            }
+
+            const price = priceMap[t.itemCode] || 0;
+            const shippedVal = (t.qtyShipped || 0) * price;
+
+            const statusInfo = calculateStatus(t);
+            if (statusInfo.statusText === "Đang chuyển") return;
+
+            const diffQty = statusInfo.chenhLechConLai;
+            const diffVal = diffQty * price;
+
+            shippedValue += shippedVal;
+
+            if (diffQty < 0) {
+                shortageValue += diffVal; // negative
+                shortageQty += Math.abs(diffQty);
+            }
+        });
+
+        const shortagePct = shippedValue > 0 ? (Math.abs(shortageValue) / shippedValue) * 100 : 0;
+
+        return {
+            shippedValue,
+            shortageQty,
+            shortageValue,
+            shortagePct
+        };
+    };
+
+    // Find all unique branches (supermarkets)
+    const allBranches = new Set();
+    transfers.forEach(t => {
+        const toBranch = (t.toBranch || "").trim();
+        if (!toBranch) return;
+
+        // Exclude virtual warehouse and "kho rau củ"
+        const normToBranch = toBranch.toLowerCase().normalize("NFC");
+        if (normToBranch.includes("xử lý thất thoát") || normToBranch.includes("kho rau củ")) return;
+
+        allBranches.add(toBranch);
     });
 
-    // Take Top 10 supermarkets only
-    const top10 = dataList.slice(0, 10);
+    const branchDataList = [];
+    allBranches.forEach(branch => {
+        const stats1 = getStatsForBranchAndDate(branch, last3Dates[0]);
+        const stats2 = getStatsForBranchAndDate(branch, last3Dates[1]);
+        const stats3 = getStatsForBranchAndDate(branch, last3Dates[2]);
 
-    // Render table rows
+        // Apply filters per day
+        const val1 = (stats1.shortageValue < 0 && 
+                      (minQty === 0 || stats1.shortageQty >= minQty) && 
+                      (minVal === 0 || Math.abs(stats1.shortageValue) >= minVal) && 
+                      (minPct === 0 || stats1.shortagePct >= minPct)) ? stats1.shortageValue : 0;
+
+        const val2 = (stats2.shortageValue < 0 && 
+                      (minQty === 0 || stats2.shortageQty >= minQty) && 
+                      (minVal === 0 || Math.abs(stats2.shortageValue) >= minVal) && 
+                      (minPct === 0 || stats2.shortagePct >= minPct)) ? stats2.shortageValue : 0;
+
+        const val3 = (stats3.shortageValue < 0 && 
+                      (minQty === 0 || stats3.shortageQty >= minQty) && 
+                      (minVal === 0 || Math.abs(stats3.shortageValue) >= minVal) && 
+                      (minPct === 0 || stats3.shortagePct >= minPct)) ? stats3.shortageValue : 0;
+
+        const totalShortage = val1 + val2 + val3;
+
+        if (totalShortage < 0) {
+            branchDataList.push({
+                branch,
+                val1,
+                val2,
+                val3,
+                totalShortage
+            });
+        }
+    });
+
+    // Sort by totalShortage (most negative shortage value first)
+    branchDataList.sort((a, b) => a.totalShortage - b.totalShortage);
+
+    const top10 = branchDataList.slice(0, 10);
+
     tableBody.innerHTML = "";
 
     if (top10.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">Không có dữ liệu phù hợp bộ lọc</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Không có dữ liệu phù hợp bộ lọc</td></tr>`;
         return;
     }
 
-    let grandTotalShipped = 0;
-    let grandTotalNetDiff = 0;
-    let grandTotalShortage = 0;
-    const grandTotalSkus = new Set();
-
-    let grandTotalPrevShortage = 0;
+    let col1Total = 0;
+    let col2Total = 0;
+    let col3Total = 0;
+    let grandTotal = 0;
 
     top10.forEach((item, idx) => {
-        grandTotalShipped += item.shippedValue;
-        grandTotalNetDiff += item.netDiffValue;
-        grandTotalShortage += item.shortageValue;
-        item.skuShortages.forEach(sku => grandTotalSkus.add(sku));
-
-        // Get D-1 stats
-        const prevItem = prevStats[item.toBranch] || { shortageValue: 0 };
-        const prevShortageVal = prevItem.shortageValue;
-        grandTotalPrevShortage += prevShortageVal;
-
-        // Calculate delta for D-1 shortage
-        const currentShortage = Math.round(item.shortageValue);
-        const prevShortage = Math.round(prevShortageVal);
-
-        let d1ShortageText = "-";
-        if (prevShortage !== 0) {
-            d1ShortageText = formatVND(prevShortage);
-        }
-
-        let d1CompareHTML = "—";
-        if (prevShortage !== 0) {
-            const currentAbs = Math.abs(currentShortage);
-            const prevAbs = Math.abs(prevShortage);
-            const absDiffPct = ((currentAbs - prevAbs) / prevAbs) * 100;
-            
-            if (absDiffPct > 0) {
-                d1CompareHTML = `<span style="color: var(--color-danger); font-weight: 600;">▲ +${absDiffPct.toFixed(2)}%</span>`;
-            } else if (absDiffPct < 0) {
-                d1CompareHTML = `<span style="color: var(--color-success); font-weight: 600;">▼ ${absDiffPct.toFixed(2)}%</span>`;
-            } else {
-                d1CompareHTML = `<span style="color: var(--text-muted);">0.00%</span>`;
-            }
-        } else if (currentShortage !== 0) {
-            d1CompareHTML = `<span style="color: var(--color-danger); font-weight: 600;">▲ Mới</span>`;
-        }
-
-        const shortagePct = item.shippedValue > 0 ? (item.shortageValue / item.shippedValue) * 100 : 0;
+        col1Total += item.val1;
+        col2Total += item.val2;
+        col3Total += item.val3;
+        grandTotal += item.totalShortage;
 
         const row = document.createElement("tr");
         row.innerHTML = `
             <td style="text-align: center;">${idx + 1}</td>
-            <td style="font-weight: 600; color: var(--text-primary);">${item.toBranch}</td>
-            <td style="text-align: right;">${formatVND(Math.round(item.shippedValue))}</td>
-            <td style="text-align: right; font-weight: 600; color: var(--color-danger);">${item.shortageValue === 0 ? "-" : formatVND(Math.round(item.shortageValue))}</td>
-            <td style="text-align: right; color: var(--color-danger); font-weight: 600;">${shortagePct === 0 ? "0.00%" : shortagePct.toFixed(2) + "%"}</td>
-            <td style="text-align: center; font-weight: 600;">${item.skuShortages.size}</td>
-            <td style="text-align: right; color: var(--text-muted);">${d1ShortageText}</td>
-            <td style="text-align: center;">${d1CompareHTML}</td>
+            <td style="font-weight: 600; color: var(--text-primary);">${item.branch}</td>
+            <td style="text-align: right; color: ${item.val1 < 0 ? "var(--color-danger)" : "var(--text-muted)"};">${item.val1 === 0 ? "-" : formatVND(Math.round(item.val1))}</td>
+            <td style="text-align: right; color: ${item.val2 < 0 ? "var(--color-danger)" : "var(--text-muted)"};">${item.val2 === 0 ? "-" : formatVND(Math.round(item.val2))}</td>
+            <td style="text-align: right; color: ${item.val3 < 0 ? "var(--color-danger)" : "var(--text-muted)"};">${item.val3 === 0 ? "-" : formatVND(Math.round(item.val3))}</td>
+            <td style="text-align: right; color: var(--color-danger); font-weight: 700;">${formatVND(Math.round(item.totalShortage))}</td>
         `;
         tableBody.appendChild(row);
     });
 
     // Render Grand Total Row
-    const grandTotalShortagePct = grandTotalShipped > 0 ? (grandTotalShortage / grandTotalShipped) * 100 : 0;
-    
-    const currentAbsTotal = Math.abs(grandTotalShortage);
-    const prevAbsTotal = Math.abs(grandTotalPrevShortage);
-    let totalD1CompareHTML = "—";
-    if (prevAbsTotal !== 0) {
-        const totalAbsDiffPct = ((currentAbsTotal - prevAbsTotal) / prevAbsTotal) * 100;
-        if (totalAbsDiffPct > 0) {
-            totalD1CompareHTML = `<span style="color: var(--color-danger); font-weight: 700;">▲ +${totalAbsDiffPct.toFixed(2)}%</span>`;
-        } else if (totalAbsDiffPct < 0) {
-            totalD1CompareHTML = `<span style="color: var(--color-success); font-weight: 700;">▼ ${totalAbsDiffPct.toFixed(2)}%</span>`;
-        } else {
-            totalD1CompareHTML = `<span style="color: var(--text-muted); font-weight: 700;">0.00%</span>`;
-        }
-    } else if (currentAbsTotal !== 0) {
-        totalD1CompareHTML = `<span style="color: var(--color-danger); font-weight: 700;">▲ Mới</span>`;
-    }
-
     const totalRow = document.createElement("tr");
     totalRow.style.fontWeight = "bold";
     totalRow.style.backgroundColor = "var(--bg-secondary)";
     totalRow.innerHTML = `
         <td style="text-align: center;">-</td>
         <td style="color: var(--text-primary);">TỔNG CỘNG</td>
-        <td style="text-align: right;">${formatVND(Math.round(grandTotalShipped))}</td>
-        <td style="text-align: right; color: var(--color-danger);">${grandTotalShortage === 0 ? "-" : formatVND(Math.round(grandTotalShortage))}</td>
-        <td style="text-align: right; color: var(--color-danger);">${grandTotalShortagePct === 0 ? "0.00%" : grandTotalShortagePct.toFixed(2) + "%"}</td>
-        <td style="text-align: center;">${grandTotalSkus.size}</td>
-        <td style="text-align: right; color: var(--text-muted);">${grandTotalPrevShortage === 0 ? "-" : formatVND(Math.round(grandTotalPrevShortage))}</td>
-        <td style="text-align: center;">${totalD1CompareHTML}</td>
+        <td style="text-align: right; color: ${col1Total < 0 ? "var(--color-danger)" : "var(--text-muted)"};">${col1Total === 0 ? "-" : formatVND(Math.round(col1Total))}</td>
+        <td style="text-align: right; color: ${col2Total < 0 ? "var(--color-danger)" : "var(--text-muted)"};">${col2Total === 0 ? "-" : formatVND(Math.round(col2Total))}</td>
+        <td style="text-align: right; color: ${col3Total < 0 ? "var(--color-danger)" : "var(--text-muted)"};">${col3Total === 0 ? "-" : formatVND(Math.round(col3Total))}</td>
+        <td style="text-align: right; color: var(--color-danger); font-weight: 700;">${formatVND(Math.round(grandTotal))}</td>
     `;
     tableBody.appendChild(totalRow);
 }

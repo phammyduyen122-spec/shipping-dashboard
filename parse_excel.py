@@ -186,18 +186,23 @@ def parse_excel():
     perf_map = {}
     try:
         perf_dir = "performance dashboard"
-        recent_perf_files = glob.glob(os.path.join(perf_dir, "chi-tiet-chia-qua-canh_*.xlsx"))
-        perf_dates = []
-        for f in recent_perf_files:
-            d = get_date_from_filename(f)
-            if d:
-                perf_dates.append((f, d))
-        if perf_dates:
-            max_date = max(d for f, d in perf_dates)
-            cutoff = max_date - timedelta(days=8)
-            recent_perf_files = [f for f, d in perf_dates if d >= cutoff]
-            recent_perf_files.sort()
-            print(f"Lọc file hiệu suất (max date: {max_date.strftime('%Y-%m-%d')}): Giữ {len(recent_perf_files)} / {len(perf_dates)} files.")
+        target_perf_file = os.path.join(perf_dir, "chi-tiet-chia-qua-canh_20062026.xlsx")
+        if os.path.exists(target_perf_file):
+            recent_perf_files = [target_perf_file]
+            print(f"Bắt buộc dùng file hiệu suất do người dùng chỉ định: {target_perf_file}")
+        else:
+            recent_perf_files = glob.glob(os.path.join(perf_dir, "chi-tiet-chia-qua-canh_*.xlsx"))
+            perf_dates = []
+            for f in recent_perf_files:
+                d = get_date_from_filename(f)
+                if d:
+                    perf_dates.append((f, d))
+            if perf_dates:
+                max_date = max(d for f, d in perf_dates)
+                cutoff = max_date - timedelta(days=8)
+                recent_perf_files = [f for f, d in perf_dates if d >= cutoff]
+                recent_perf_files.sort()
+                print(f"Lọc file hiệu suất (max date: {max_date.strftime('%Y-%m-%d')}): Giữ {len(recent_perf_files)} / {len(perf_dates)} files.")
         
         if recent_perf_files or len(existing_perf) > 0:
             perf_mapping = {
@@ -331,18 +336,23 @@ def parse_excel():
         traceback.print_exc()
 
     # 2. Read Shipping transfers Excel
-    recent_excel_files = glob.glob("transfer_*.xlsx")
-    trans_dates = []
-    for f in recent_excel_files:
-        d = get_date_from_filename(f)
-        if d:
-            trans_dates.append((f, d))
-    if trans_dates:
-        max_date = max(d for f, d in trans_dates)
-        cutoff = max_date - timedelta(days=8)
-        recent_excel_files = [f for f, d in trans_dates if d >= cutoff]
-        recent_excel_files.sort()
-        print(f"Lọc file điều chuyển (max date: {max_date.strftime('%Y-%m-%d')}): Giữ {len(recent_excel_files)} / {len(trans_dates)} files.")
+    target_excel_file = "transfer_20062026-155955.xlsx"
+    if os.path.exists(target_excel_file):
+        recent_excel_files = [target_excel_file]
+        print(f"Bắt buộc dùng file điều chuyển do người dùng chỉ định: {target_excel_file}")
+    else:
+        recent_excel_files = glob.glob("transfer_*.xlsx")
+        trans_dates = []
+        for f in recent_excel_files:
+            d = get_date_from_filename(f)
+            if d:
+                trans_dates.append((f, d))
+        if trans_dates:
+            max_date = max(d for f, d in trans_dates)
+            cutoff = max_date - timedelta(days=8)
+            recent_excel_files = [f for f, d in trans_dates if d >= cutoff]
+            recent_excel_files.sort()
+            print(f"Lọc file điều chuyển (max date: {max_date.strftime('%Y-%m-%d')}): Giữ {len(recent_excel_files)} / {len(trans_dates)} files.")
     
     if not recent_excel_files and len(existing_trans) == 0:
         print("Lỗi: Không tìm thấy file Excel transfer_*.xlsx nào và không có dữ liệu cũ.")

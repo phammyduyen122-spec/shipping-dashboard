@@ -726,6 +726,28 @@ function populateFilterOptions() {
         });
     }
 
+    // Populate Tab 4 Supermarket filter
+    const superBranchOptions = document.getElementById("superFilterBranchOptions");
+    if (superBranchOptions) {
+        superBranchOptions.innerHTML = '';
+        toBranches.forEach(branch => {
+            superBranchOptions.innerHTML += `
+                <label class="multiselect-option">
+                    <input type="checkbox" value="${branch}"> <span>${branch}</span>
+                </label>
+            `;
+        });
+    }
+
+    // Populate Top SKU branch filter
+    const topSkuBranchFilter = document.getElementById("topSkuBranchFilter");
+    if (topSkuBranchFilter) {
+        topSkuBranchFilter.innerHTML = '<option value="All" selected>Tất cả siêu thị</option>';
+        toBranches.forEach(branch => {
+            topSkuBranchFilter.innerHTML += `<option value="${branch}">${branch}</option>`;
+        });
+    }
+
     // Populate Units
     if (unitOptions) {
         units.forEach(unit => {
@@ -1238,6 +1260,8 @@ function updateSelectLabel(container, labelEl) {
         defaultText = "-- Tất cả nơi nhận --";
     } else if (container.id.includes("Category")) {
         defaultText = "-- Tất cả ngành hàng --";
+    } else if (container.id.includes("Branch")) {
+        defaultText = "-- Tất cả siêu thị --";
     }
         
     if (checked.length === 0) {
@@ -1249,7 +1273,7 @@ function updateSelectLabel(container, labelEl) {
         if (checked.length === total) {
             labelEl.innerText = container.id.includes("Status") 
                 ? "Tất cả trạng thái" 
-                : (container.id.includes("FromBranch") ? "Tất cả nơi chuyển" : (container.id.includes("ToBranch") ? "Tất cả nơi nhận" : "Tất cả ngành hàng"));
+                : (container.id.includes("FromBranch") ? "Tất cả nơi chuyển" : (container.id.includes("ToBranch") ? "Tất cả nơi nhận" : (container.id.includes("Branch") ? "Tất cả siêu thị" : "Tất cả ngành hàng")));
         } else {
             labelEl.innerText = `Đã chọn (${checked.length})`;
         }
@@ -1966,7 +1990,8 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
         "catDateTableStartDate", "catDateTableEndDate",
         "topSkuStartDate", "topSkuEndDate",
         "vegLevel3DateStartDate", "vegLevel3DateEndDate",
-        "vegLevel3StartDate", "vegLevel3EndDate"
+        "vegLevel3StartDate", "vegLevel3EndDate",
+        "catValStartDate", "catValEndDate"
     ];
     defaultDateInputs.forEach(id => {
         const el = document.getElementById(id);
@@ -2005,6 +2030,7 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
     bindDateFilters("topSkuStartDate", "topSkuEndDate", renderTopSkuDiscrepancyTable);
     bindDateFilters("vegLevel3DateStartDate", "vegLevel3DateEndDate", renderVegetablesLevel3DateTable);
     bindDateFilters("vegLevel3StartDate", "vegLevel3EndDate", renderVegetablesLevel3Table);
+    bindDateFilters("catValStartDate", "catValEndDate", () => renderCategoryValuePerformanceTable(transfers));
     
     const catClearFiltersBtn = document.getElementById("catClearFiltersBtn");
     if (catClearFiltersBtn) {
@@ -2015,7 +2041,13 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
             if (vegLevel3DateFilterDate) vegLevel3DateFilterDate.value = "";
 
             // Clear table-specific date filters
-            const clearInputs = ["catDateTableStartDate", "catDateTableEndDate", "topSkuStartDate", "topSkuEndDate", "vegLevel3DateStartDate", "vegLevel3DateEndDate", "vegLevel3StartDate", "vegLevel3EndDate"];
+            const clearInputs = [
+                "catDateTableStartDate", "catDateTableEndDate",
+                "topSkuStartDate", "topSkuEndDate",
+                "vegLevel3DateStartDate", "vegLevel3DateEndDate",
+                "vegLevel3StartDate", "vegLevel3EndDate",
+                "catValStartDate", "catValEndDate"
+            ];
             clearInputs.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = "";
@@ -2047,6 +2079,12 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
 
             const topSkuCategoryFilter = document.getElementById("topSkuCategoryFilter");
             if (topSkuCategoryFilter) topSkuCategoryFilter.value = "All";
+
+            const topSkuBranchFilter = document.getElementById("topSkuBranchFilter");
+            if (topSkuBranchFilter) topSkuBranchFilter.value = "All";
+
+            const topSkuMinValFilter = document.getElementById("topSkuMinValFilter");
+            if (topSkuMinValFilter) topSkuMinValFilter.value = "";
 
             const topSkuSearchInput = document.getElementById("topSkuSearchInput");
             if (topSkuSearchInput) topSkuSearchInput.value = "";
@@ -2103,6 +2141,20 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
         });
     }
 
+    const topSkuBranchFilter = document.getElementById("topSkuBranchFilter");
+    if (topSkuBranchFilter) {
+        topSkuBranchFilter.addEventListener("change", () => {
+            renderTopSkuDiscrepancyTable();
+        });
+    }
+
+    const topSkuMinValFilter = document.getElementById("topSkuMinValFilter");
+    if (topSkuMinValFilter) {
+        topSkuMinValFilter.addEventListener("input", () => {
+            renderTopSkuDiscrepancyTable();
+        });
+    }
+
     const topSkuSortCriteria = document.getElementById("topSkuSortCriteria");
     if (topSkuSortCriteria) {
         topSkuSortCriteria.addEventListener("change", () => {
@@ -2131,6 +2183,7 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
 function setupSupermarketEventListeners(earliestDate, latestDate) {
     setupMultiSelectDropdown("superFilterCategoryContainer");
     setupMultiSelectDropdown("superFilterGroupContainer");
+    setupMultiSelectDropdown("superFilterBranchContainer");
 
     const superStartDate = document.getElementById("superFilterStartDate");
     const superEndDate = document.getElementById("superFilterEndDate");
@@ -2175,6 +2228,12 @@ function setupSupermarketEventListeners(earliestDate, latestDate) {
             if (groupContainer) {
                 groupContainer.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = false);
                 updateSelectLabel(groupContainer, groupContainer.querySelector(".multiselect-value"));
+            }
+
+            const branchContainer = document.getElementById("superFilterBranchContainer");
+            if (branchContainer) {
+                branchContainer.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = false);
+                updateSelectLabel(branchContainer, branchContainer.querySelector(".multiselect-value"));
             }
 
             if (superSortCriteria) superSortCriteria.value = "shortageValue";
@@ -3977,7 +4036,7 @@ function exportPerfToCSV() {
         const slBoSung = t.matchedCorrectiveQty || 0;
         
         const price = window.productPrices ? (window.productPrices[t.itemCode] || 0) : 0;
-        const valLech = price * diff;
+        const valLech = Math.round(price * diff);
 
         const row = [
             t.date,
@@ -4814,10 +4873,10 @@ function renderF1CategoryDateTable() {
     }
 
     // Render the new Category Value Summary Table
-    renderCategoryValuePerformanceTable(activeTransfers);
+    renderCategoryValuePerformanceTable();
 }
 
-function renderCategoryValuePerformanceTable(activeTransfers) {
+function renderCategoryValuePerformanceTable() {
     const tbody = document.getElementById("perfCategoryValueBody");
     if (!tbody) return;
     tbody.innerHTML = "";
@@ -4842,8 +4901,8 @@ function renderCategoryValuePerformanceTable(activeTransfers) {
         }
     }
 
-    const tableStartEl = document.getElementById("perfF1CategoryStartDate");
-    const tableEndEl = document.getElementById("perfF1CategoryEndDate");
+    const tableStartEl = document.getElementById("catValStartDate");
+    const tableEndEl = document.getElementById("catValEndDate");
     const globalStartEl = document.getElementById(isCategoryTabActive ? "catFilterStartDate" : "perfFilterStartDate");
     const globalEndEl = document.getElementById(isCategoryTabActive ? "catFilterEndDate" : "perfFilterEndDate");
 
@@ -4867,7 +4926,49 @@ function renderCategoryValuePerformanceTable(activeTransfers) {
     });
     catData["Khác"] = { shipVal: 0, diffVal: 0 };
 
-    activeTransfers.forEach(t => {
+    const currentActiveTransfers = transfers.filter(t => {
+        if ((t.fromBranch || "").toString().normalize("NFC").trim().toLowerCase() !== "kho rau củ") {
+            return false;
+        }
+        if (!t.nguoiChia) {
+            return false;
+        }
+        const name = t.nguoiChia.trim().toLowerCase();
+        
+        let matchGroupPrefix = false;
+        for (const g of activeGroups) {
+            if (name.startsWith(g.toLowerCase())) {
+                matchGroupPrefix = true;
+                break;
+            }
+        }
+        if (!matchGroupPrefix) return false;
+
+        const matchUser = selectedUsers.length === 0 || selectedUsers.includes(t.nguoiChia);
+        if (!matchUser) return false;
+
+        if (localUserSearch !== "") {
+            if (!name.includes(localUserSearch)) {
+                return false;
+            }
+        }
+
+        // Match global category selection
+        const matchCategory = selectedCats.length === 0 || selectedCats.includes(t.nganhHang);
+        if (!matchCategory) return false;
+
+        // Match global branch selection
+        const matchBranch = selectedBranches.length === 0 || selectedBranches.includes(t.toBranch);
+        if (!matchBranch) return false;
+
+        // Match current dates
+        const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
+        const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;
+
+        return matchStartDate && matchEndDate;
+    });
+
+    currentActiveTransfers.forEach(t => {
         const cat = categories.includes(t.nganhHang) ? t.nganhHang : "Khác";
         const price = window.productPrices ? (window.productPrices[t.itemCode] || 0) : 0;
         const shipVal = (t.qtyShipped || 0) * price;
@@ -5114,8 +5215,8 @@ function downloadCategoryValueTabular() {
         }
     }
 
-    const tableStartEl = document.getElementById("perfF1CategoryStartDate");
-    const tableEndEl = document.getElementById("perfF1CategoryEndDate");
+    const tableStartEl = document.getElementById("catValStartDate");
+    const tableEndEl = document.getElementById("catValEndDate");
     const globalStartEl = document.getElementById(isCategoryTabActive ? "catFilterStartDate" : "perfFilterStartDate");
     const globalEndEl = document.getElementById(isCategoryTabActive ? "catFilterEndDate" : "perfFilterEndDate");
 
@@ -5615,6 +5716,12 @@ function renderTopSkuDiscrepancyTable() {
     const sortCriteriaEl = document.getElementById("topSkuSortCriteria");
     const sortCriteria = sortCriteriaEl ? sortCriteriaEl.value : "qty";
 
+    const branchFilterEl = document.getElementById("topSkuBranchFilter");
+    const selectedBranch = branchFilterEl ? branchFilterEl.value : "All";
+
+    const minValFilterEl = document.getElementById("topSkuMinValFilter");
+    const minValFilter = (minValFilterEl && minValFilterEl.value !== "") ? parseFloat(minValFilterEl.value) : 0;
+
     const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
     const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
 
@@ -5710,6 +5817,11 @@ function renderTopSkuDiscrepancyTable() {
             return;
         }
 
+        // Apply Branch filter
+        if (selectedBranch !== "All" && t.toBranch !== selectedBranch) {
+            return;
+        }
+
         const itemCode = t.itemCode;
         const itemName = t.itemName || "";
         const unit = t.unit || "";
@@ -5798,6 +5910,11 @@ function renderTopSkuDiscrepancyTable() {
                 return;
             }
 
+            // Apply Branch filter
+            if (selectedBranch !== "All" && t.toBranch !== selectedBranch) {
+                return;
+            }
+
             const itemCode = t.itemCode;
             const statusInfo = calculateStatus(t);
             if (statusInfo.statusText === "Đang chuyển") {
@@ -5823,6 +5940,11 @@ function renderTopSkuDiscrepancyTable() {
     }
 
     let skuList = Object.values(skuAgg);
+
+    // Apply minimum absolute discrepancy value filter
+    if (minValFilter > 0) {
+        skuList = skuList.filter(sku => sku.valDiff >= minValFilter);
+    }
 
     // Sort by selected criteria
     if (sortCriteria === "percent") {
@@ -6661,7 +6783,7 @@ function exportSummaryToCSV() {
         const pctText = `${pctLech.toFixed(2)}%`;
 
         const price = window.productPrices ? (window.productPrices[item.barcode] || 0) : 0;
-        const valLech = price * item.chenhLechConLai;
+        const valLech = Math.round(price * item.chenhLechConLai);
 
         rows.push([
             index + 1,
@@ -6693,7 +6815,7 @@ function exportSummaryToCSV() {
         grandTotalAbsDiff += item.absDiff;
 
         const price = window.productPrices ? (window.productPrices[item.barcode] || 0) : 0;
-        grandTotalVal += price * item.chenhLechConLai;
+        grandTotalVal += Math.round(price * item.chenhLechConLai);
     });
 
     const grandTotalErrorRate = grandTotalShared > 0 ? (grandTotalAbsDiff / grandTotalShared) * 100 : 0;
@@ -6741,6 +6863,13 @@ function renderSupermarketPerformanceTable() {
         selectedGroups = Array.from(groupContainer.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
     }
 
+    // Get selected supermarkets
+    let selectedBranches = [];
+    const branchContainer = document.getElementById("superFilterBranchContainer");
+    if (branchContainer) {
+        selectedBranches = Array.from(branchContainer.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
+    }
+
     // Get threshold filters
     const minQtyInput = document.getElementById("superFilterMinQty");
     const minValInput = document.getElementById("superFilterMinVal");
@@ -6785,6 +6914,9 @@ function renderSupermarketPerformanceTable() {
             // Exclude "KHO RAU CỦ XỬ LÝ THẤT THOÁT"
             const normToBranch = toBranch.toLowerCase().normalize("NFC");
             if (normToBranch.includes("xử lý thất thoát") || normToBranch.includes("kho rau củ")) return;
+
+            // Filter by selected supermarkets (branches)
+            if (selectedBranches.length > 0 && !selectedBranches.includes(toBranch)) return;
 
             if (!aggregated[toBranch]) {
                 aggregated[toBranch] = {

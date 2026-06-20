@@ -758,12 +758,21 @@
                 </div>
             </div>
 
-            <!-- Bảng tổng hợp giá trị chênh lệch theo Ngành Hàng -->
             <div class="table-card" style="margin-bottom: 24px;">
                 <div class="table-header-row" style="background-color: rgba(79, 70, 229, 0.05); border-bottom: 1px solid rgba(79, 70, 229, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                     <span class="table-title" style="color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0;">
                         💰 Tổng hợp giá trị chênh lệch theo Ngành Hàng
                     </span>
+                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <label for="catValStartDate" style="font-size: 12px; font-weight: 600; color: var(--color-primary);">Từ ngày:</label>
+                            <input type="date" id="catValStartDate" class="input-field" style="width: 130px; height: 30px; margin: 0; padding: 4px 8px; font-size: 12px; border-color: var(--color-primary); color: var(--text-primary); border-radius: var(--radius-sm); background-color: var(--bg-secondary);">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <label for="catValEndDate" style="font-size: 12px; font-weight: 600; color: var(--color-primary);">Đến ngày:</label>
+                            <input type="date" id="catValEndDate" class="input-field" style="width: 130px; height: 30px; margin: 0; padding: 4px 8px; font-size: 12px; border-color: var(--color-primary); color: var(--text-primary); border-radius: var(--radius-sm); background-color: var(--bg-secondary);">
+                        </div>
+                    </div>
                     <div class="table-actions">
                         <button class="btn btn-secondary" id="catValuePerfBtnExport">
                             <span>📥 Xuất Excel/CSV</span>
@@ -852,6 +861,16 @@
                                 <option value="2.EGGS">2.EGGS</option>
                                 <option value="2.DELICA">2.DELICA</option>
                             </select>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <label for="topSkuBranchFilter" style="font-size: 12px; font-weight: 600; color: var(--color-warning);">Siêu thị:</label>
+                            <select id="topSkuBranchFilter" class="input-field" style="width: 160px; padding: 4px 28px 4px 12px; font-size: 12px; height: 30px; margin: 0; background-color: var(--bg-primary); border-color: var(--color-warning); color: var(--color-warning); font-weight: 600; cursor: pointer; border-radius: var(--radius-sm);">
+                                <option value="All" selected>Tất cả siêu thị</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <label for="topSkuMinValFilter" style="font-size: 12px; font-weight: 600; color: var(--color-warning);">Lệch từ:</label>
+                            <input type="number" id="topSkuMinValFilter" class="input-field" style="width: 100px; height: 30px; margin: 0; padding: 4px 8px; font-size: 12px; border-color: var(--color-warning); color: var(--text-primary); border-radius: var(--radius-sm);" placeholder="Ví dụ: 100000" min="0">
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <label for="topSkuSortCriteria" style="font-size: 12px; font-weight: 600; color: var(--color-warning);">Tiêu chí:</label>
@@ -1033,6 +1052,26 @@
                                     <label class="multiselect-option"><input type="checkbox" value="F2"> <span>F2</span></label>
                                     <label class="multiselect-option"><input type="checkbox" value="HUYHOANG"> <span>HUYHOANG</span></label>
                                     <label class="multiselect-option"><input type="checkbox" value="CTV"> <span>CTV</span></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Siêu thị Filter (Multi-select) -->
+                    <div class="filter-group">
+                        <label class="filter-label">Siêu thị</label>
+                        <div class="multiselect-container" id="superFilterBranchContainer">
+                            <div class="multiselect-select">
+                                <span class="multiselect-value">-- Tất cả siêu thị --</span>
+                                <span class="multiselect-arrow">▾</span>
+                            </div>
+                            <div class="multiselect-dropdown">
+                                <div class="multiselect-actions">
+                                    <span class="multiselect-action-btn select-all">Chọn tất cả</span>
+                                    <span class="multiselect-action-btn clear-all">Xóa tất cả</span>
+                                </div>
+                                <div class="multiselect-options-list" id="superFilterBranchOptions">
+                                    <!-- Dynamic content populated by JS -->
                                 </div>
                             </div>
                         </div>

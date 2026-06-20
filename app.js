@@ -406,8 +406,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Set default date range to cover the entire dataset range (e.g. June 9 to June 10)
-    document.getElementById("filterStartDate").value = earliestDate;
-    document.getElementById("filterEndDate").value = latestDate;
+    if (document.getElementById("filterStartDate")) {
+        document.getElementById("filterStartDate").value = earliestDate;
+    }
+    if (document.getElementById("filterEndDate")) {
+        document.getElementById("filterEndDate").value = latestDate;
+    }
     if (document.getElementById("perfFilterStartDate")) {
         document.getElementById("perfFilterStartDate").value = earliestDate;
     }
@@ -446,35 +450,46 @@ document.addEventListener("DOMContentLoaded", () => {
 // Setup All Event Listeners
 function setupEventListeners() {
     // Theme toggle
-    document.getElementById("themeToggleBtn").addEventListener("click", toggleTheme);
+    const themeToggleBtn = document.getElementById("themeToggleBtn");
+    if (themeToggleBtn) themeToggleBtn.addEventListener("click", toggleTheme);
     
     // Filters change
-    document.getElementById("filterItemCode").addEventListener("input", onItemCodeSearchInput);
-    document.getElementById("filterItemCode").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            confirmSelectedSuggestions();
-        }
-    });
-    document.getElementById("itemTagsContainer").addEventListener("click", () => {
-        document.getElementById("filterItemCode").focus();
-    });
+    const filterItemCode = document.getElementById("filterItemCode");
+    if (filterItemCode) {
+        filterItemCode.addEventListener("input", onItemCodeSearchInput);
+        filterItemCode.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                confirmSelectedSuggestions();
+            }
+        });
+    }
+    const itemTagsContainer = document.getElementById("itemTagsContainer");
+    if (itemTagsContainer && filterItemCode) {
+        itemTagsContainer.addEventListener("click", () => {
+            filterItemCode.focus();
+        });
+    }
     
     // Bind Custom Multi-select Dropdowns
-    setupMultiSelectDropdown("filterStatusContainer");
-    setupMultiSelectDropdown("filterFromBranchContainer");
-    setupMultiSelectDropdown("filterToBranchContainer");
-    setupMultiSelectDropdown("filterCategoryContainer");
+    if (document.getElementById("filterStatusContainer")) setupMultiSelectDropdown("filterStatusContainer");
+    if (document.getElementById("filterFromBranchContainer")) setupMultiSelectDropdown("filterFromBranchContainer");
+    if (document.getElementById("filterToBranchContainer")) setupMultiSelectDropdown("filterToBranchContainer");
+    if (document.getElementById("filterCategoryContainer")) setupMultiSelectDropdown("filterCategoryContainer");
     
-    document.getElementById("filterStartDate").addEventListener("change", applyFiltersAndRender);
-    document.getElementById("filterEndDate").addEventListener("change", applyFiltersAndRender);
+    const filterStartDate = document.getElementById("filterStartDate");
+    if (filterStartDate) filterStartDate.addEventListener("change", applyFiltersAndRender);
+    const filterEndDate = document.getElementById("filterEndDate");
+    if (filterEndDate) filterEndDate.addEventListener("change", applyFiltersAndRender);
     
     // Clear Filters
-    document.getElementById("clearFiltersBtn").addEventListener("click", clearFilters);
+    const clearFiltersBtn = document.getElementById("clearFiltersBtn");
+    if (clearFiltersBtn) clearFiltersBtn.addEventListener("click", clearFilters);
 
     // Close item list & dropdowns when clicking outside
     document.addEventListener("click", (e) => {
-        if (!e.target.closest("#filterItemCode") && !e.target.closest("#itemDropdownList")) {
+        const filterItemCodeEl = document.getElementById("filterItemCode");
+        if (filterItemCodeEl && !e.target.closest("#filterItemCode") && !e.target.closest("#itemDropdownList")) {
             hideItemDropdownList();
         }
         if (!e.target.closest("#newRecordItemCode") && !e.target.closest("#modalItemDropdownList")) {
@@ -486,33 +501,45 @@ function setupEventListeners() {
     });
 
     // Open/Close Add Modal
-    document.getElementById("btnAddRecord").addEventListener("click", openAddModal);
-    document.getElementById("modalCloseBtn").addEventListener("click", closeAddModal);
-    document.getElementById("modalCancelBtn").addEventListener("click", closeAddModal);
+    const btnAddRecord = document.getElementById("btnAddRecord");
+    if (btnAddRecord) btnAddRecord.addEventListener("click", openAddModal);
+    const modalCloseBtn = document.getElementById("modalCloseBtn");
+    if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeAddModal);
+    const modalCancelBtn = document.getElementById("modalCancelBtn");
+    if (modalCancelBtn) modalCancelBtn.addEventListener("click", closeAddModal);
     
     // Modal Form Auto-fill based on Item Code
-    document.getElementById("newRecordItemCode").addEventListener("input", onModalItemCodeInput);
+    const newRecordItemCode = document.getElementById("newRecordItemCode");
+    if (newRecordItemCode) newRecordItemCode.addEventListener("input", onModalItemCodeInput);
     
     // Submit Form
-    document.getElementById("addRecordForm").addEventListener("submit", handleAddRecord);
+    const addRecordForm = document.getElementById("addRecordForm");
+    if (addRecordForm) addRecordForm.addEventListener("submit", handleAddRecord);
 
     // Export button
-    document.getElementById("btnExport").addEventListener("click", exportToCSV);
+    const btnExport = document.getElementById("btnExport");
+    if (btnExport) btnExport.addEventListener("click", exportToCSV);
 
     // Pagination buttons
-    document.getElementById("prevPageBtn").addEventListener("click", () => {
-        if (currentPage > 1) {
-            currentPage--;
-            renderTable();
-        }
-    });
-    document.getElementById("nextPageBtn").addEventListener("click", () => {
-        const totalPages = Math.ceil(filteredTransfers.length / rowsPerPage);
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderTable();
-        }
-    });
+    const prevPageBtn = document.getElementById("prevPageBtn");
+    if (prevPageBtn) {
+        prevPageBtn.addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        });
+    }
+    const nextPageBtn = document.getElementById("nextPageBtn");
+    if (nextPageBtn) {
+        nextPageBtn.addEventListener("click", () => {
+            const totalPages = Math.ceil(filteredTransfers.length / rowsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+            }
+        });
+    }
 
     // Table sorting triggers
     const tableHeaders = document.querySelectorAll("th[data-sort]");
@@ -999,20 +1026,26 @@ function clearFilters() {
     selectedItemCodes = [];
     renderItemTags();
     
-    document.getElementById("filterItemCode").value = "";
-    document.getElementById("filterStartDate").value = "";
-    document.getElementById("filterEndDate").value = "";
+    if (document.getElementById("filterItemCode")) document.getElementById("filterItemCode").value = "";
+    if (document.getElementById("filterStartDate")) document.getElementById("filterStartDate").value = "";
+    if (document.getElementById("filterEndDate")) document.getElementById("filterEndDate").value = "";
     
     // Reset status checkboxes
     document.querySelectorAll("#filterStatusContainer input[type='checkbox']").forEach(cb => cb.checked = false);
-    updateSelectLabel(document.getElementById("filterStatusContainer"), document.querySelector("#filterStatusContainer .multiselect-value"));
+    if (document.getElementById("filterStatusContainer")) {
+        updateSelectLabel(document.getElementById("filterStatusContainer"), document.querySelector("#filterStatusContainer .multiselect-value"));
+    }
     
     // Reset branch checkboxes
     document.querySelectorAll("#filterFromBranchContainer input[type='checkbox']").forEach(cb => cb.checked = false);
-    updateSelectLabel(document.getElementById("filterFromBranchContainer"), document.querySelector("#filterFromBranchContainer .multiselect-value"));
+    if (document.getElementById("filterFromBranchContainer")) {
+        updateSelectLabel(document.getElementById("filterFromBranchContainer"), document.querySelector("#filterFromBranchContainer .multiselect-value"));
+    }
     
     document.querySelectorAll("#filterToBranchContainer input[type='checkbox']").forEach(cb => cb.checked = false);
-    updateSelectLabel(document.getElementById("filterToBranchContainer"), document.querySelector("#filterToBranchContainer .multiselect-value"));
+    if (document.getElementById("filterToBranchContainer")) {
+        updateSelectLabel(document.getElementById("filterToBranchContainer"), document.querySelector("#filterToBranchContainer .multiselect-value"));
+    }
     
     // Reset unit checkboxes
     const filterUnitContainer = document.getElementById("filterUnitContainer");
@@ -1034,8 +1067,10 @@ function clearFilters() {
 
 // Core filter computation and view updates
 function applyFiltersAndRender() {
-    const startDateQuery = document.getElementById("filterStartDate").value;
-    const endDateQuery = document.getElementById("filterEndDate").value;
+    const filterStartDateEl = document.getElementById("filterStartDate");
+    const filterEndDateEl = document.getElementById("filterEndDate");
+    const startDateQuery = filterStartDateEl ? filterStartDateEl.value : "";
+    const endDateQuery = filterEndDateEl ? filterEndDateEl.value : "";
 
     // Read selected statuses from checkboxes
     const selectedStatuses = Array.from(document.querySelectorAll("#filterStatusContainer input[type='checkbox']:checked")).map(cb => cb.value);
@@ -1051,7 +1086,8 @@ function applyFiltersAndRender() {
     const selectedCategories = Array.from(document.querySelectorAll("#filterCategoryContainer input[type='checkbox']:checked")).map(cb => cb.value);
 
     // Current text query in item search (if any)
-    const textQuery = document.getElementById("filterItemCode").value.toLowerCase().trim();
+    const filterItemCodeEl = document.getElementById("filterItemCode");
+    const textQuery = filterItemCodeEl ? filterItemCodeEl.value.toLowerCase().trim() : "";
 
     filteredTransfers = transfers.filter(transfer => {
         // Status calculations
@@ -1254,6 +1290,7 @@ function sortFilteredData() {
 // Table rendering
 function renderTable() {
     const tbody = document.getElementById("tableBody");
+    if (!tbody) return;
     tbody.innerHTML = "";
 
     if (filteredTransfers.length === 0) {
@@ -1318,16 +1355,15 @@ function updatePaginationUI(totalPages, fromIndex = 0, toIndex = 0, totalCount =
     const nextBtn = document.getElementById("nextPageBtn");
     const infoText = document.getElementById("paginationInfo");
 
-    if (totalCount === 0) {
-        prevBtn.disabled = true;
-        nextBtn.disabled = true;
-        infoText.innerText = "Hiển thị 0 của 0 bản ghi";
-        return;
+    if (prevBtn) prevBtn.disabled = totalCount === 0 || currentPage === 1;
+    if (nextBtn) nextBtn.disabled = totalCount === 0 || currentPage === totalPages;
+    if (infoText) {
+        if (totalCount === 0) {
+            infoText.innerText = "Hiển thị 0 của 0 bản ghi";
+        } else {
+            infoText.innerText = `Hiển thị từ ${fromIndex} đến ${toIndex} của ${totalCount.toLocaleString()} bản ghi (Trang ${currentPage}/${totalPages})`;
+        }
     }
-
-    prevBtn.disabled = currentPage === 1;
-    nextBtn.disabled = currentPage === totalPages;
-    infoText.innerText = `Hiển thị từ ${fromIndex} đến ${toIndex} của ${totalCount.toLocaleString()} bản ghi (Trang ${currentPage}/${totalPages})`;
 }
 
 
@@ -1555,38 +1591,22 @@ function updateSumifsSummary() {
 
 // Tab Switcher Controller
 function setupTabs() {
-    const tabTransferMonitor = document.getElementById("tabTransferMonitor");
     const tabPerformanceReport = document.getElementById("tabPerformanceReport");
     const tabCategoryPerformance = document.getElementById("tabCategoryPerformance");
     const tabExportExcel = document.getElementById("tabExportExcel");
     
-    const contentTransferMonitor = document.getElementById("contentTransferMonitor");
     const contentPerformanceReport = document.getElementById("contentPerformanceReport");
     const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
     const contentExportExcel = document.getElementById("contentExportExcel");
 
-    if (!tabTransferMonitor || !tabPerformanceReport || !tabCategoryPerformance) return;
-
-    tabTransferMonitor.addEventListener("click", () => {
-        tabTransferMonitor.classList.add("active");
-        tabPerformanceReport.classList.remove("active");
-        tabCategoryPerformance.classList.remove("active");
-        if (tabExportExcel) tabExportExcel.classList.remove("active");
-        
-        contentTransferMonitor.classList.add("active");
-        contentPerformanceReport.classList.remove("active");
-        contentCategoryPerformance.classList.remove("active");
-        if (contentExportExcel) contentExportExcel.classList.remove("active");
-    });
+    if (!tabPerformanceReport || !tabCategoryPerformance) return;
 
     tabPerformanceReport.addEventListener("click", () => {
         tabPerformanceReport.classList.add("active");
-        tabTransferMonitor.classList.remove("active");
         tabCategoryPerformance.classList.remove("active");
         if (tabExportExcel) tabExportExcel.classList.remove("active");
         
         contentPerformanceReport.classList.add("active");
-        contentTransferMonitor.classList.remove("active");
         contentCategoryPerformance.classList.remove("active");
         if (contentExportExcel) contentExportExcel.classList.remove("active");
         
@@ -1595,12 +1615,10 @@ function setupTabs() {
 
     tabCategoryPerformance.addEventListener("click", () => {
         tabCategoryPerformance.classList.add("active");
-        tabTransferMonitor.classList.remove("active");
         tabPerformanceReport.classList.remove("active");
         if (tabExportExcel) tabExportExcel.classList.remove("active");
         
         contentCategoryPerformance.classList.add("active");
-        contentTransferMonitor.classList.remove("active");
         contentPerformanceReport.classList.remove("active");
         if (contentExportExcel) contentExportExcel.classList.remove("active");
         
@@ -1610,12 +1628,10 @@ function setupTabs() {
     if (tabExportExcel && contentExportExcel) {
         tabExportExcel.addEventListener("click", () => {
             tabExportExcel.classList.add("active");
-            tabTransferMonitor.classList.remove("active");
             tabPerformanceReport.classList.remove("active");
             tabCategoryPerformance.classList.remove("active");
             
             contentExportExcel.classList.add("active");
-            contentTransferMonitor.classList.remove("active");
             contentPerformanceReport.classList.remove("active");
             contentCategoryPerformance.classList.remove("active");
             
@@ -3622,6 +3638,7 @@ function updatePerfSummary() {
     let totalShared = 0;
     let totalDiff = 0;
     let totalDiffAbs = 0;
+    let totalDiffValue = 0;
 
     const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
     const categoryDiffs = {};
@@ -3651,11 +3668,18 @@ function updatePerfSummary() {
                 categoryDiffs["Khác"] += diff;
             }
         }
+        
+        // Sum total discrepancy value (deficits) including "Hao hụt"
+        if (diff < 0) {
+            const price = window.productPrices ? (window.productPrices[t.itemCode] || 0) : 0;
+            totalDiffValue += diff * price;
+        }
     });
 
     const perfTotalReqEl = document.getElementById("perfTotalReq");
     const perfTotalSharedEl = document.getElementById("perfTotalShared");
     const perfTotalDiffEl = document.getElementById("perfTotalDiff");
+    const perfTotalDiffValueEl = document.getElementById("perfTotalDiffValue");
 
     if (perfTotalReqEl) perfTotalReqEl.innerText = formatNumber(totalReq);
     if (perfTotalSharedEl) perfTotalSharedEl.innerText = formatNumber(totalShared);
@@ -3668,6 +3692,17 @@ function updatePerfSummary() {
             perfTotalDiffEl.style.color = "var(--color-info)";
         } else {
             perfTotalDiffEl.style.color = "var(--text-primary)";
+        }
+    }
+
+    if (perfTotalDiffValueEl) {
+        perfTotalDiffValueEl.innerText = formatVND(totalDiffValue);
+        if (totalDiffValue < 0) {
+            perfTotalDiffValueEl.style.color = "var(--color-danger)";
+        } else if (totalDiffValue > 0) {
+            perfTotalDiffValueEl.style.color = "var(--color-info)";
+        } else {
+            perfTotalDiffValueEl.style.color = "var(--text-primary)";
         }
     }
     

@@ -36,6 +36,7 @@
         <div class="tabs-navigation">
             <button class="tab-btn active" id="tabPerformanceReport">📊 Hiệu suất Chia hàng</button>
             <button class="tab-btn" id="tabCategoryPerformance">🗂️ Hiệu suất Ngành hàng</button>
+            <button class="tab-btn" id="tabSupermarketPerformance">🛒 Siêu thị</button>
         </div>
 
         <!-- Tab 2: Performance Report -->
@@ -982,6 +983,117 @@
             </div>
         </div>
 
+        <!-- Tab 4: Supermarket Performance Report -->
+        <div class="tab-content" id="contentSupermarketPerformance">
+            <!-- Advanced Filter Controls for Supermarket Performance -->
+            <div class="filters-card" style="margin-bottom: 24px;">
+                <div class="filters-header">
+                    🔍 <span>Bộ lọc thống kê siêu thị chênh lệch</span>
+                </div>
+                <div class="filters-grid">
+                    <!-- Ngành hàng Filter (Multi-select) -->
+                    <div class="filter-group">
+                        <label class="filter-label">Ngành hàng</label>
+                        <div class="multiselect-container" id="superFilterCategoryContainer">
+                            <div class="multiselect-select">
+                                <span class="multiselect-value">-- Tất cả ngành hàng --</span>
+                                <span class="multiselect-arrow">▾</span>
+                            </div>
+                            <div class="multiselect-dropdown">
+                                <div class="multiselect-actions">
+                                    <span class="multiselect-action-btn select-all">Chọn tất cả</span>
+                                    <span class="multiselect-action-btn clear-all">Xóa tất cả</span>
+                                </div>
+                                <div class="multiselect-options-list" id="superFilterCategoryOptions">
+                                    <label class="multiselect-option"><input type="checkbox" value="2.EGGS"> <span>2.EGGS</span></label>
+                                    <label class="multiselect-option"><input type="checkbox" value="2.DELICA"> <span>2.DELICA</span></label>
+                                    <label class="multiselect-option"><input type="checkbox" value="2.VEGETABLES"> <span>2.VEGETABLES</span></label>
+                                    <label class="multiselect-option"><input type="checkbox" value="2.BAKERY"> <span>2.BAKERY</span></label>
+                                    <label class="multiselect-option"><input type="checkbox" value="2.FRUITS"> <span>2.FRUITS</span></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nhóm nhân sự Filter (Multi-select) -->
+                    <div class="filter-group">
+                        <label class="filter-label">Nhóm nhân sự</label>
+                        <div class="multiselect-container" id="superFilterGroupContainer">
+                            <div class="multiselect-select">
+                                <span class="multiselect-value">-- Tất cả nhóm --</span>
+                                <span class="multiselect-arrow">▾</span>
+                            </div>
+                            <div class="multiselect-dropdown">
+                                <div class="multiselect-actions">
+                                    <span class="multiselect-action-btn select-all">Chọn tất cả</span>
+                                    <span class="multiselect-action-btn clear-all">Xóa tất cả</span>
+                                </div>
+                                <div class="multiselect-options-list" id="superFilterGroupOptions">
+                                    <label class="multiselect-option"><input type="checkbox" value="F1"> <span>F1</span></label>
+                                    <label class="multiselect-option"><input type="checkbox" value="F2"> <span>F2</span></label>
+                                    <label class="multiselect-option"><input type="checkbox" value="HUYHOANG"> <span>HUYHOANG</span></label>
+                                    <label class="multiselect-option"><input type="checkbox" value="CTV"> <span>CTV</span></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Date Range Filters -->
+                    <div class="filter-group">
+                        <label class="filter-label">Từ ngày</label>
+                        <input type="date" id="superFilterStartDate" class="input-field">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Đến ngày</label>
+                        <input type="date" id="superFilterEndDate" class="input-field">
+                    </div>
+                </div>
+                <div style="margin-top: 16px; display: flex; justify-content: flex-end;">
+                    <button class="btn btn-secondary" id="superClearFiltersBtn">
+                        <span>🧹 Xóa bộ lọc</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bảng thống kê Top Siêu thị lệch thiếu nhiều nhất -->
+            <div class="table-card" style="margin-bottom: 24px;">
+                <div class="table-header-row" style="background-color: rgba(79, 70, 229, 0.05); border-bottom: 1px solid rgba(79, 70, 229, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <span class="table-title" style="color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0;">
+                        🛒 Thống kê Top Siêu thị lệch thiếu nhiều theo nhóm ngành hàng
+                    </span>
+                    <div class="table-actions" style="display: flex; align-items: center; gap: 12px;">
+                        <select id="superSortCriteria" style="padding: 6px 12px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--bg-card); color: var(--text-primary); font-size: 13px; font-weight: 600; cursor: pointer; outline: none;">
+                            <option value="shortageValue">Sắp xếp: Giá trị lệch thiếu (Giảm dần)</option>
+                            <option value="netValue">Sắp xếp: Giá trị chênh lệch (Giảm dần)</option>
+                            <option value="shippedValue">Sắp xếp: Tổng giá trị chuyển (Giảm dần)</option>
+                            <option value="skuCount">Sắp xếp: Số lượng SKU chênh lệch (Giảm dần)</option>
+                        </select>
+                        <button class="btn btn-secondary" id="superBtnExport">
+                            <span>📥 Xuất Excel/CSV</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="supermarketPerformanceTable">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 60px;">STT</th>
+                                <th>Tên Siêu thị</th>
+                                <th style="text-align: right;">Tổng giá trị chuyển</th>
+                                <th style="text-align: right;">Tổng giá trị lệch</th>
+                                <th style="text-align: right; color: var(--color-danger);">Giá trị lệch thiếu</th>
+                                <th style="text-align: right; color: var(--color-danger);">% Lệch thiếu</th>
+                                <th style="text-align: center; width: 140px;">Số SKU lệch thiếu</th>
+                                <th style="text-align: right; color: var(--text-muted);">Lệch thiếu (D-1)</th>
+                                <th style="text-align: center; width: 130px;">So sánh D-1</th>
+                            </tr>
+                        </thead>
+                        <tbody id="supermarketPerformanceBody">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
     <!-- Modal for Adding New Record -->

@@ -424,6 +424,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("catFilterEndDate")) {
         document.getElementById("catFilterEndDate").value = latestDate;
     }
+    if (document.getElementById("superFilterStartDate")) {
+        document.getElementById("superFilterStartDate").value = earliestDate;
+    }
+    if (document.getElementById("superFilterEndDate")) {
+        document.getElementById("superFilterEndDate").value = latestDate;
+    }
     if (document.getElementById("exportStartDate")) {
         document.getElementById("exportStartDate").value = earliestDate;
     }
@@ -440,6 +446,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupTabs();
     setupPerfEventListeners();
     setupCategoryEventListeners(earliestDate, latestDate);
+    setupSupermarketEventListeners(earliestDate, latestDate);
     setupExportTabEventListeners(earliestDate, latestDate);
     
     // Initial Render
@@ -1146,6 +1153,8 @@ function setupMultiSelectDropdown(containerId) {
         filterFn = renderF1CategoryTable;
     } else if (containerId.includes("perf")) {
         filterFn = applyPerfFiltersAndRender;
+    } else if (containerId.includes("super")) {
+        filterFn = renderSupermarketPerformanceTable;
     }
 
     // Toggle dropdown
@@ -1593,10 +1602,12 @@ function updateSumifsSummary() {
 function setupTabs() {
     const tabPerformanceReport = document.getElementById("tabPerformanceReport");
     const tabCategoryPerformance = document.getElementById("tabCategoryPerformance");
+    const tabSupermarketPerformance = document.getElementById("tabSupermarketPerformance");
     const tabExportExcel = document.getElementById("tabExportExcel");
     
     const contentPerformanceReport = document.getElementById("contentPerformanceReport");
     const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
+    const contentSupermarketPerformance = document.getElementById("contentSupermarketPerformance");
     const contentExportExcel = document.getElementById("contentExportExcel");
 
     if (!tabPerformanceReport || !tabCategoryPerformance) return;
@@ -1604,10 +1615,12 @@ function setupTabs() {
     tabPerformanceReport.addEventListener("click", () => {
         tabPerformanceReport.classList.add("active");
         tabCategoryPerformance.classList.remove("active");
+        if (tabSupermarketPerformance) tabSupermarketPerformance.classList.remove("active");
         if (tabExportExcel) tabExportExcel.classList.remove("active");
         
         contentPerformanceReport.classList.add("active");
         contentCategoryPerformance.classList.remove("active");
+        if (contentSupermarketPerformance) contentSupermarketPerformance.classList.remove("active");
         if (contentExportExcel) contentExportExcel.classList.remove("active");
         
         applyPerfFiltersAndRender();
@@ -1616,24 +1629,44 @@ function setupTabs() {
     tabCategoryPerformance.addEventListener("click", () => {
         tabCategoryPerformance.classList.add("active");
         tabPerformanceReport.classList.remove("active");
+        if (tabSupermarketPerformance) tabSupermarketPerformance.classList.remove("active");
         if (tabExportExcel) tabExportExcel.classList.remove("active");
         
         contentCategoryPerformance.classList.add("active");
         contentPerformanceReport.classList.remove("active");
+        if (contentSupermarketPerformance) contentSupermarketPerformance.classList.remove("active");
         if (contentExportExcel) contentExportExcel.classList.remove("active");
         
         renderF1CategoryTable();
     });
+
+    if (tabSupermarketPerformance && contentSupermarketPerformance) {
+        tabSupermarketPerformance.addEventListener("click", () => {
+            tabSupermarketPerformance.classList.add("active");
+            tabPerformanceReport.classList.remove("active");
+            tabCategoryPerformance.classList.remove("active");
+            if (tabExportExcel) tabExportExcel.classList.remove("active");
+            
+            contentSupermarketPerformance.classList.add("active");
+            contentPerformanceReport.classList.remove("active");
+            contentCategoryPerformance.classList.remove("active");
+            if (contentExportExcel) contentExportExcel.classList.remove("active");
+            
+            renderSupermarketPerformanceTable();
+        });
+    }
 
     if (tabExportExcel && contentExportExcel) {
         tabExportExcel.addEventListener("click", () => {
             tabExportExcel.classList.add("active");
             tabPerformanceReport.classList.remove("active");
             tabCategoryPerformance.classList.remove("active");
+            if (tabSupermarketPerformance) tabSupermarketPerformance.classList.remove("active");
             
             contentExportExcel.classList.add("active");
             contentPerformanceReport.classList.remove("active");
             contentCategoryPerformance.classList.remove("active");
+            if (contentSupermarketPerformance) contentSupermarketPerformance.classList.remove("active");
             
             renderExportPreview();
         });
@@ -2091,6 +2124,58 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
         newBtn.addEventListener("click", () => {
             const todayStr = new Date().toISOString().split("T")[0];
             downloadTableToExcel("topSkuDiscrepancyTable", `BaoCao_Top10_SKU_Lech_${todayStr}.csv`);
+        });
+    }
+}
+
+function setupSupermarketEventListeners(earliestDate, latestDate) {
+    setupMultiSelectDropdown("superFilterCategoryContainer");
+    setupMultiSelectDropdown("superFilterGroupContainer");
+
+    const superStartDate = document.getElementById("superFilterStartDate");
+    const superEndDate = document.getElementById("superFilterEndDate");
+    if (superStartDate) superStartDate.value = earliestDate;
+    if (superEndDate) superEndDate.value = latestDate;
+
+    if (superStartDate) superStartDate.addEventListener("change", renderSupermarketPerformanceTable);
+    if (superEndDate) superEndDate.addEventListener("change", renderSupermarketPerformanceTable);
+
+    const superSortCriteria = document.getElementById("superSortCriteria");
+    if (superSortCriteria) {
+        superSortCriteria.addEventListener("change", () => {
+            renderSupermarketPerformanceTable();
+        });
+    }
+
+    const superClearFiltersBtn = document.getElementById("superClearFiltersBtn");
+    if (superClearFiltersBtn) {
+        superClearFiltersBtn.addEventListener("click", () => {
+            if (superStartDate) superStartDate.value = earliestDate;
+            if (superEndDate) superEndDate.value = latestDate;
+
+            const catContainer = document.getElementById("superFilterCategoryContainer");
+            if (catContainer) {
+                catContainer.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = false);
+                updateSelectLabel(catContainer, catContainer.querySelector(".multiselect-value"));
+            }
+
+            const groupContainer = document.getElementById("superFilterGroupContainer");
+            if (groupContainer) {
+                groupContainer.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = false);
+                updateSelectLabel(groupContainer, groupContainer.querySelector(".multiselect-value"));
+            }
+
+            if (superSortCriteria) superSortCriteria.value = "shortageValue";
+
+            renderSupermarketPerformanceTable();
+        });
+    }
+
+    const superBtnExport = document.getElementById("superBtnExport");
+    if (superBtnExport) {
+        superBtnExport.addEventListener("click", () => {
+            const todayStr = new Date().toISOString().split("T")[0];
+            downloadTableToExcel("supermarketPerformanceTable", `BaoCao_SieuThi_LechThieu_${todayStr}.csv`);
         });
     }
 }
@@ -6619,5 +6704,223 @@ function exportSummaryToCSV() {
 
     const todayStr = new Date().toISOString().split("T")[0];
     downloadCSV(headers, rows, `BaoCao_TomTatHieuSuat_${todayStr}.csv`);
+}
+
+function renderSupermarketPerformanceTable() {
+    const tableBody = document.getElementById("supermarketPerformanceBody");
+    if (!tableBody) return;
+
+    // Get filter inputs
+    const startDate = document.getElementById("superFilterStartDate") ? document.getElementById("superFilterStartDate").value : "";
+    const endDate = document.getElementById("superFilterEndDate") ? document.getElementById("superFilterEndDate").value : "";
+    const sortCriteria = document.getElementById("superSortCriteria") ? document.getElementById("superSortCriteria").value : "shortageValue";
+
+    // Get selected categories
+    let selectedCats = [];
+    const catContainer = document.getElementById("superFilterCategoryContainer");
+    if (catContainer) {
+        selectedCats = Array.from(catContainer.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
+    }
+
+    // Get selected personnel groups
+    let selectedGroups = [];
+    const groupContainer = document.getElementById("superFilterGroupContainer");
+    if (groupContainer) {
+        selectedGroups = Array.from(groupContainer.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
+    }
+
+    // Parse product price maps
+    const priceMap = window.productPrices || {};
+
+    // Helper function to aggregate by supermarket (toBranch) for a date range
+    const aggregateData = (start, end) => {
+        const aggregated = {};
+        
+        transfers.forEach(t => {
+            // Filter by date
+            if (start && t.date < start) return;
+            if (end && t.date > end) return;
+
+            // Filter by category
+            const category = t.nganhHang || "Khác";
+            if (selectedCats.length > 0 && !selectedCats.includes(category)) return;
+
+            // Filter by group (find who chia-ed it and check their group)
+            if (selectedGroups.length > 0) {
+                // Find personnel group
+                const lowerName = (t.nguoiChia || "").trim().toLowerCase();
+                let group = "CTV";
+                if (lowerName.startsWith("f1")) group = "F1";
+                else if (lowerName.startsWith("f2")) group = "F2";
+                else if (lowerName.startsWith("huyhoang")) group = "HUYHOANG";
+                
+                if (!selectedGroups.includes(group)) return;
+            }
+
+            // Exclude non-supermarkets if they are not supermarkets (wait, user wants all ST / supermarkets, but let's aggregate for any valid toBranch that has transfers)
+            const toBranch = (t.toBranch || "").trim();
+            if (!toBranch) return;
+
+            if (!aggregated[toBranch]) {
+                aggregated[toBranch] = {
+                    toBranch: toBranch,
+                    shippedValue: 0,
+                    netDiffValue: 0,
+                    shortageValue: 0,
+                    skuShortages: new Set(),
+                    totalCount: 0
+                };
+            }
+
+            const price = priceMap[t.itemCode] || 0;
+            const shippedVal = (t.qtyShipped || 0) * price;
+            
+            const statusInfo = calculateStatus(t);
+            if (statusInfo.statusText === "Đang chuyển") return;
+
+            const diffQty = statusInfo.chenhLechConLai;
+            const diffVal = diffQty * price;
+
+            aggregated[toBranch].shippedValue += shippedVal;
+            aggregated[toBranch].netDiffValue += diffVal;
+
+            if (diffQty < 0) {
+                aggregated[toBranch].shortageValue += diffVal; // negative
+                aggregated[toBranch].skuShortages.add(t.itemCode);
+            }
+            aggregated[toBranch].totalCount++;
+        });
+
+        return aggregated;
+    };
+
+    // Calculate current period stats
+    const currentStats = aggregateData(startDate, endDate);
+
+    // Calculate D-1 period stats
+    const prevStartDate = startDate ? getPrevDateStr(startDate) : "";
+    const prevEndDate = endDate ? getPrevDateStr(endDate) : "";
+    const prevStats = aggregateData(prevStartDate, prevEndDate);
+
+    // Convert currentStats object to array
+    const dataList = Object.values(currentStats);
+
+    // Sort currentStats
+    dataList.sort((a, b) => {
+        if (sortCriteria === "shortageValue") {
+            return Math.abs(b.shortageValue) - Math.abs(a.shortageValue);
+        } else if (sortCriteria === "netValue") {
+            return Math.abs(b.netDiffValue) - Math.abs(a.netDiffValue);
+        } else if (sortCriteria === "shippedValue") {
+            return b.shippedValue - a.shippedValue;
+        } else if (sortCriteria === "skuCount") {
+            return b.skuShortages.size - a.skuShortages.size;
+        }
+        return 0;
+    });
+
+    // Render table rows
+    tableBody.innerHTML = "";
+
+    if (dataList.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted);">Không có dữ liệu phù hợp bộ lọc</td></tr>`;
+        return;
+    }
+
+    let grandTotalShipped = 0;
+    let grandTotalNetDiff = 0;
+    let grandTotalShortage = 0;
+    const grandTotalSkus = new Set();
+
+    let grandTotalPrevShortage = 0;
+
+    dataList.forEach((item, idx) => {
+        grandTotalShipped += item.shippedValue;
+        grandTotalNetDiff += item.netDiffValue;
+        grandTotalShortage += item.shortageValue;
+        item.skuShortages.forEach(sku => grandTotalSkus.add(sku));
+
+        // Get D-1 stats
+        const prevItem = prevStats[item.toBranch] || { shortageValue: 0 };
+        const prevShortageVal = prevItem.shortageValue;
+        grandTotalPrevShortage += prevShortageVal;
+
+        // Calculate delta for D-1 shortage
+        const currentShortage = Math.round(item.shortageValue);
+        const prevShortage = Math.round(prevShortageVal);
+
+        let d1ShortageText = "-";
+        if (prevShortage !== 0) {
+            d1ShortageText = formatVND(prevShortage);
+        }
+
+        let d1CompareHTML = "—";
+        if (prevShortage !== 0) {
+            const currentAbs = Math.abs(currentShortage);
+            const prevAbs = Math.abs(prevShortage);
+            const absDiffPct = ((currentAbs - prevAbs) / prevAbs) * 100;
+            
+            if (absDiffPct > 0) {
+                d1CompareHTML = `<span style="color: var(--color-danger); font-weight: 600;">▲ +${absDiffPct.toFixed(2)}%</span>`;
+            } else if (absDiffPct < 0) {
+                d1CompareHTML = `<span style="color: var(--color-success); font-weight: 600;">▼ ${absDiffPct.toFixed(2)}%</span>`;
+            } else {
+                d1CompareHTML = `<span style="color: var(--text-muted);">0.00%</span>`;
+            }
+        } else if (currentShortage !== 0) {
+            d1CompareHTML = `<span style="color: var(--color-danger); font-weight: 600;">▲ Mới</span>`;
+        }
+
+        const shortagePct = item.shippedValue > 0 ? (item.shortageValue / item.shippedValue) * 100 : 0;
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td style="text-align: center;">${idx + 1}</td>
+            <td style="font-weight: 600; color: var(--text-primary);">${item.toBranch}</td>
+            <td style="text-align: right;">${formatVND(Math.round(item.shippedValue))}</td>
+            <td style="text-align: right; font-weight: 600; color: ${item.netDiffValue >= 0 ? "var(--color-success)" : "var(--color-danger)"};">${item.netDiffValue === 0 ? "-" : formatVND(Math.round(item.netDiffValue))}</td>
+            <td style="text-align: right; font-weight: 600; color: var(--color-danger);">${item.shortageValue === 0 ? "-" : formatVND(Math.round(item.shortageValue))}</td>
+            <td style="text-align: right; color: var(--color-danger); font-weight: 600;">${shortagePct === 0 ? "0.00%" : shortagePct.toFixed(2) + "%"}</td>
+            <td style="text-align: center; font-weight: 600;">${item.skuShortages.size}</td>
+            <td style="text-align: right; color: var(--text-muted);">${d1ShortageText}</td>
+            <td style="text-align: center;">${d1CompareHTML}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+
+    // Render Grand Total Row
+    const grandTotalShortagePct = grandTotalShipped > 0 ? (grandTotalShortage / grandTotalShipped) * 100 : 0;
+    
+    const currentAbsTotal = Math.abs(grandTotalShortage);
+    const prevAbsTotal = Math.abs(grandTotalPrevShortage);
+    let totalD1CompareHTML = "—";
+    if (prevAbsTotal !== 0) {
+        const totalAbsDiffPct = ((currentAbsTotal - prevAbsTotal) / prevAbsTotal) * 100;
+        if (totalAbsDiffPct > 0) {
+            totalD1CompareHTML = `<span style="color: var(--color-danger); font-weight: 700;">▲ +${totalAbsDiffPct.toFixed(2)}%</span>`;
+        } else if (totalAbsDiffPct < 0) {
+            totalD1CompareHTML = `<span style="color: var(--color-success); font-weight: 700;">▼ ${totalAbsDiffPct.toFixed(2)}%</span>`;
+        } else {
+            totalD1CompareHTML = `<span style="color: var(--text-muted); font-weight: 700;">0.00%</span>`;
+        }
+    } else if (currentAbsTotal !== 0) {
+        totalD1CompareHTML = `<span style="color: var(--color-danger); font-weight: 700;">▲ Mới</span>`;
+    }
+
+    const totalRow = document.createElement("tr");
+    totalRow.style.fontWeight = "bold";
+    totalRow.style.backgroundColor = "var(--bg-secondary)";
+    totalRow.innerHTML = `
+        <td style="text-align: center;">-</td>
+        <td style="color: var(--text-primary);">TỔNG CỘNG</td>
+        <td style="text-align: right;">${formatVND(Math.round(grandTotalShipped))}</td>
+        <td style="text-align: right; color: ${grandTotalNetDiff >= 0 ? "var(--color-success)" : "var(--color-danger)"};">${grandTotalNetDiff === 0 ? "-" : formatVND(Math.round(grandTotalNetDiff))}</td>
+        <td style="text-align: right; color: var(--color-danger);">${grandTotalShortage === 0 ? "-" : formatVND(Math.round(grandTotalShortage))}</td>
+        <td style="text-align: right; color: var(--color-danger);">${grandTotalShortagePct === 0 ? "0.00%" : grandTotalShortagePct.toFixed(2) + "%"}</td>
+        <td style="text-align: center;">${grandTotalSkus.size}</td>
+        <td style="text-align: right; color: var(--text-muted);">${grandTotalPrevShortage === 0 ? "-" : formatVND(Math.round(grandTotalPrevShortage))}</td>
+        <td style="text-align: center;">${totalD1CompareHTML}</td>
+    `;
+    tableBody.appendChild(totalRow);
 }
 

@@ -6867,7 +6867,7 @@ function renderSupermarketPerformanceTable() {
     tableBody.innerHTML = "";
 
     if (top10.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted);">Không có dữ liệu phù hợp bộ lọc</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">Không có dữ liệu phù hợp bộ lọc</td></tr>`;
         return;
     }
 
@@ -6922,7 +6922,6 @@ function renderSupermarketPerformanceTable() {
             <td style="text-align: center;">${idx + 1}</td>
             <td style="font-weight: 600; color: var(--text-primary);">${item.toBranch}</td>
             <td style="text-align: right;">${formatVND(Math.round(item.shippedValue))}</td>
-            <td style="text-align: right; font-weight: 600; color: ${item.netDiffValue >= 0 ? "var(--color-success)" : "var(--color-danger)"};">${item.netDiffValue === 0 ? "-" : formatVND(Math.round(item.netDiffValue))}</td>
             <td style="text-align: right; font-weight: 600; color: var(--color-danger);">${item.shortageValue === 0 ? "-" : formatVND(Math.round(item.shortageValue))}</td>
             <td style="text-align: right; color: var(--color-danger); font-weight: 600;">${shortagePct === 0 ? "0.00%" : shortagePct.toFixed(2) + "%"}</td>
             <td style="text-align: center; font-weight: 600;">${item.skuShortages.size}</td>
@@ -6958,7 +6957,6 @@ function renderSupermarketPerformanceTable() {
         <td style="text-align: center;">-</td>
         <td style="color: var(--text-primary);">TỔNG CỘNG</td>
         <td style="text-align: right;">${formatVND(Math.round(grandTotalShipped))}</td>
-        <td style="text-align: right; color: ${grandTotalNetDiff >= 0 ? "var(--color-success)" : "var(--color-danger)"};">${grandTotalNetDiff === 0 ? "-" : formatVND(Math.round(grandTotalNetDiff))}</td>
         <td style="text-align: right; color: var(--color-danger);">${grandTotalShortage === 0 ? "-" : formatVND(Math.round(grandTotalShortage))}</td>
         <td style="text-align: right; color: var(--color-danger);">${grandTotalShortagePct === 0 ? "0.00%" : grandTotalShortagePct.toFixed(2) + "%"}</td>
         <td style="text-align: center;">${grandTotalSkus.size}</td>

@@ -1087,19 +1087,7 @@
                         <input type="date" id="superFilterEndDate" class="input-field">
                     </div>
 
-                    <!-- Threshold Filters -->
-                    <div class="filter-group">
-                        <label class="filter-label">Lệch thiếu từ (SL)</label>
-                        <input type="number" id="superFilterMinQty" class="input-field" placeholder="Ví dụ: 5" min="0">
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Lệch thiếu từ (Giá trị)</label>
-                        <input type="number" id="superFilterMinVal" class="input-field" placeholder="Ví dụ: 100000" min="0">
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Lệch thiếu từ (%)</label>
-                        <input type="number" id="superFilterMinPct" class="input-field" placeholder="Ví dụ: 1.5" min="0" step="0.1">
-                    </div>
+
                 </div>
                 <div style="margin-top: 16px; display: flex; justify-content: flex-end;">
                     <button class="btn btn-secondary" id="superClearFiltersBtn">
@@ -1115,12 +1103,14 @@
                         🛒 Thống kê Top Siêu thị lệch thiếu nhiều theo nhóm ngành hàng (3 ngày gần nhất)
                     </span>
                     <div class="table-actions" style="display: flex; align-items: center; gap: 12px;">
-                        <select id="superSortCriteria" style="display: none; padding: 6px 12px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--bg-card); color: var(--text-primary); font-size: 13px; font-weight: 600; cursor: pointer; outline: none;">
-                            <option value="shortageValue">Sắp xếp: Giá trị lệch thiếu (Giảm dần)</option>
-                            <option value="netValue">Sắp xếp: Giá trị chênh lệch (Giảm dần)</option>
-                            <option value="shippedValue">Sắp xếp: Tổng giá trị chuyển (Giảm dần)</option>
-                            <option value="skuCount">Sắp xếp: Số lượng SKU chênh lệch (Giảm dần)</option>
-                        </select>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <label for="superSortCriteria" style="font-size: 12px; font-weight: 600; color: var(--color-primary);">Tiêu chí:</label>
+                            <select id="superSortCriteria" class="input-field" style="width: auto; padding: 4px 28px 4px 12px; font-size: 12px; height: 30px; margin: 0; background-color: var(--bg-primary); border-color: var(--color-primary); color: var(--color-primary); font-weight: 600; cursor: pointer; border-radius: var(--radius-sm);">
+                                <option value="shortageQty">Số lượng</option>
+                                <option value="shortageValue" selected>Giá trị</option>
+                                <option value="shortagePct">% Số lượng</option>
+                            </select>
+                        </div>
                         <button class="btn btn-secondary" id="superBtnExport">
                             <span>📥 Xuất Excel/CSV</span>
                         </button>

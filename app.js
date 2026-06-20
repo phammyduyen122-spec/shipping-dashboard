@@ -2193,13 +2193,7 @@ function setupSupermarketEventListeners(earliestDate, latestDate) {
     if (superStartDate) superStartDate.addEventListener("change", renderSupermarketPerformanceTable);
     if (superEndDate) superEndDate.addEventListener("change", renderSupermarketPerformanceTable);
 
-    const superFilterMinQty = document.getElementById("superFilterMinQty");
-    const superFilterMinVal = document.getElementById("superFilterMinVal");
-    const superFilterMinPct = document.getElementById("superFilterMinPct");
 
-    if (superFilterMinQty) superFilterMinQty.addEventListener("input", renderSupermarketPerformanceTable);
-    if (superFilterMinVal) superFilterMinVal.addEventListener("input", renderSupermarketPerformanceTable);
-    if (superFilterMinPct) superFilterMinPct.addEventListener("input", renderSupermarketPerformanceTable);
 
     const superSortCriteria = document.getElementById("superSortCriteria");
     if (superSortCriteria) {
@@ -2214,9 +2208,7 @@ function setupSupermarketEventListeners(earliestDate, latestDate) {
             if (superStartDate) superStartDate.value = earliestDate;
             if (superEndDate) superEndDate.value = latestDate;
 
-            if (superFilterMinQty) superFilterMinQty.value = "";
-            if (superFilterMinVal) superFilterMinVal.value = "";
-            if (superFilterMinPct) superFilterMinPct.value = "";
+
 
             const catContainer = document.getElementById("superFilterCategoryContainer");
             if (catContainer) {
@@ -6870,88 +6862,8 @@ function renderSupermarketPerformanceTable() {
         selectedBranches = Array.from(branchContainer.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
     }
 
-    // Get threshold filters
-    const minQtyInput = document.getElementById("superFilterMinQty");
-    const minValInput = document.getElementById("superFilterMinVal");
-    const minPctInput = document.getElementById("superFilterMinPct");
-
-    const minQty = minQtyInput && minQtyInput.value ? parseFloat(minQtyInput.value) : 0;
-    const minVal = minValInput && minValInput.value ? parseFloat(minValInput.value) : 0;
-    const minPct = minPctInput && minPctInput.value ? parseFloat(minPctInput.value) : 0;
-
     // Parse product price maps
     const priceMap = window.productPrices || {};
-
-    // Helper function to aggregate by supermarket (toBranch) for a date range
-    const aggregateData = (start, end) => {
-        const aggregated = {};
-        
-        transfers.forEach(t => {
-            // Filter by date
-            if (start && t.date < start) return;
-            if (end && t.date > end) return;
-
-            // Filter by category
-            const category = t.nganhHang || "Khác";
-            if (selectedCats.length > 0 && !selectedCats.includes(category)) return;
-
-            // Filter by group (find who chia-ed it and check their group)
-            if (selectedGroups.length > 0) {
-                // Find personnel group
-                const lowerName = (t.nguoiChia || "").trim().toLowerCase();
-                let group = "CTV";
-                if (lowerName.startsWith("f1")) group = "F1";
-                else if (lowerName.startsWith("f2")) group = "F2";
-                else if (lowerName.startsWith("huyhoang")) group = "HUYHOANG";
-                
-                if (!selectedGroups.includes(group)) return;
-            }
-
-            // Exclude non-supermarkets if they are not supermarkets (wait, user wants all ST / supermarkets, but let's aggregate for any valid toBranch that has transfers)
-            const toBranch = (t.toBranch || "").trim();
-            if (!toBranch) return;
-
-            // Exclude "KHO RAU CỦ XỬ LÝ THẤT THOÁT"
-            const normToBranch = toBranch.toLowerCase().normalize("NFC");
-            if (normToBranch.includes("xử lý thất thoát") || normToBranch.includes("kho rau củ")) return;
-
-            // Filter by selected supermarkets (branches)
-            if (selectedBranches.length > 0 && !selectedBranches.includes(toBranch)) return;
-
-            if (!aggregated[toBranch]) {
-                aggregated[toBranch] = {
-                    toBranch: toBranch,
-                    shippedValue: 0,
-                    netDiffValue: 0,
-                    shortageValue: 0,
-                    shortageQty: 0,
-                    skuShortages: new Set(),
-                    totalCount: 0
-                };
-            }
-
-            const price = priceMap[t.itemCode] || 0;
-            const shippedVal = (t.qtyShipped || 0) * price;
-            
-            const statusInfo = calculateStatus(t);
-            if (statusInfo.statusText === "Đang chuyển") return;
-
-            const diffQty = statusInfo.chenhLechConLai;
-            const diffVal = diffQty * price;
-
-            aggregated[toBranch].shippedValue += shippedVal;
-            aggregated[toBranch].netDiffValue += diffVal;
-
-            if (diffQty < 0) {
-                aggregated[toBranch].shortageValue += diffVal; // negative
-                aggregated[toBranch].shortageQty += Math.abs(diffQty);
-                aggregated[toBranch].skuShortages.add(t.itemCode);
-            }
-            aggregated[toBranch].totalCount++;
-        });
-
-        return aggregated;
-    };
 
     // Get the 3 most recent dates dynamically
     const allDatesSet = new Set();
@@ -6981,6 +6893,7 @@ function renderSupermarketPerformanceTable() {
     // Helper to calculate daily stats per branch
     const getStatsForBranchAndDate = (branch, date) => {
         let shippedValue = 0;
+        let shippedQty = 0;
         let shortageQty = 0;
         let shortageValue = 0;
 
@@ -7014,6 +6927,7 @@ function renderSupermarketPerformanceTable() {
             const diffVal = diffQty * price;
 
             shippedValue += shippedVal;
+            shippedQty += (t.qtyShipped || 0);
 
             if (diffQty < 0) {
                 shortageValue += diffVal; // negative
@@ -7022,12 +6936,15 @@ function renderSupermarketPerformanceTable() {
         });
 
         const shortagePct = shippedValue > 0 ? (Math.abs(shortageValue) / shippedValue) * 100 : 0;
+        const shortageQtyPct = shippedQty > 0 ? (shortageQty / shippedQty) * 100 : 0;
 
         return {
             shippedValue,
+            shippedQty,
             shortageQty,
             shortageValue,
-            shortagePct
+            shortagePct,
+            shortageQtyPct
         };
     };
 
@@ -7050,37 +6967,34 @@ function renderSupermarketPerformanceTable() {
         const stats2 = getStatsForBranchAndDate(branch, last3Dates[1]);
         const stats3 = getStatsForBranchAndDate(branch, last3Dates[2]);
 
-        // Apply filters per day
-        const val1 = (stats1.shortageValue < 0 && 
-                      (minQty === 0 || stats1.shortageQty >= minQty) && 
-                      (minVal === 0 || Math.abs(stats1.shortageValue) >= minVal) && 
-                      (minPct === 0 || stats1.shortagePct >= minPct)) ? stats1.shortageValue : 0;
+        const totalShortageQty = stats1.shortageQty + stats2.shortageQty + stats3.shortageQty;
+        const totalShortageValue = stats1.shortageValue + stats2.shortageValue + stats3.shortageValue;
 
-        const val2 = (stats2.shortageValue < 0 && 
-                      (minQty === 0 || stats2.shortageQty >= minQty) && 
-                      (minVal === 0 || Math.abs(stats2.shortageValue) >= minVal) && 
-                      (minPct === 0 || stats2.shortagePct >= minPct)) ? stats2.shortageValue : 0;
+        if (totalShortageQty > 0 || totalShortageValue < 0) {
+            const totalShippedQty = stats1.shippedQty + stats2.shippedQty + stats3.shippedQty;
+            const totalShortageQtyPct = totalShippedQty > 0 ? (totalShortageQty / totalShippedQty) * 100 : 0;
 
-        const val3 = (stats3.shortageValue < 0 && 
-                      (minQty === 0 || stats3.shortageQty >= minQty) && 
-                      (minVal === 0 || Math.abs(stats3.shortageValue) >= minVal) && 
-                      (minPct === 0 || stats3.shortagePct >= minPct)) ? stats3.shortageValue : 0;
-
-        const totalShortage = val1 + val2 + val3;
-
-        if (totalShortage < 0) {
             branchDataList.push({
                 branch,
-                val1,
-                val2,
-                val3,
-                totalShortage
+                stats1,
+                stats2,
+                stats3,
+                totalShortageQty,
+                totalShortageValue,
+                totalShortageQtyPct,
+                totalShippedQty
             });
         }
     });
 
-    // Sort by totalShortage (most negative shortage value first)
-    branchDataList.sort((a, b) => a.totalShortage - b.totalShortage);
+    // Sort by criteria
+    if (sortCriteria === "shortageQty") {
+        branchDataList.sort((a, b) => b.totalShortageQty - a.totalShortageQty);
+    } else if (sortCriteria === "shortagePct") {
+        branchDataList.sort((a, b) => b.totalShortageQtyPct - a.totalShortageQtyPct);
+    } else {
+        branchDataList.sort((a, b) => a.totalShortageValue - b.totalShortageValue);
+    }
 
     const top10 = branchDataList.slice(0, 10);
 
@@ -7091,40 +7005,142 @@ function renderSupermarketPerformanceTable() {
         return;
     }
 
-    let col1Total = 0;
-    let col2Total = 0;
-    let col3Total = 0;
-    let grandTotal = 0;
+    let col1ValTotal = 0;
+    let col2ValTotal = 0;
+    let col3ValTotal = 0;
+    let grandValTotal = 0;
+
+    let col1QtyTotal = 0;
+    let col2QtyTotal = 0;
+    let col3QtyTotal = 0;
+    let grandQtyTotal = 0;
+
+    let col1ShippedQtyTotal = 0;
+    let col2ShippedQtyTotal = 0;
+    let col3ShippedQtyTotal = 0;
+    let grandShippedQtyTotal = 0;
 
     top10.forEach((item, idx) => {
-        col1Total += item.val1;
-        col2Total += item.val2;
-        col3Total += item.val3;
-        grandTotal += item.totalShortage;
+        col1ValTotal += item.stats1.shortageValue;
+        col2ValTotal += item.stats2.shortageValue;
+        col3ValTotal += item.stats3.shortageValue;
+        grandValTotal += item.totalShortageValue;
+
+        col1QtyTotal += item.stats1.shortageQty;
+        col2QtyTotal += item.stats2.shortageQty;
+        col3QtyTotal += item.stats3.shortageQty;
+        grandQtyTotal += item.totalShortageQty;
+
+        col1ShippedQtyTotal += item.stats1.shippedQty;
+        col2ShippedQtyTotal += item.stats2.shippedQty;
+        col3ShippedQtyTotal += item.stats3.shippedQty;
+        grandShippedQtyTotal += item.totalShippedQty;
+
+        let displayCol1 = "";
+        let displayCol2 = "";
+        let displayCol3 = "";
+        let displayTotal = "";
+
+        let col1Color = "var(--text-muted)";
+        let col2Color = "var(--text-muted)";
+        let col3Color = "var(--text-muted)";
+        let totalColor = "var(--color-danger)";
+
+        if (sortCriteria === "shortageQty") {
+            displayCol1 = item.stats1.shortageQty === 0 ? "-" : formatNumber(-item.stats1.shortageQty);
+            displayCol2 = item.stats2.shortageQty === 0 ? "-" : formatNumber(-item.stats2.shortageQty);
+            displayCol3 = item.stats3.shortageQty === 0 ? "-" : formatNumber(-item.stats3.shortageQty);
+            displayTotal = item.totalShortageQty === 0 ? "-" : formatNumber(-item.totalShortageQty);
+
+            if (item.stats1.shortageQty > 0) col1Color = "var(--color-danger)";
+            if (item.stats2.shortageQty > 0) col2Color = "var(--color-danger)";
+            if (item.stats3.shortageQty > 0) col3Color = "var(--color-danger)";
+        } else if (sortCriteria === "shortagePct") {
+            displayCol1 = item.stats1.shortageQtyPct === 0 ? "-" : item.stats1.shortageQtyPct.toFixed(2) + "%";
+            displayCol2 = item.stats2.shortageQtyPct === 0 ? "-" : item.stats2.shortageQtyPct.toFixed(2) + "%";
+            displayCol3 = item.stats3.shortageQtyPct === 0 ? "-" : item.stats3.shortageQtyPct.toFixed(2) + "%";
+            displayTotal = item.totalShortageQtyPct === 0 ? "-" : item.totalShortageQtyPct.toFixed(2) + "%";
+
+            if (item.stats1.shortageQtyPct > 0) col1Color = "var(--color-danger)";
+            if (item.stats2.shortageQtyPct > 0) col2Color = "var(--color-danger)";
+            if (item.stats3.shortageQtyPct > 0) col3Color = "var(--color-danger)";
+        } else {
+            displayCol1 = item.stats1.shortageValue === 0 ? "-" : formatVND(Math.round(item.stats1.shortageValue));
+            displayCol2 = item.stats2.shortageValue === 0 ? "-" : formatVND(Math.round(item.stats2.shortageValue));
+            displayCol3 = item.stats3.shortageValue === 0 ? "-" : formatVND(Math.round(item.stats3.shortageValue));
+            displayTotal = item.totalShortageValue === 0 ? "-" : formatVND(Math.round(item.totalShortageValue));
+
+            if (item.stats1.shortageValue < 0) col1Color = "var(--color-danger)";
+            if (item.stats2.shortageValue < 0) col2Color = "var(--color-danger)";
+            if (item.stats3.shortageValue < 0) col3Color = "var(--color-danger)";
+        }
 
         const row = document.createElement("tr");
         row.innerHTML = `
             <td style="text-align: center;">${idx + 1}</td>
             <td style="font-weight: 600; color: var(--text-primary);">${item.branch}</td>
-            <td style="text-align: right; color: ${item.val1 < 0 ? "var(--color-danger)" : "var(--text-muted)"};">${item.val1 === 0 ? "-" : formatVND(Math.round(item.val1))}</td>
-            <td style="text-align: right; color: ${item.val2 < 0 ? "var(--color-danger)" : "var(--text-muted)"};">${item.val2 === 0 ? "-" : formatVND(Math.round(item.val2))}</td>
-            <td style="text-align: right; color: ${item.val3 < 0 ? "var(--color-danger)" : "var(--text-muted)"};">${item.val3 === 0 ? "-" : formatVND(Math.round(item.val3))}</td>
-            <td style="text-align: right; color: var(--color-danger); font-weight: 700;">${formatVND(Math.round(item.totalShortage))}</td>
+            <td style="text-align: right; color: ${col1Color};">${displayCol1}</td>
+            <td style="text-align: right; color: ${col2Color};">${displayCol2}</td>
+            <td style="text-align: right; color: ${col3Color};">${displayCol3}</td>
+            <td style="text-align: right; color: ${totalColor}; font-weight: 700;">${displayTotal}</td>
         `;
         tableBody.appendChild(row);
     });
 
     // Render Grand Total Row
+    let totalCol1 = "";
+    let totalCol2 = "";
+    let totalCol3 = "";
+    let totalGrand = "";
+
+    let totalCol1Color = "var(--text-muted)";
+    let totalCol2Color = "var(--text-muted)";
+    let totalCol3Color = "var(--text-muted)";
+
+    if (sortCriteria === "shortageQty") {
+        totalCol1 = col1QtyTotal === 0 ? "-" : formatNumber(-col1QtyTotal);
+        totalCol2 = col2QtyTotal === 0 ? "-" : formatNumber(-col2QtyTotal);
+        totalCol3 = col3QtyTotal === 0 ? "-" : formatNumber(-col3QtyTotal);
+        totalGrand = grandQtyTotal === 0 ? "-" : formatNumber(-grandQtyTotal);
+
+        if (col1QtyTotal > 0) totalCol1Color = "var(--color-danger)";
+        if (col2QtyTotal > 0) totalCol2Color = "var(--color-danger)";
+        if (col3QtyTotal > 0) totalCol3Color = "var(--color-danger)";
+    } else if (sortCriteria === "shortagePct") {
+        const col1Pct = col1ShippedQtyTotal > 0 ? (col1QtyTotal / col1ShippedQtyTotal) * 100 : 0;
+        const col2Pct = col2ShippedQtyTotal > 0 ? (col2QtyTotal / col2ShippedQtyTotal) * 100 : 0;
+        const col3Pct = col3ShippedQtyTotal > 0 ? (col3QtyTotal / col3ShippedQtyTotal) * 100 : 0;
+        const grandPct = grandShippedQtyTotal > 0 ? (grandQtyTotal / grandShippedQtyTotal) * 100 : 0;
+
+        totalCol1 = col1Pct === 0 ? "-" : col1Pct.toFixed(2) + "%";
+        totalCol2 = col2Pct === 0 ? "-" : col2Pct.toFixed(2) + "%";
+        totalCol3 = col3Pct === 0 ? "-" : col3Pct.toFixed(2) + "%";
+        totalGrand = grandPct === 0 ? "-" : grandPct.toFixed(2) + "%";
+
+        if (col1Pct > 0) totalCol1Color = "var(--color-danger)";
+        if (col2Pct > 0) totalCol2Color = "var(--color-danger)";
+        if (col3Pct > 0) totalCol3Color = "var(--color-danger)";
+    } else {
+        totalCol1 = col1ValTotal === 0 ? "-" : formatVND(Math.round(col1ValTotal));
+        totalCol2 = col2ValTotal === 0 ? "-" : formatVND(Math.round(col2ValTotal));
+        totalCol3 = col3ValTotal === 0 ? "-" : formatVND(Math.round(col3ValTotal));
+        totalGrand = grandValTotal === 0 ? "-" : formatVND(Math.round(grandValTotal));
+
+        if (col1ValTotal < 0) totalCol1Color = "var(--color-danger)";
+        if (col2ValTotal < 0) totalCol2Color = "var(--color-danger)";
+        if (col3ValTotal < 0) totalCol3Color = "var(--color-danger)";
+    }
+
     const totalRow = document.createElement("tr");
     totalRow.style.fontWeight = "bold";
     totalRow.style.backgroundColor = "var(--bg-secondary)";
     totalRow.innerHTML = `
         <td style="text-align: center;">-</td>
         <td style="color: var(--text-primary);">TỔNG CỘNG</td>
-        <td style="text-align: right; color: ${col1Total < 0 ? "var(--color-danger)" : "var(--text-muted)"};">${col1Total === 0 ? "-" : formatVND(Math.round(col1Total))}</td>
-        <td style="text-align: right; color: ${col2Total < 0 ? "var(--color-danger)" : "var(--text-muted)"};">${col2Total === 0 ? "-" : formatVND(Math.round(col2Total))}</td>
-        <td style="text-align: right; color: ${col3Total < 0 ? "var(--color-danger)" : "var(--text-muted)"};">${col3Total === 0 ? "-" : formatVND(Math.round(col3Total))}</td>
-        <td style="text-align: right; color: var(--color-danger); font-weight: 700;">${formatVND(Math.round(grandTotal))}</td>
+        <td style="text-align: right; color: ${totalCol1Color};">${totalCol1}</td>
+        <td style="text-align: right; color: ${totalCol2Color};">${totalCol2}</td>
+        <td style="text-align: right; color: ${totalCol3Color};">${totalCol3}</td>
+        <td style="text-align: right; color: var(--color-danger); font-weight: 700;">${totalGrand}</td>
     `;
     tableBody.appendChild(totalRow);
 }

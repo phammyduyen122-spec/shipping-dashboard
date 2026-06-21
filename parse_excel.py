@@ -186,7 +186,7 @@ def parse_excel():
     perf_map = {}
     try:
         perf_dir = "performance dashboard"
-        target_perf_file = os.path.join(perf_dir, "chi-tiet-chia-qua-canh_20062026.xlsx")
+        target_perf_file = os.path.join(perf_dir, "chi-tiet-chia-qua-canh_21062026.xlsx")
         if os.path.exists(target_perf_file):
             recent_perf_files = [target_perf_file]
             print(f"Bắt buộc dùng file hiệu suất do người dùng chỉ định: {target_perf_file}")
@@ -336,7 +336,7 @@ def parse_excel():
         traceback.print_exc()
 
     # 2. Read Shipping transfers Excel
-    target_excel_file = "transfer_20062026-155955.xlsx"
+    target_excel_file = "transfer_21062026-203956.xlsx"
     if os.path.exists(target_excel_file):
         recent_excel_files = [target_excel_file]
         print(f"Bắt buộc dùng file điều chuyển do người dùng chỉ định: {target_excel_file}")

@@ -6963,6 +6963,8 @@ function renderSupermarketPerformanceTable() {
 
     const branchDataList = [];
     allBranches.forEach(branch => {
+        if (selectedBranches.length > 0 && !selectedBranches.includes(branch)) return;
+
         const stats1 = getStatsForBranchAndDate(branch, last3Dates[0]);
         const stats2 = getStatsForBranchAndDate(branch, last3Dates[1]);
         const stats3 = getStatsForBranchAndDate(branch, last3Dates[2]);

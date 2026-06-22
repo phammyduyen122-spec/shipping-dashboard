@@ -6998,7 +6998,7 @@ function renderSupermarketPerformanceTable() {
         branchDataList.sort((a, b) => a.totalShortageValue - b.totalShortageValue);
     }
 
-    const top10 = branchDataList.slice(0, 10);
+    const top10 = branchDataList;
 
     tableBody.innerHTML = "";
 

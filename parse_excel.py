@@ -186,10 +186,14 @@ def parse_excel():
     perf_map = {}
     try:
         perf_dir = "performance dashboard"
-        target_perf_file = os.path.join(perf_dir, "chi-tiet-chia-qua-canh_22062026.xlsx")
-        if os.path.exists(target_perf_file):
-            recent_perf_files = [target_perf_file]
-            print(f"Bắt buộc dùng file hiệu suất do người dùng chỉ định: {target_perf_file}")
+        target_perf_files = [
+            os.path.join(perf_dir, "chi-tiet-chia-qua-canh_21062026.xlsx"),
+            os.path.join(perf_dir, "chi-tiet-chia-qua-canh_22062026.xlsx"),
+            os.path.join(perf_dir, "chi-tiet-chia-qua-canh_23062026.xlsx")
+        ]
+        recent_perf_files = [f for f in target_perf_files if os.path.exists(f)]
+        if recent_perf_files:
+            print(f"Bắt buộc dùng các file hiệu suất do người dùng chỉ định: {recent_perf_files}")
         else:
             recent_perf_files = glob.glob(os.path.join(perf_dir, "chi-tiet-chia-qua-canh_*.xlsx"))
             perf_dates = []
@@ -336,10 +340,14 @@ def parse_excel():
         traceback.print_exc()
 
     # 2. Read Shipping transfers Excel
-    target_excel_file = "transfer_22062026-144518.xlsx"
-    if os.path.exists(target_excel_file):
-        recent_excel_files = [target_excel_file]
-        print(f"Bắt buộc dùng file điều chuyển do người dùng chỉ định: {target_excel_file}")
+    target_excel_files = [
+        "transfer_21062026-203956.xlsx",
+        "transfer_22062026-144518.xlsx",
+        "transfer_23062026-150954.xlsx"
+    ]
+    recent_excel_files = [f for f in target_excel_files if os.path.exists(f)]
+    if recent_excel_files:
+        print(f"Bắt buộc dùng các file điều chuyển do người dùng chỉ định: {recent_excel_files}")
     else:
         recent_excel_files = glob.glob("transfer_*.xlsx")
         trans_dates = []

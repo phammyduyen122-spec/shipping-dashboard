@@ -189,7 +189,8 @@ def parse_excel():
         target_perf_files = [
             os.path.join(perf_dir, "chi-tiet-chia-qua-canh_21062026.xlsx"),
             os.path.join(perf_dir, "chi-tiet-chia-qua-canh_22062026.xlsx"),
-            os.path.join(perf_dir, "chi-tiet-chia-qua-canh_23062026.xlsx")
+            os.path.join(perf_dir, "chi-tiet-chia-qua-canh_23062026.xlsx"),
+            os.path.join(perf_dir, "chi-tiet-chia-qua-canh_24062026.xlsx")
         ]
         recent_perf_files = [f for f in target_perf_files if os.path.exists(f)]
         if recent_perf_files:
@@ -343,7 +344,8 @@ def parse_excel():
     target_excel_files = [
         "transfer_21062026-203956.xlsx",
         "transfer_22062026-144518.xlsx",
-        "transfer_23062026-150954.xlsx"
+        "transfer_23062026-150954.xlsx",
+        "transfer_24062026-152327.xlsx"
     ]
     recent_excel_files = [f for f in target_excel_files if os.path.exists(f)]
     if recent_excel_files:

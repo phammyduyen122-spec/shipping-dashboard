@@ -186,12 +186,7 @@ def parse_excel():
     perf_map = {}
     try:
         perf_dir = "performance dashboard"
-        target_perf_files = [
-            os.path.join(perf_dir, "chi-tiet-chia-qua-canh_22062026.xlsx"),
-            os.path.join(perf_dir, "chi-tiet-chia-qua-canh_23062026.xlsx"),
-            os.path.join(perf_dir, "chi-tiet-chia-qua-canh_24062026.xlsx"),
-            os.path.join(perf_dir, "chi-tiet-chia-qua-canh_25062026 (1).xlsx")
-        ]
+        target_perf_files = []
         recent_perf_files = [f for f in target_perf_files if os.path.exists(f)]
         if recent_perf_files:
             print(f"Bắt buộc dùng các file hiệu suất do người dùng chỉ định: {recent_perf_files}")
@@ -314,6 +309,16 @@ def parse_excel():
             if dfs_perf:
                 df_perf_all = pd.concat(dfs_perf, ignore_index=True)
                 df_perf_all['ngayChuyen'] = df_perf_all['ngayChuyen'].apply(parse_dt)
+                
+                # Dynamic allowed_dates calculation based on the actual data
+                valid_dates = df_perf_all[df_perf_all['ngayChuyen'] != 'N/A']['ngayChuyen']
+                if not valid_dates.empty:
+                    actual_max_date = valid_dates.max()
+                    print(f"Max date found in performance data: {actual_max_date}")
+                    global_max_date = datetime.strptime(actual_max_date, '%Y-%m-%d')
+                    allowed_dates = [(global_max_date - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(4)]
+                    print(f"Recomputed rolling 4 days: {allowed_dates}")
+                
                 # Filter strictly for the rolling 4 days
                 df_perf_all = df_perf_all[df_perf_all['ngayChuyen'].isin(allowed_dates)]
                 
@@ -341,12 +346,7 @@ def parse_excel():
         traceback.print_exc()
 
     # 2. Read Shipping transfers Excel
-    target_excel_files = [
-        "transfer_22062026-144518.xlsx",
-        "transfer_23062026-150954.xlsx",
-        "transfer_24062026-152327.xlsx",
-        "transfer_25062026-171831.xlsx"
-    ]
+    target_excel_files = []
     recent_excel_files = [f for f in target_excel_files if os.path.exists(f)]
     if recent_excel_files:
         print(f"Bắt buộc dùng các file điều chuyển do người dùng chỉ định: {recent_excel_files}")

@@ -446,7 +446,9 @@ document.addEventListener("DOMContentLoaded", () => {
     setupTabs();
     setupPerfEventListeners();
     setupCategoryEventListeners(earliestDate, latestDate);
-    setupSupermarketEventListeners(earliestDate, latestDate);
+    if (document.getElementById("contentSupermarketPerformance")) {
+        setupSupermarketEventListeners(earliestDate, latestDate);
+    }
     setupExportTabEventListeners(earliestDate, latestDate);
     
     // Initial Render

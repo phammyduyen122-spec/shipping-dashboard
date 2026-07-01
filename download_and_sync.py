@@ -101,7 +101,7 @@ async def main():
             await page.fill("input[name='account']", "SC015807")
             await page.fill("input[name='password']", "Yuanxxinh@1202")
             await page.click("button:has-text('ĐĂNG NHẬP')")
-            await page.wait_for_timeout(5000)
+            await page.wait_for_timeout(20000)
             
             print("Navigating to transfers_transit_items...")
             await page.goto("https://kdb.kingfood.co/transfer-item/transfers_transit_items")

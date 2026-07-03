@@ -2811,7 +2811,7 @@ function applyPerfFiltersAndRender() {
 
     filteredPerfTransfers = transfers.filter(t => {
         // Only evaluate main KHO RAU CỦ transfers for CTV performance reports
-        if !isMainBranch(t.fromBranch) {
+        if (!isMainBranch(t.fromBranch)) {
             return false;
         }
         // Keep only F1, F2, HUYHOANG, CTV, and exclude empty/unknown dividing staff
@@ -2897,7 +2897,7 @@ function renderTopCTVTable() {
     // Filter the shipping transfers (Tab 1 dataset) based on Tab 2 performance filters
     const activeTransfers = transfers.filter(t => {
         // Only evaluate main KHO RAU CỦ transfers for CTV performance reports
-        if !isMainBranch(t.fromBranch) {
+        if (!isMainBranch(t.fromBranch)) {
             return false;
         }
         // Keep only F1, F2, HUYHOANG, CTV, and exclude empty/unknown dividing staff
@@ -3138,7 +3138,7 @@ function renderTopCTVBestTable() {
     // Filter the shipping transfers (Tab 1 dataset) based on Tab 2 performance filters
     const activeTransfers = transfers.filter(t => {
         // Only evaluate main KHO RAU CỦ transfers for CTV performance reports
-        if !isMainBranch(t.fromBranch) {
+        if (!isMainBranch(t.fromBranch)) {
             return false;
         }
         // Keep only F1, F2, HUYHOANG, CTV, and exclude empty/unknown dividing staff
@@ -3338,7 +3338,7 @@ function renderPerfSummaryTable() {
     // Build lookup for total shared quantity (unfiltered qtyShipped per date, user, barcode, unit)
     const totalSharedLookup = {};
     transfers.forEach(t => {
-        if !isMainBranch(t.fromBranch) {
+        if (!isMainBranch(t.fromBranch)) {
             return;
         }
         if (!t.nguoiChia) {
@@ -3893,7 +3893,7 @@ function updatePerfSummary() {
         let diffAbs = 0;
         
         const rangeTransfers = transfers.filter(t => {
-            if !isMainBranch(t.fromBranch) {
+            if (!isMainBranch(t.fromBranch)) {
                 return false;
             }
             if (!t.nguoiChia) {
@@ -4147,7 +4147,7 @@ function renderF1CategoryTable() {
     const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
 
     const activeTransfers = transfers.filter(t => {
-        if !isMainBranch(t.fromBranch) {
+        if (!isMainBranch(t.fromBranch)) {
             return false;
         }
         if (!t.nguoiChia) {
@@ -4443,7 +4443,7 @@ function renderVegetablesLevel3Table() {
     const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
 
     const filteredTransfers = transfers.filter(t => {
-        if !isMainBranch(t.fromBranch) {
+        if (!isMainBranch(t.fromBranch)) {
             return false;
         }
         if (!t.nguoiChia) {
@@ -4679,7 +4679,7 @@ function renderF1CategoryDateTable() {
     const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
 
     const activeTransfers = transfers.filter(t => {
-        if !isMainBranch(t.fromBranch) {
+        if (!isMainBranch(t.fromBranch)) {
             return false;
         }
         if (!t.nguoiChia) {
@@ -4934,7 +4934,7 @@ function renderCategoryValuePerformanceTable() {
     catData["Khác"] = { shipVal: 0, diffVal: 0 };
 
     const currentActiveTransfers = transfers.filter(t => {
-        if !isMainBranch(t.fromBranch) {
+        if (!isMainBranch(t.fromBranch)) {
             return false;
         }
         if (!t.nguoiChia) {
@@ -4989,7 +4989,7 @@ function renderCategoryValuePerformanceTable() {
 
     // Compute D-1 period data
     const prevActiveTransfers = transfers.filter(t => {
-        if !isMainBranch(t.fromBranch) {
+        if (!isMainBranch(t.fromBranch)) {
             return false;
         }
         if (!t.nguoiChia) {
@@ -5248,7 +5248,7 @@ function downloadCategoryValueTabular() {
     catData["Khác"] = { shipVal: 0, diffVal: 0 };
 
     const activeTransfers = transfers.filter(t => {
-        if !isMainBranch(t.fromBranch) {
+        if (!isMainBranch(t.fromBranch)) {
             return false;
         }
         if (!t.nguoiChia) {
@@ -5302,7 +5302,7 @@ function downloadCategoryValueTabular() {
 
     // Compute D-1 period data
     const prevActiveTransfers = transfers.filter(t => {
-        if !isMainBranch(t.fromBranch) {
+        if (!isMainBranch(t.fromBranch)) {
             return false;
         }
         if (!t.nguoiChia) {
@@ -5481,7 +5481,7 @@ function renderVegetablesLevel3DateTable() {
     const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
 
     const activeTransfers = transfers.filter(t => {
-        if !isMainBranch(t.fromBranch) {
+        if (!isMainBranch(t.fromBranch)) {
             return false;
         }
         if (!t.nguoiChia) {
@@ -5767,7 +5767,7 @@ function renderTopSkuDiscrepancyTable() {
     const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
 
     const activeTransfers = transfers.filter(t => {
-        if !isMainBranch(t.fromBranch) {
+        if (!isMainBranch(t.fromBranch)) {
             return false;
         }
         if (!t.nguoiChia) {
@@ -5879,7 +5879,7 @@ function renderTopSkuDiscrepancyTable() {
     const prevSkuAgg = {};
     if (prevStartDateQuery && prevEndDateQuery) {
         const prevTransfers = transfers.filter(t => {
-            if !isMainBranch(t.fromBranch) {
+            if (!isMainBranch(t.fromBranch)) {
                 return false;
             }
             if (!t.nguoiChia) {
@@ -6123,7 +6123,7 @@ function getFilteredExportData(datasetType) {
     
     if (datasetType === "category") {
         const activeTransfers = transfers.filter(t => {
-            if !isMainBranch(t.fromBranch) return false;
+            if (!isMainBranch(t.fromBranch)) return false;
             if (!t.nguoiChia) return false;
             const matchStart = startDate === "" || t.date >= startDate;
             const matchEnd = endDate === "" || t.date <= endDate;
@@ -6194,7 +6194,7 @@ function getFilteredExportData(datasetType) {
     
     if (datasetType === "ctvSummary") {
         const activeTransfers = transfers.filter(t => {
-            if !isMainBranch(t.fromBranch) return false;
+            if (!isMainBranch(t.fromBranch)) return false;
             if (!t.nguoiChia) return false;
             
             const matchStart = startDate === "" || t.date >= startDate;
@@ -6283,7 +6283,7 @@ function getFilteredExportData(datasetType) {
     
     if (datasetType === "categoryDate") {
         const activeTransfers = transfers.filter(t => {
-            if !isMainBranch(t.fromBranch) return false;
+            if (!isMainBranch(t.fromBranch)) return false;
             if (!t.nguoiChia) return false;
             const matchStart = startDate === "" || t.date >= startDate;
             const matchEnd = endDate === "" || t.date <= endDate;
@@ -6541,7 +6541,7 @@ function downloadCategoryF1Tabular() {
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
 
     const activeTransfers = transfers.filter(t => {
-        if !isMainBranch(t.fromBranch) return false;
+        if (!isMainBranch(t.fromBranch)) return false;
         if (!t.nguoiChia) return false;
         const name = t.nguoiChia.trim().toLowerCase();
         
@@ -6658,7 +6658,7 @@ function downloadCategoryDateTabular() {
     const localDateSearch = document.getElementById("catDateTableFilterDate") ? document.getElementById("catDateTableFilterDate").value.trim() : "";
 
     const activeTransfers = transfers.filter(t => {
-        if !isMainBranch(t.fromBranch) return false;
+        if (!isMainBranch(t.fromBranch)) return false;
         if (!t.nguoiChia) return false;
         const name = t.nguoiChia.trim().toLowerCase();
         
@@ -6758,7 +6758,7 @@ function exportSummaryToCSV() {
 
     const totalSharedLookup = {};
     transfers.forEach(t => {
-        if !isMainBranch(t.fromBranch) {
+        if (!isMainBranch(t.fromBranch)) {
             return;
         }
         if (!t.nguoiChia) {

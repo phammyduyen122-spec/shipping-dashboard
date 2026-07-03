@@ -94,7 +94,15 @@ def load_existing_data(filepath="data.js"):
         for row in compressed_trans:
             toBranch = branches[row[3]] if 0 <= row[3] < len(branches) else ""
             itemInfo = catalog.get(row[4], ["", "", ""])
-            fromBranch = "KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG" if row[2] == "XL" else "KHO RAU CỦ"
+            fb_code = row[2]
+            if fb_code == "XL":
+                fromBranch = "KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG"
+            elif fb_code == "BT":
+                fromBranch = "KHO QUÁ CẢNH BÁNH TƯƠI"
+            elif fb_code == "BT_XL":
+                fromBranch = "KHO QUÁ CẢNH BÁNH TƯƠI XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG"
+            else:
+                fromBranch = "KHO RAU CỦ"
             nguoiChia = users[row[10]] if 0 <= row[10] < len(users) else ""
             existing_trans.append({
                 'date': row[1],
@@ -432,7 +440,12 @@ def parse_excel():
                 df_clean_f['fromBranch'] = df_clean_f['fromBranch'].map(unique_vals)
                 
                 # Filter rows immediately to save huge memory & CPU concat time
-                df_clean_f = df_clean_f[df_clean_f['fromBranch'].isin(['KHO RAU CỦ', 'KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG'])]
+                df_clean_f = df_clean_f[df_clean_f['fromBranch'].isin([
+                    'KHO RAU CỦ',
+                    'KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG',
+                    'KHO QUÁ CẢNH BÁNH TƯƠI',
+                    'KHO QUÁ CẢNH BÁNH TƯƠI XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG'
+                ])]
                 
                 dfs_transfers.append(df_clean_f)
             except Exception as e_file:
@@ -635,7 +648,11 @@ def parse_excel():
         # Columns: [id, date, fromBranch, toBranchIdx, itemCode, qtyShipped, qtyReceived, transferCode, generatedDoc, docStatus, nguoiChiaIdx]
         compressed_trans = []
         for r in records:
-            fb = "XL" if "XỬ LÝ" in r.get("fromBranch", "") else "RC"
+            from_b = r.get("fromBranch", "")
+            if "BÁNH TƯƠI" in from_b:
+                fb = "BT_XL" if "XỬ LÝ" in from_b else "BT"
+            else:
+                fb = "XL" if "XỬ LÝ" in from_b else "RC"
             row = [
                 r.get("id"),
                 r.get("date"),

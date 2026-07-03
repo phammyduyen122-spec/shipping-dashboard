@@ -7,7 +7,14 @@
         window.initialTransfers = window.compressedTransfers.map(row => {
             const itemCode = row[4];
             const itemInfo = window.itemCatalog[itemCode] || ["", "", "", ""];
-            const fromBranch = row[2] === "XL" ? "KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG" : "KHO RAU CỦ";
+            let fromBranch = "KHO RAU CỦ";
+            if (row[2] === "XL") {
+                fromBranch = "KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG";
+            } else if (row[2] === "BT") {
+                fromBranch = "KHO QUÁ CẢNH BÁNH TƯƠI";
+            } else if (row[2] === "BT_XL") {
+                fromBranch = "KHO QUÁ CẢNH BÁNH TƯƠI XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG";
+            }
             const toBranch = window.branchesList[row[3]] || "";
             const nguoiChia = window.usersList[row[10]] || "";
             

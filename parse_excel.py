@@ -491,15 +491,23 @@ def parse_excel():
                 unique_vals = {x: unicodedata.normalize('NFC', x) for x in df_clean[str_col].unique()}
                 df_clean[str_col] = df_clean[str_col].map(unique_vals)
             
-        # Filter: only keep KHO RAU CỦ and KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG
-        df_clean = df_clean[df_clean['fromBranch'].isin(['KHO RAU CỦ', 'KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG'])]
+        # Filter: keep KHO RAU CỦ, KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG, KHO QUÁ CẢNH BÁNH TƯƠI, KHO QUÁ CẢNH BÁNH TƯƠI XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG
+        df_clean = df_clean[df_clean['fromBranch'].isin([
+            'KHO RAU CỦ',
+            'KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG',
+            'KHO QUÁ CẢNH BÁNH TƯƠI',
+            'KHO QUÁ CẢNH BÁNH TƯƠI XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG'
+        ])]
         
         # Set supplementQty = qtyReceived (excluding -1) for corrective rows whose destination is a Supermarket (starts with KFM)
-        is_corrective = df_clean['fromBranch'] == 'KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG'
+        is_corrective = df_clean['fromBranch'].isin([
+            'KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG',
+            'KHO QUÁ CẢNH BÁNH TƯƠI XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG'
+        ])
         is_to_supermarket = df_clean['toBranch'].str.upper().str.startswith('KFM')
         
-        # Cap original received qty: SL nhận <= SL chuyển từ kho rau củ
-        is_orig = df_clean['fromBranch'] == 'KHO RAU CỦ'
+        # Cap original received qty: SL nhận <= SL chuyển từ kho gốc
+        is_orig = df_clean['fromBranch'].isin(['KHO RAU CỦ', 'KHO QUÁ CẢNH BÁNH TƯƠI'])
         df_clean.loc[is_orig & (df_clean['qtyReceived'] > df_clean['qtyShipped']) & (df_clean['qtyReceived'] != -1), 'qtyReceived'] = df_clean.loc[is_orig & (df_clean['qtyReceived'] > df_clean['qtyShipped']) & (df_clean['qtyReceived'] != -1), 'qtyShipped']
         
         # Set supplementQty = qtyShipped for corrective rows
@@ -517,7 +525,7 @@ def parse_excel():
         df_clean['nguoiChia'] = df_clean.apply(get_nguoi_chia, axis=1)
 
         # Inherit nguoiChia for corrective rows from original rows with matching itemCode, toBranch, and date proximity (within 3 days)
-        is_orig = df_clean['fromBranch'] == 'KHO RAU CỦ'
+        is_orig = df_clean['fromBranch'].isin(['KHO RAU CỦ', 'KHO QUÁ CẢNH BÁNH TƯƠI'])
         orig_lookup = {}
         for idx, row in df_clean[is_orig].iterrows():
             if not row['nguoiChia']:

@@ -2905,7 +2905,7 @@ function renderTopCTVTable() {
             return false;
         }
         const name = t.nguoiChia.trim().toLowerCase();
-        if (!(name.startsWith("f1") || name.startsWith("f2") || name.startsWith("huyhoang") || name.startsWith("ctv"))) {
+        if (!(name.startsWith("f1") || name.startsWith("f2") || name.startsWith("huyhoang") || name.startsWith("ctv") || name.startsWith("bakery"))) {
             return false;
         }
 
@@ -3146,7 +3146,7 @@ function renderTopCTVBestTable() {
             return false;
         }
         const name = t.nguoiChia.trim().toLowerCase();
-        if (!(name.startsWith("f1") || name.startsWith("f2") || name.startsWith("huyhoang") || name.startsWith("ctv"))) {
+        if (!(name.startsWith("f1") || name.startsWith("f2") || name.startsWith("huyhoang") || name.startsWith("ctv") || name.startsWith("bakery"))) {
             return false;
         }
 
@@ -4107,7 +4107,7 @@ function renderF1CategoryTable() {
         }
     } else {
         if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV"];
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
         } else {
             activeGroups = [groupFilterVal];
         }
@@ -4118,11 +4118,12 @@ function renderF1CategoryTable() {
 
     const titleEl = document.getElementById("perfF1TableTitle");
     if (titleEl) {
-        const isAllGroups = activeGroups.length === 4 && 
+        const isAllGroups = activeGroups.length === 5 && 
                             activeGroups.includes("F1") && 
                             activeGroups.includes("F2") && 
                             activeGroups.includes("HUYHOANG") && 
-                            activeGroups.includes("CTV");
+                            activeGroups.includes("CTV") &&
+                            activeGroups.includes("BAKERY");
         if (isAllGroups) {
             titleEl.innerHTML = "📊 Theo dõi hiệu suất phân loại theo Ngành Hàng (Toàn bộ nhân sự)";
         } else {
@@ -4413,7 +4414,7 @@ function renderVegetablesLevel3Table() {
         activeGroups = selectedGroups;
     } else {
         if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV"];
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
         } else {
             activeGroups = [groupFilterVal];
         }
@@ -4658,7 +4659,7 @@ function renderF1CategoryDateTable() {
         activeGroups = selectedGroups;
     } else {
         if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV"];
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
         } else {
             activeGroups = [groupFilterVal];
         }
@@ -4902,7 +4903,7 @@ function renderCategoryValuePerformanceTable() {
         activeGroups = selectedGroups;
     } else {
         if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV"];
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
         } else {
             activeGroups = [groupFilterVal];
         }
@@ -5216,7 +5217,7 @@ function downloadCategoryValueTabular() {
         activeGroups = selectedGroups;
     } else {
         if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV"];
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
         } else {
             activeGroups = [groupFilterVal];
         }
@@ -5460,7 +5461,7 @@ function renderVegetablesLevel3DateTable() {
         activeGroups = selectedGroups;
     } else {
         if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV"];
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
         } else {
             activeGroups = [groupFilterVal];
         }
@@ -5743,7 +5744,7 @@ function renderTopSkuDiscrepancyTable() {
         activeGroups = selectedGroups;
     } else {
         if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV"];
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
         } else {
             activeGroups = [groupFilterVal];
         }
@@ -6170,6 +6171,7 @@ function getFilteredExportData(datasetType) {
             if (name.startsWith("f1")) group = "F1";
             else if (name.startsWith("f2")) group = "F2";
             else if (name.startsWith("huyhoang")) group = "HUYHOANG";
+            else if (name.startsWith("bakery")) group = "BAKERY";
             
             categories.forEach(cat => {
                 const shipped = uData.categories[cat].shipped;
@@ -6260,6 +6262,7 @@ function getFilteredExportData(datasetType) {
             if (name.startsWith("f1")) group = "F1";
             else if (name.startsWith("f2")) group = "F2";
             else if (name.startsWith("huyhoang")) group = "HUYHOANG";
+            else if (name.startsWith("bakery")) group = "BAKERY";
             
             const stErrorRate = item.storesShared.size > 0 ? ((item.storesDiscrepant.size / item.storesShared.size) * 100).toFixed(2) + "%" : "0.00%";
             const qtyErrorRate = item.totalReqQty > 0 ? ((item.totalDiffQty / item.totalReqQty) * 100).toFixed(2) + "%" : "0.00%";
@@ -6527,7 +6530,7 @@ function downloadCategoryF1Tabular() {
         activeGroups = selectedGroups;
     } else {
         if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV"];
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
         } else {
             activeGroups = [groupFilterVal];
         }
@@ -6608,6 +6611,7 @@ function downloadCategoryF1Tabular() {
         if (name.startsWith("f1")) group = "F1";
         else if (name.startsWith("f2")) group = "F2";
         else if (name.startsWith("huyhoang")) group = "HUYHOANG";
+        else if (name.startsWith("bakery")) group = "BAKERY";
         
         categories.forEach(cat => {
             const shipped = uData.categories[cat].shipped;
@@ -6644,7 +6648,7 @@ function downloadCategoryDateTabular() {
         activeGroups = selectedGroups;
     } else {
         if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV"];
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
         } else {
             activeGroups = [groupFilterVal];
         }
@@ -6928,6 +6932,7 @@ function renderSupermarketPerformanceTable() {
                 if (lowerName.startsWith("f1")) group = "F1";
                 else if (lowerName.startsWith("f2")) group = "F2";
                 else if (lowerName.startsWith("huyhoang")) group = "HUYHOANG";
+                else if (lowerName.startsWith("bakery")) group = "BAKERY";
 
                 if (!selectedGroups.includes(group)) return;
             }

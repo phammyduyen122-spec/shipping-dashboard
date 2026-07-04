@@ -340,6 +340,9 @@ const perfRowsPerPage = 8;
 let currentPerfSortColumn = "ngayChuyen";
 let currentPerfSortDirection = "asc";
 
+let currentSummarySortColumn = "date";
+let currentSummarySortDirection = "desc";
+
 // Pagination State
 let currentPage = 1;
 const rowsPerPage = 8;
@@ -1969,6 +1972,26 @@ function setupPerfEventListeners() {
         });
     });
 
+    const summaryTableHeaders = document.querySelectorAll("th[data-summary-sort]");
+    summaryTableHeaders.forEach(th => {
+        th.addEventListener("click", () => {
+            const column = th.getAttribute("data-summary-sort");
+            if (currentSummarySortColumn === column) {
+                currentSummarySortDirection = currentSummarySortDirection === "asc" ? "desc" : "asc";
+            } else {
+                currentSummarySortColumn = column;
+                currentSummarySortDirection = "asc";
+            }
+            
+            summaryTableHeaders.forEach(header => {
+                header.classList.remove("sort-asc", "sort-desc");
+            });
+            th.classList.add(currentSummarySortDirection === "asc" ? "sort-asc" : "sort-desc");
+            
+            renderPerfSummaryTable();
+        });
+    });
+
     const btnExportTopCTVWorst = document.getElementById("btnExportTopCTVWorst");
     if (btnExportTopCTVWorst) {
         btnExportTopCTVWorst.addEventListener("click", () => {
@@ -3484,13 +3507,72 @@ function renderPerfSummaryTable() {
         return;
     }
 
-    // Sort by date descending, then by user name, then by barcode
+    // Precompute pctLech for sorting
+    sortedSummary.forEach(item => {
+        const key = `${item.date}_${item.user}_${item.barcode}_${item.unit}`;
+        const totalShared = totalSharedLookup[key] || 0;
+        item.pctLech = totalShared > 0 ? (item.absDiff / totalShared) * 100 : 0;
+    });
+
     sortedSummary.sort((a, b) => {
-        const dateCmp = b.date.localeCompare(a.date);
-        if (dateCmp !== 0) return dateCmp;
-        const userCmp = a.user.localeCompare(b.user, "vi");
-        if (userCmp !== 0) return userCmp;
-        return a.barcode.localeCompare(b.barcode);
+        let valA, valB;
+        
+        switch (currentSummarySortColumn) {
+            case "date":
+                valA = a.date || "";
+                valB = b.date || "";
+                break;
+            case "user":
+                valA = a.user || "";
+                valB = b.user || "";
+                break;
+            case "barcode":
+                valA = a.barcode || "";
+                valB = b.barcode || "";
+                break;
+            case "itemName":
+                valA = a.itemName || "";
+                valB = b.itemName || "";
+                break;
+            case "nganhHang":
+                valA = a.nganhHang || "";
+                valB = b.nganhHang || "";
+                break;
+            case "qtyShipped":
+                valA = a.qtyShipped || 0;
+                valB = b.qtyShipped || 0;
+                break;
+            case "chenhLechConLai":
+                valA = a.chenhLechConLai || 0;
+                valB = b.chenhLechConLai || 0;
+                break;
+            case "valLech":
+                valA = a.valLech || 0;
+                valB = b.valLech || 0;
+                break;
+            case "pctLech":
+                valA = a.pctLech || 0;
+                valB = b.pctLech || 0;
+                break;
+            default:
+                valA = a[currentSummarySortColumn] || "";
+                valB = b[currentSummarySortColumn] || "";
+        }
+
+        if (valA === valB) {
+            const dateCmp = b.date.localeCompare(a.date);
+            if (dateCmp !== 0) return dateCmp;
+            const userCmp = a.user.localeCompare(b.user, "vi");
+            if (userCmp !== 0) return userCmp;
+            return a.barcode.localeCompare(b.barcode);
+        }
+
+        if (typeof valA === "string") {
+            const cmp = valA.localeCompare(valB, "vi");
+            return currentSummarySortDirection === "asc" ? cmp : -cmp;
+        } else {
+            return currentSummarySortDirection === "asc" ? valA - valB : valB - valA;
+        }
     });
 
     lastSortedSummary = sortedSummary;

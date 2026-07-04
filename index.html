@@ -524,17 +524,17 @@
                         <thead>
                             <tr>
                                 <th style="text-align: center; width: 60px;">STT</th>
-                                <th>Ngày chia hàng</th>
-                                <th>Nhân sự chia</th>
-                                <th>Barcode</th>
-                                <th>Tên sản phẩm</th>
+                                <th data-summary-sort="date" class="sort-desc">Ngày chia hàng</th>
+                                <th data-summary-sort="user">Nhân sự chia</th>
+                                <th data-summary-sort="barcode">Barcode</th>
+                                <th data-summary-sort="itemName">Tên sản phẩm</th>
                                 <th>Đơn vị tính</th>
-                                <th>Ngành hàng</th>
+                                <th data-summary-sort="nganhHang">Ngành hàng</th>
                                 <th style="text-align: right;">Giá mua</th>
-                                <th style="text-align: right;">SL chia</th>
-                                <th style="text-align: right;">SL lệch còn lại</th>
-                                <th style="text-align: right;">Giá trị lệch</th>
-                                <th style="text-align: right;">% Lệch</th>
+                                <th style="text-align: right;" data-summary-sort="qtyShipped">SL chia</th>
+                                <th style="text-align: right;" data-summary-sort="chenhLechConLai">SL lệch còn lại</th>
+                                <th style="text-align: right;" data-summary-sort="valLech">Giá trị lệch</th>
+                                <th style="text-align: right;" data-summary-sort="pctLech">% Lệch</th>
                             </tr>
                         </thead>
                         <tbody id="perfSummaryBody">
@@ -1083,8 +1083,8 @@
     </div>
 
     <!-- Data Script -->
-    <script src="data.js?v=58"></script>
+    <script src="data.js?v=59"></script>
     <!-- Core App Execution Script -->
-    <script src="app.js?v=58"></script>
+    <script src="app.js?v=59"></script>
 </body>
 </html>

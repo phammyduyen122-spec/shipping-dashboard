@@ -607,6 +607,18 @@ function updateThemeToggleUI() {
     }
 }
 
+// Helper to classify dividing staff name into a group (F1, F2, HUYHOANG, BAKERY, or CTV)
+function getUserGroup(username) {
+    if (!username) return "";
+    const name = username.trim().toLowerCase();
+    if (name.startsWith("f1")) return "F1";
+    if (name.startsWith("f2") || name.startsWith("f20")) return "F2";
+    if (name.startsWith("huyhoang")) return "HUYHOANG";
+    if (name.startsWith("bakery")) return "BAKERY";
+    if (name.startsWith("f4") || name.startsWith("f40")) return "F2";
+    return "CTV";
+}
+
 // Calculate status for a given record
 function calculateStatus(t) {
     let slChuyenKRC = t.qtyShipped;
@@ -2923,27 +2935,22 @@ function renderTopCTVTable() {
         if (!isMainBranch(t.fromBranch)) {
             return false;
         }
-        // Keep only F1, F2, HUYHOANG, CTV, and exclude empty/unknown dividing staff
+        // Keep valid dividing staff and exclude system/empty users
         if (!t.nguoiChia) {
             return false;
         }
         const name = t.nguoiChia.trim().toLowerCase();
-        if (!(name.startsWith("f1") || name.startsWith("f2") || name.startsWith("huyhoang") || name.startsWith("ctv") || name.startsWith("bakery"))) {
+        if (name === "wmsdev") {
             return false;
         }
 
-        // Match staff group
-        let matchGroup = true;
+        // Match staff group using getUserGroup classification
+        const userGroup = getUserGroup(t.nguoiChia);
         if (selectedGroups.length > 0) {
-            matchGroup = false;
-            for (const g of selectedGroups) {
-                if (name.startsWith(g.toLowerCase())) {
-                    matchGroup = true;
-                    break;
-                }
+            if (!selectedGroups.includes(userGroup)) {
+                return false;
             }
         }
-        if (!matchGroup) return false;
 
         // Match items
         const matchItem = (selectedPerfItemCodes.length === 0 && textQuery === "") || 
@@ -3164,27 +3171,22 @@ function renderTopCTVBestTable() {
         if (!isMainBranch(t.fromBranch)) {
             return false;
         }
-        // Keep only F1, F2, HUYHOANG, CTV, and exclude empty/unknown dividing staff
+        // Keep valid dividing staff and exclude system/empty users
         if (!t.nguoiChia) {
             return false;
         }
         const name = t.nguoiChia.trim().toLowerCase();
-        if (!(name.startsWith("f1") || name.startsWith("f2") || name.startsWith("huyhoang") || name.startsWith("ctv") || name.startsWith("bakery"))) {
+        if (name === "wmsdev") {
             return false;
         }
 
-        // Match staff group
-        let matchGroup = true;
+        // Match staff group using getUserGroup classification
+        const userGroup = getUserGroup(t.nguoiChia);
         if (selectedGroups.length > 0) {
-            matchGroup = false;
-            for (const g of selectedGroups) {
-                if (name.startsWith(g.toLowerCase())) {
-                    matchGroup = true;
-                    break;
-                }
+            if (!selectedGroups.includes(userGroup)) {
+                return false;
             }
         }
-        if (!matchGroup) return false;
 
         // Match items
         const matchItem = (selectedPerfItemCodes.length === 0 && textQuery === "") || 
@@ -6248,12 +6250,7 @@ function getFilteredExportData(datasetType) {
         
         Object.keys(userAgg).sort((a,b) => a.localeCompare(b, "vi")).forEach(user => {
             const uData = userAgg[user];
-            const name = user.toLowerCase();
-            let group = "CTV";
-            if (name.startsWith("f1")) group = "F1";
-            else if (name.startsWith("f2")) group = "F2";
-            else if (name.startsWith("huyhoang")) group = "HUYHOANG";
-            else if (name.startsWith("bakery")) group = "BAKERY";
+            const group = getUserGroup(user);
             
             categories.forEach(cat => {
                 const shipped = uData.categories[cat].shipped;
@@ -6339,12 +6336,7 @@ function getFilteredExportData(datasetType) {
         
         Object.keys(userAgg).sort((a,b) => a.localeCompare(b, "vi")).forEach(user => {
             const item = userAgg[user];
-            const name = user.toLowerCase();
-            let group = "CTV";
-            if (name.startsWith("f1")) group = "F1";
-            else if (name.startsWith("f2")) group = "F2";
-            else if (name.startsWith("huyhoang")) group = "HUYHOANG";
-            else if (name.startsWith("bakery")) group = "BAKERY";
+            const group = getUserGroup(user);
             
             const stErrorRate = item.storesShared.size > 0 ? ((item.storesDiscrepant.size / item.storesShared.size) * 100).toFixed(2) + "%" : "0.00%";
             const qtyErrorRate = item.totalReqQty > 0 ? ((item.totalDiffQty / item.totalReqQty) * 100).toFixed(2) + "%" : "0.00%";
@@ -6688,12 +6680,7 @@ function downloadCategoryF1Tabular() {
     
     Object.keys(userAgg).sort((a,b) => a.localeCompare(b, "vi")).forEach(user => {
         const uData = userAgg[user];
-        const name = user.toLowerCase();
-        let group = "CTV";
-        if (name.startsWith("f1")) group = "F1";
-        else if (name.startsWith("f2")) group = "F2";
-        else if (name.startsWith("huyhoang")) group = "HUYHOANG";
-        else if (name.startsWith("bakery")) group = "BAKERY";
+        const group = getUserGroup(user);
         
         categories.forEach(cat => {
             const shipped = uData.categories[cat].shipped;
@@ -7009,13 +6996,7 @@ function renderSupermarketPerformanceTable() {
 
             // Filter by personnel group
             if (selectedGroups.length > 0) {
-                const lowerName = (t.nguoiChia || "").trim().toLowerCase();
-                let group = "CTV";
-                if (lowerName.startsWith("f1")) group = "F1";
-                else if (lowerName.startsWith("f2")) group = "F2";
-                else if (lowerName.startsWith("huyhoang")) group = "HUYHOANG";
-                else if (lowerName.startsWith("bakery")) group = "BAKERY";
-
+                const group = getUserGroup(t.nguoiChia);
                 if (!selectedGroups.includes(group)) return;
             }
 

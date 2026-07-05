@@ -359,7 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const rawPerfTransfers = window.performanceTransfers || [];
     performanceTransfers = rawPerfTransfers.filter(t => {
         const name = (t.nguoiChia || "").trim().toLowerCase().normalize("NFC");
-        const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu"];
+        const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát"];
         return name !== "" && !excluded.includes(name);
     });
 
@@ -376,7 +376,7 @@ document.addEventListener("DOMContentLoaded", () => {
     transfers = processedTransfers.map(t => {
         if (t.nguoiChia) {
             const name = t.nguoiChia.trim().toLowerCase().normalize("NFC");
-            const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu"];
+            const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát"];
             if (name === "" || excluded.includes(name)) {
                 t.nguoiChia = "";
             }
@@ -2854,7 +2854,7 @@ function applyPerfFiltersAndRender() {
             return false;
         }
         const name = t.nguoiChia.trim().toLowerCase().normalize("NFC");
-        const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu"];
+        const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát"];
         if (name === "" || excluded.includes(name)) {
             return false;
         }
@@ -3984,7 +3984,7 @@ function updatePerfSummary() {
                 return false;
             }
             const name = t.nguoiChia.trim().toLowerCase().normalize("NFC");
-            const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu"];
+            const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát"];
             if (name === "" || excluded.includes(name)) {
                 return false;
             }
@@ -4164,6 +4164,17 @@ function exportPerfToCSV() {
     document.body.removeChild(link);
 }
 
+// Helper to classify staff for Category performance tab
+function getCategoryTabGroup(username) {
+    if (!username) return "";
+    const name = username.trim().toLowerCase();
+    if (name.startsWith("f1")) return "NVCT";
+    if (name.startsWith("f2") || name.startsWith("f20") || name.startsWith("f4") || name.startsWith("f40")) return "F2";
+    if (name.startsWith("huyhoang")) return "HUYHOANG";
+    if (name === "wmsdev" || name.startsWith("bakery")) return "";
+    return "NVCT"; // Full-name staff are CTVs -> NVCT
+}
+
 // Bảng theo dõi hiệu suất phân loại theo Ngành Hàng (Nhóm F1)
 function renderF1CategoryTable() {
     const tbody = document.getElementById("perfF1CategoryBody");
@@ -4176,38 +4187,39 @@ function renderF1CategoryTable() {
     const groupSelector = isCategoryTabActive ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
     const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
     
-    let activeGroups = [];
+    let allowedGroups = ["NVCT", "F2", "HUYHOANG"];
     const groupFilterEl = document.getElementById("perfF1GroupFilter");
     const groupFilterVal = groupFilterEl ? groupFilterEl.value : "All";
 
     if (selectedGroups.length > 0) {
-        activeGroups = selectedGroups;
+        const resolved = [];
+        if (selectedGroups.includes("F1") || selectedGroups.includes("CTV")) resolved.push("NVCT");
+        if (selectedGroups.includes("F2")) resolved.push("F2");
+        if (selectedGroups.includes("HUYHOANG")) resolved.push("HUYHOANG");
+        allowedGroups = resolved;
+        
         if (groupFilterEl) {
-            if (selectedGroups.length === 1) {
-                groupFilterEl.value = selectedGroups[0];
+            if (resolved.length === 1) {
+                groupFilterEl.value = resolved[0];
             } else {
                 groupFilterEl.value = "All";
             }
         }
     } else {
-        if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
-        } else {
-            activeGroups = [groupFilterVal];
+        if (groupFilterVal !== "All") {
+            allowedGroups = [groupFilterVal];
         }
     }
 
-    const titleGroupText = activeGroups.join(" + ");
-    const headerGroupText = activeGroups.join("/");
+    const titleGroupText = allowedGroups.join(" + ");
+    const headerGroupText = allowedGroups.join("/");
 
     const titleEl = document.getElementById("perfF1TableTitle");
     if (titleEl) {
-        const isAllGroups = activeGroups.length === 5 && 
-                            activeGroups.includes("F1") && 
-                            activeGroups.includes("F2") && 
-                            activeGroups.includes("HUYHOANG") && 
-                            activeGroups.includes("CTV") &&
-                            activeGroups.includes("BAKERY");
+        const isAllGroups = allowedGroups.length === 3 && 
+                            allowedGroups.includes("NVCT") && 
+                            allowedGroups.includes("F2") && 
+                            allowedGroups.includes("HUYHOANG");
         if (isAllGroups) {
             titleEl.innerHTML = "📊 Theo dõi hiệu suất phân loại theo Ngành Hàng (Toàn bộ nhân sự)";
         } else {
@@ -4238,16 +4250,11 @@ function renderF1CategoryTable() {
         if (!t.nguoiChia) {
             return false;
         }
-        const name = t.nguoiChia.trim().toLowerCase();
-        
-        let matchGroupPrefix = false;
-        for (const g of activeGroups) {
-            if (name.startsWith(g.toLowerCase())) {
-                matchGroupPrefix = true;
-                break;
-            }
+        const userGroup = getCategoryTabGroup(t.nguoiChia);
+        if (!userGroup || !allowedGroups.includes(userGroup)) {
+            return false;
         }
-        if (!matchGroupPrefix) return false;
+        const name = t.nguoiChia.trim().toLowerCase();
 
         // Match global user selection (only if not on the dedicated Category tab)
         const matchUser = selectedUsers.length === 0 || selectedUsers.includes(t.nguoiChia);

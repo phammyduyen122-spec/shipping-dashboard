@@ -7,6 +7,12 @@ import time
 from datetime import datetime, timedelta
 import unicodedata
 
+EXCLUDED_USERS = {
+    'nhan quang hiếu', 'nhân quang hiếu', 'nhan quang hieu', 'nhân quang hieu',
+    'huỳnh tấn phát', 'huynh tan phat', 'huynh tấn phát', 'huỳnh tấn phat',
+    'huỳnh tan phát', 'huynh tan phát'
+}
+
 def get_best_file_for_date(directory, prefix, date_obj):
     fmt1 = date_obj.strftime("%Y-%m-%d")
     fmt2 = date_obj.strftime("%d%m%Y")
@@ -104,6 +110,10 @@ def load_existing_data(filepath="data.js"):
             else:
                 fromBranch = "KHO RAU CỦ"
             nguoiChia = users[row[10]] if 0 <= row[10] < len(users) else ""
+            if nguoiChia:
+                n_norm = unicodedata.normalize('NFC', nguoiChia.strip().lower())
+                if n_norm in EXCLUDED_USERS:
+                    nguoiChia = ""
             existing_trans.append({
                 'date': row[1],
                 'fromBranch': fromBranch,
@@ -127,6 +137,10 @@ def load_existing_data(filepath="data.js"):
             noiNhan = branches[row[4]] if 0 <= row[4] < len(branches) else ""
             itemInfo = catalog.get(row[3], ["", "", ""])
             nguoiChia = users[row[23]] if 0 <= row[23] < len(users) else ""
+            if nguoiChia:
+                n_norm = unicodedata.normalize('NFC', nguoiChia.strip().lower())
+                if n_norm in EXCLUDED_USERS:
+                    nguoiChia = ""
             existing_perf.append({
                 'maYeuCau': row[1],
                 'maPhieu': row[2],
@@ -183,8 +197,8 @@ def parse_excel():
     else:
         global_max_date = datetime(2026, 6, 17)
         
-    allowed_dates = [(global_max_date - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(4)]
-    print(f"Rolling 4 days for filtering: {allowed_dates}")
+    allowed_dates = [(global_max_date - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(2)]
+    print(f"Rolling 2 days for filtering: {allowed_dates}")
     
     # Load existing data
     existing_trans, existing_perf = load_existing_data("data.js")
@@ -248,8 +262,7 @@ def parse_excel():
                 n = str(name).strip().lower()
                 import unicodedata
                 n_norm = unicodedata.normalize('NFC', n)
-                excluded = ['nhan quang hiếu', 'nhân quang hiếu', 'nhan quang hieu', 'nhân quang hieu']
-                if n_norm in excluded or not n_norm:
+                if n_norm in EXCLUDED_USERS or not n_norm:
                     return False
                 return True
                 
@@ -324,8 +337,8 @@ def parse_excel():
                     actual_max_date = valid_dates.max()
                     print(f"Max date found in performance data: {actual_max_date}")
                     global_max_date = datetime.strptime(actual_max_date, '%Y-%m-%d')
-                    allowed_dates = [(global_max_date - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(4)]
-                    print(f"Recomputed rolling 4 days: {allowed_dates}")
+                    allowed_dates = [(global_max_date - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(2)]
+                    print(f"Recomputed rolling 2 days: {allowed_dates}")
                 
                 # Filter strictly for the rolling 4 days
                 df_perf_all = df_perf_all[df_perf_all['ngayChuyen'].isin(allowed_dates)]

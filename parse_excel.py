@@ -126,7 +126,7 @@ def load_existing_data(filepath="data.js"):
                 'transferCode': row[7],
                 'originalDoc': "",
                 'generatedDoc': row[8],
-                'supplementQty': 0,
+                'supplementQty': row[11] if len(row) > 11 else 0,
                 'docStatus': row[9],
                 'nguoiChia': nguoiChia
             })
@@ -197,8 +197,8 @@ def parse_excel():
     else:
         global_max_date = datetime(2026, 6, 17)
         
-    allowed_dates = [(global_max_date - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(2)]
-    print(f"Rolling 2 days for filtering: {allowed_dates}")
+    allowed_dates = [(global_max_date - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(3)]
+    print(f"Rolling 3 days for filtering: {allowed_dates}")
     
     # Load existing data
     existing_trans, existing_perf = load_existing_data("data.js")
@@ -337,8 +337,8 @@ def parse_excel():
                     actual_max_date = valid_dates.max()
                     print(f"Max date found in performance data: {actual_max_date}")
                     global_max_date = datetime.strptime(actual_max_date, '%Y-%m-%d')
-                    allowed_dates = [(global_max_date - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(2)]
-                    print(f"Recomputed rolling 2 days: {allowed_dates}")
+                    allowed_dates = [(global_max_date - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(3)]
+                    print(f"Recomputed rolling 3 days: {allowed_dates}")
                 
                 # Filter strictly for the rolling 4 days
                 df_perf_all = df_perf_all[df_perf_all['ngayChuyen'].isin(allowed_dates)]
@@ -685,7 +685,8 @@ def parse_excel():
                 r.get("transferCode"),
                 r.get("generatedDoc"),
                 r.get("docStatus"),
-                get_user_idx(r.get("nguoiChia"))
+                get_user_idx(r.get("nguoiChia")),
+                r.get("supplementQty", 0)
             ]
             compressed_trans.append(row)
 

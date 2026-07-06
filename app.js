@@ -33,7 +33,8 @@
                 transferCode: row[7],
                 generatedDoc: row[8],
                 docStatus: row[9],
-                nguoiChia: nguoiChia
+                nguoiChia: nguoiChia,
+                supplementQty: row[11] || 0
             };
         });
         
@@ -665,7 +666,7 @@ function calculateStatus(t) {
         slBoSung = isSupermarket ? t.qtyShipped : 0;
         chenhLechConLai = chenhLech; // Direct calculation: SL nhận - SL chuyển
     } else {
-        slBoSung = t.matchedCorrectiveQty || 0;
+        slBoSung = t.matchedCorrectiveQty || t.supplementQty || 0;
         if (chenhLech < 0) {
             // Shortage: < 0. Adding slBoSung (positive) pulls it towards 0.
             chenhLechConLai = chenhLech + slBoSung;
@@ -3416,7 +3417,7 @@ function renderPerfSummaryTable() {
         }
 
         const receivedVal = row.qtyReceived === -1 ? 0 : row.qtyReceived;
-        const slBoSung = row.matchedCorrectiveQty || 0;
+        const slBoSung = row.matchedCorrectiveQty || row.supplementQty || 0;
 
         summaryAgg[key].qtyReceived += receivedVal;
         summaryAgg[key].qtyShipped += row.qtyShipped;
@@ -3827,7 +3828,7 @@ function renderPerfTable() {
 
         const rawDiff = row.qtyReceived - row.qtyShipped;
         const rawDiffText = formatDiffNumber(rawDiff);
-        const slBoSung = row.matchedCorrectiveQty || 0;
+        const slBoSung = row.matchedCorrectiveQty || row.supplementQty || 0;
 
         const price = window.productPrices ? (window.productPrices[row.itemCode] || 0) : 0;
         const valLech = price * diff;
@@ -4124,7 +4125,7 @@ function exportPerfToCSV() {
         const statusInfo = calculateStatus(t);
         const diff = statusInfo.chenhLechConLai;
         const rawDiff = t.qtyReceived - t.qtyShipped;
-        const slBoSung = t.matchedCorrectiveQty || 0;
+        const slBoSung = t.matchedCorrectiveQty || t.supplementQty || 0;
         
         const price = window.productPrices ? (window.productPrices[t.itemCode] || 0) : 0;
         const valLech = Math.round(price * diff);

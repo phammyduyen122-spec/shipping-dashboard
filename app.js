@@ -293,7 +293,7 @@ function linkTransfers(rawTransfers) {
         }
     });
 
-    // Pass 2: Fallback matches prioritizing date proximity (0 days first, then up to 3 days)
+    // Pass 2: Fallback matches prioritizing date proximity (0 days first, then up to 3 days, symmetric)
     for (let maxDiff = 0; maxDiff <= 3; maxDiff++) {
         originals.forEach(orig => {
             if (orig.matchedCorrectiveQty > 0) return; // Already matched
@@ -307,7 +307,7 @@ function linkTransfers(rawTransfers) {
                     if (c.isMerged) return false;
                     const cDate = new Date(c.date);
                     const diffDays = Math.round((cDate - origDate) / (1000 * 60 * 60 * 24));
-                    return diffDays >= 0 && diffDays <= maxDiff && c.qtyShipped > 0;
+                    return Math.abs(diffDays) <= maxDiff && c.qtyShipped > 0;
                 });
                 if (match) {
                     orig.matchedCorrectiveQty = match.qtyShipped;
@@ -316,6 +316,22 @@ function linkTransfers(rawTransfers) {
             }
         });
     }
+
+    // Pass 3: If original received quantity is 0 (ST entered 0), match with any remaining unmatched corrective transfer for the same store and item
+    originals.forEach(orig => {
+        if (orig.matchedCorrectiveQty > 0) return; // Already matched
+        if (orig.qtyReceived !== 0) return; // Only apply if ST entered 0
+        
+        const key = `${norm(orig.toBranch)}_${norm(orig.itemCode)}`;
+        const candidates = correctiveMap[key];
+        if (candidates) {
+            const match = candidates.find(c => !c.isMerged && c.qtyShipped > 0);
+            if (match) {
+                orig.matchedCorrectiveQty = match.qtyShipped;
+                match.isMerged = true;
+            }
+        }
+    });
 
     return [...originals, ...correctives];
 }

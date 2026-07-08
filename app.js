@@ -503,6 +503,13 @@ function setupEventListeners() {
             if (e.key === "Enter") {
                 e.preventDefault();
                 confirmSelectedSuggestions();
+            } else if (e.key === "Backspace" && e.target.value === "") {
+                if (selectedItemCodes.length > 0) {
+                    e.preventDefault();
+                    selectedItemCodes.pop();
+                    renderItemTags();
+                    applyFiltersAndRender();
+                }
             }
         });
     }
@@ -1812,6 +1819,13 @@ function setupPerfEventListeners() {
         if (e.key === "Enter") {
             e.preventDefault();
             confirmSelectedPerfSuggestions();
+        } else if (e.key === "Backspace" && e.target.value === "") {
+            if (selectedPerfItemCodes.length > 0) {
+                e.preventDefault();
+                selectedPerfItemCodes.pop();
+                renderPerfItemTags();
+                applyPerfFiltersAndRender();
+            }
         }
     });
 
@@ -1829,6 +1843,13 @@ function setupPerfEventListeners() {
             if (e.key === "Enter") {
                 e.preventDefault();
                 confirmSelectedSummaryProductSuggestions();
+            } else if (e.key === "Backspace" && e.target.value === "") {
+                if (selectedSummaryProductCodes.length > 0) {
+                    e.preventDefault();
+                    selectedSummaryProductCodes.pop();
+                    renderSummaryProductTags();
+                    renderPerfSummaryTable();
+                }
             }
         });
     }

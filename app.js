@@ -14,6 +14,10 @@
                 fromBranch = "KHO QUÁ CẢNH BÁNH TƯƠI";
             } else if (row[2] === "BT_XL") {
                 fromBranch = "KHO QUÁ CẢNH BÁNH TƯƠI XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG";
+            } else if (row[2] === "MF") {
+                fromBranch = "MeatFish - Miền Đông - SCF - Quá Cảnh";
+            } else if (row[2] === "MF_XL") {
+                fromBranch = "MeatFish - Miền Đông - SCF - Lệch Chuyển Hàng";
             }
             const toBranch = window.branchesList[row[3]] || "";
             const nguoiChia = window.usersList[row[10]] || "";
@@ -83,7 +87,7 @@
 // Helper function to check if a branch is a main shipping origin
 function isMainBranch(branchName) {
     const b = (branchName || "").toString().normalize("NFC").trim().toLowerCase();
-    return b === "kho rau củ" || b === "kho quá cảnh bánh tươi";
+    return b === "kho rau củ" || b === "kho quá cảnh bánh tươi" || b === "meatfish - miền đông - scf - quá cảnh";
 }
 
 function formatActiveDates(dateSet) {
@@ -248,7 +252,7 @@ function linkTransfers(rawTransfers) {
         }
         
         const fromB = norm(t.fromBranch);
-        if (fromB === "kho rau củ" || fromB === "kho quá cảnh bánh tươi") {
+        if (fromB === "kho rau củ" || fromB === "kho quá cảnh bánh tươi" || fromB === "meatfish - miền đông - scf - quá cảnh") {
             let qtyRec = t.qtyReceived;
             if (qtyRec > t.qtyShipped && qtyRec !== -1) {
                 qtyRec = t.qtyShipped;
@@ -258,7 +262,7 @@ function linkTransfers(rawTransfers) {
                 qtyReceived: qtyRec,
                 matchedCorrectiveQty: 0
             });
-        } else if (fromB === "kho rau củ xử lý chênh lệch chuyển hàng" || fromB === "kho quá cảnh bánh tươi xử lý chênh lệch chuyển hàng") {
+        } else if (fromB === "kho rau củ xử lý chênh lệch chuyển hàng" || fromB === "kho quá cảnh bánh tươi xử lý chênh lệch chuyển hàng" || fromB === "meatfish - miền đông - scf - lệch chuyển hàng") {
             correctives.push({
                 ...t,
                 isMerged: false
@@ -651,7 +655,7 @@ function calculateStatus(t) {
     // Cap original received quantity: SL nhận <= SL chuyển từ kho rau củ
     const norm = (str) => (str || "").toString().normalize("NFC").trim().toLowerCase();
     const fromB = norm(t.fromBranch);
-    if ((fromB === "kho rau củ" || fromB === "kho quá cảnh bánh tươi") && slNhanKRC > slChuyenKRC && slNhanKRC !== -1) {
+    if ((fromB === "kho rau củ" || fromB === "kho quá cảnh bánh tươi" || fromB === "meatfish - miền đông - scf - quá cảnh") && slNhanKRC > slChuyenKRC && slNhanKRC !== -1) {
         slNhanKRC = slChuyenKRC;
     }
 
@@ -680,7 +684,7 @@ function calculateStatus(t) {
     }
 
     const toB = norm(t.toBranch);
-    const isCorrective = fromB === "kho rau củ xử lý chênh lệch chuyển hàng" || fromB === "kho quá cảnh bánh tươi xử lý chênh lệch chuyển hàng";
+    const isCorrective = fromB === "kho rau củ xử lý chênh lệch chuyển hàng" || fromB === "kho quá cảnh bánh tươi xử lý chênh lệch chuyển hàng" || fromB === "meatfish - miền đông - scf - lệch chuyển hàng";
     const isSupermarket = toB.startsWith("kfm");
 
     chenhLech = t.qtyReceived - t.qtyShipped;
@@ -7084,7 +7088,7 @@ function renderSupermarketPerformanceTable() {
 
         // Exclude virtual warehouse and "kho rau củ"
         const normToBranch = toBranch.toLowerCase().normalize("NFC");
-        if (normToBranch.includes("xử lý thất thoát") || normToBranch.includes("kho rau củ")) return;
+        if (normToBranch.includes("xử lý thất thoát") || normToBranch.includes("kho rau củ") || normToBranch.includes("quá cảnh")) return;
 
         allBranches.add(toBranch);
     });

@@ -107,6 +107,10 @@ def load_existing_data(filepath="data.js"):
                 fromBranch = "KHO QUÁ CẢNH BÁNH TƯƠI"
             elif fb_code == "BT_XL":
                 fromBranch = "KHO QUÁ CẢNH BÁNH TƯƠI XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG"
+            elif fb_code == "MF":
+                fromBranch = "MeatFish - Miền Đông - SCF - Quá Cảnh"
+            elif fb_code == "MF_XL":
+                fromBranch = "MeatFish - Miền Đông - SCF - Lệch Chuyển Hàng"
             else:
                 fromBranch = "KHO RAU CỦ"
             nguoiChia = users[row[10]] if 0 <= row[10] < len(users) else ""
@@ -457,7 +461,9 @@ def parse_excel():
                     'KHO RAU CỦ',
                     'KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG',
                     'KHO QUÁ CẢNH BÁNH TƯƠI',
-                    'KHO QUÁ CẢNH BÁNH TƯƠI XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG'
+                    'KHO QUÁ CẢNH BÁNH TƯƠI XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG',
+                    'MeatFish - Miền Đông - SCF - Quá Cảnh',
+                    'MeatFish - Miền Đông - SCF - Lệch Chuyển Hàng'
                 ])]
                 
                 dfs_transfers.append(df_clean_f)
@@ -504,23 +510,26 @@ def parse_excel():
                 unique_vals = {x: unicodedata.normalize('NFC', x) for x in df_clean[str_col].unique()}
                 df_clean[str_col] = df_clean[str_col].map(unique_vals)
             
-        # Filter: keep KHO RAU CỦ, KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG, KHO QUÁ CẢNH BÁNH TƯƠI, KHO QUÁ CẢNH BÁNH TƯƠI XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG
+        # Filter: keep KHO RAU CỦ, KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG, KHO QUÁ CẢNH BÁNH TƯƠI, KHO QUÁ CẢNH BÁNH TƯƠI XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG, and MeatFish warehouses
         df_clean = df_clean[df_clean['fromBranch'].isin([
             'KHO RAU CỦ',
             'KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG',
             'KHO QUÁ CẢNH BÁNH TƯƠI',
-            'KHO QUÁ CẢNH BÁNH TƯƠI XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG'
+            'KHO QUÁ CẢNH BÁNH TƯƠI XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG',
+            'MeatFish - Miền Đông - SCF - Quá Cảnh',
+            'MeatFish - Miền Đông - SCF - Lệch Chuyển Hàng'
         ])]
         
         # Set supplementQty = qtyReceived (excluding -1) for corrective rows whose destination is a Supermarket (starts with KFM)
         is_corrective = df_clean['fromBranch'].isin([
             'KHO RAU CỦ XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG',
-            'KHO QUÁ CẢNH BÁNH TƯƠI XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG'
+            'KHO QUÁ CẢNH BÁNH TƯƠI XỬ LÝ CHÊNH LỆCH CHUYỂN HÀNG',
+            'MeatFish - Miền Đông - SCF - Lệch Chuyển Hàng'
         ])
         is_to_supermarket = df_clean['toBranch'].str.upper().str.startswith('KFM')
         
         # Cap original received qty: SL nhận <= SL chuyển từ kho gốc
-        is_orig = df_clean['fromBranch'].isin(['KHO RAU CỦ', 'KHO QUÁ CẢNH BÁNH TƯƠI'])
+        is_orig = df_clean['fromBranch'].isin(['KHO RAU CỦ', 'KHO QUÁ CẢNH BÁNH TƯƠI', 'MeatFish - Miền Đông - SCF - Quá Cảnh'])
         df_clean.loc[is_orig & (df_clean['qtyReceived'] > df_clean['qtyShipped']) & (df_clean['qtyReceived'] != -1), 'qtyReceived'] = df_clean.loc[is_orig & (df_clean['qtyReceived'] > df_clean['qtyShipped']) & (df_clean['qtyReceived'] != -1), 'qtyShipped']
         
         # Set supplementQty = qtyShipped for corrective rows
@@ -538,7 +547,7 @@ def parse_excel():
         df_clean['nguoiChia'] = df_clean.apply(get_nguoi_chia, axis=1)
 
         # Inherit nguoiChia for corrective rows from original rows with matching itemCode, toBranch, and date proximity (within 3 days)
-        is_orig = df_clean['fromBranch'].isin(['KHO RAU CỦ', 'KHO QUÁ CẢNH BÁNH TƯƠI'])
+        is_orig = df_clean['fromBranch'].isin(['KHO RAU CỦ', 'KHO QUÁ CẢNH BÁNH TƯƠI', 'MeatFish - Miền Đông - SCF - Quá Cảnh'])
         orig_lookup = {}
         for idx, row in df_clean[is_orig].iterrows():
             if not row['nguoiChia']:
@@ -672,6 +681,8 @@ def parse_excel():
             from_b = r.get("fromBranch", "")
             if "BÁNH TƯƠI" in from_b:
                 fb = "BT_XL" if "XỬ LÝ" in from_b else "BT"
+            elif "MeatFish" in from_b:
+                fb = "MF_XL" if "Lệch Chuyển Hàng" in from_b or "LỆCH" in from_b.upper() else "MF"
             else:
                 fb = "XL" if "XỬ LÝ" in from_b else "RC"
             row = [

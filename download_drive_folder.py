@@ -6,7 +6,10 @@ import sys
 
 def main():
     sys.stdout.reconfigure(encoding='utf-8')
-    url = "https://drive.google.com/drive/folders/1-Rf7O1H-Qsepdrr6coXN7BFsur1gke-g"
+    urls = [
+        "https://drive.google.com/drive/folders/1-Rf7O1H-Qsepdrr6coXN7BFsur1gke-g",
+        "https://drive.google.com/drive/folders/123jgWrt18ousMRlasUjEwd9rrn76ksNS"
+    ]
     temp_dir = "gdrive_temp"
     
     # Clean temporary folder if it exists
@@ -14,11 +17,13 @@ def main():
         shutil.rmtree(temp_dir)
     os.makedirs(temp_dir, exist_ok=True)
     
-    print(f"Downloading Google Drive folder to {temp_dir}...")
+    print(f"Downloading Google Drive folders to {temp_dir}...")
     try:
-        # download_folder downloads all files in the folder to the target directory
-        gdown.download_folder(url=url, output=temp_dir, quiet=False, use_cookies=False)
-        print("Folder downloaded successfully!")
+        for url in urls:
+            print(f"Downloading folder: {url} ...")
+            # download_folder downloads all files in the folder to the target directory
+            gdown.download_folder(url=url, output=temp_dir, quiet=False, use_cookies=False)
+        print("All folders downloaded successfully!")
         
         # Check files downloaded
         files = glob.glob(os.path.join(temp_dir, "*"))

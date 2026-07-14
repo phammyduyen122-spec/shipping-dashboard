@@ -84,9 +84,43 @@
 })();
 
 // Helper function to format a set of dates for aggregated CTV rows
+window.activePerfWarehouseGroup = "VegBakery";
+
+function getActiveCategories() {
+    const activeTransfersList = window.transfers || [];
+    if (window.activePerfWarehouseGroup === "MeatFish") {
+        const norm = (str) => (str || "").toString().normalize("NFC").trim().toLowerCase();
+        const cats = Array.from(new Set(
+            activeTransfersList
+                .filter(t => norm(t.fromBranch) === "meatfish - miền đông - scf - quá cảnh")
+                .map(t => t.nguoiChia ? t.nganhHang : null)
+                .filter(Boolean)
+        )).sort();
+        return cats.length > 0 ? cats : ["2.MEAT-FISH"];
+    } else if (window.activePerfWarehouseGroup === "VegBakery") {
+        const norm = (str) => (str || "").toString().normalize("NFC").trim().toLowerCase();
+        const cats = Array.from(new Set(
+            activeTransfersList
+                .filter(t => norm(t.fromBranch) === "kho rau củ" || norm(t.fromBranch) === "kho quá cảnh bánh tươi")
+                .map(t => t.nguoiChia ? t.nganhHang : null)
+                .filter(Boolean)
+        )).sort();
+        return cats.length > 0 ? cats : ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+    } else {
+        const cats = Array.from(new Set(activeTransfersList.map(t => t.nguoiChia ? t.nganhHang : null).filter(Boolean))).sort();
+        return cats.length > 0 ? cats : ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+    }
+}
+
 // Helper function to check if a branch is a main shipping origin
 function isMainBranch(branchName) {
     const b = (branchName || "").toString().normalize("NFC").trim().toLowerCase();
+    if (window.activePerfWarehouseGroup === "MeatFish") {
+        return b === "meatfish - miền đông - scf - quá cảnh";
+    }
+    if (window.activePerfWarehouseGroup === "VegBakery") {
+        return b === "kho rau củ" || b === "kho quá cảnh bánh tươi";
+    }
     return b === "kho rau củ" || b === "kho quá cảnh bánh tươi" || b === "meatfish - miền đông - scf - quá cảnh";
 }
 
@@ -1683,6 +1717,7 @@ function updateSumifsSummary() {
 // Tab Switcher Controller
 function setupTabs() {
     const tabPerformanceReport = document.getElementById("tabPerformanceReport");
+    const tabMeatFishPerformance = document.getElementById("tabMeatFishPerformance");
     const tabCategoryPerformance = document.getElementById("tabCategoryPerformance");
     const tabSupermarketPerformance = document.getElementById("tabSupermarketPerformance");
     const tabExportExcel = document.getElementById("tabExportExcel");
@@ -1695,7 +1730,9 @@ function setupTabs() {
     if (!tabPerformanceReport || !tabCategoryPerformance) return;
 
     tabPerformanceReport.addEventListener("click", () => {
+        window.activePerfWarehouseGroup = "VegBakery";
         tabPerformanceReport.classList.add("active");
+        if (tabMeatFishPerformance) tabMeatFishPerformance.classList.remove("active");
         tabCategoryPerformance.classList.remove("active");
         if (tabSupermarketPerformance) tabSupermarketPerformance.classList.remove("active");
         if (tabExportExcel) tabExportExcel.classList.remove("active");
@@ -1705,12 +1742,34 @@ function setupTabs() {
         if (contentSupermarketPerformance) contentSupermarketPerformance.classList.remove("active");
         if (contentExportExcel) contentExportExcel.classList.remove("active");
         
-        applyPerfFiltersAndRender();
+        populatePerfFilterOptions();
+        clearPerfFilters();
     });
 
+    if (tabMeatFishPerformance) {
+        tabMeatFishPerformance.addEventListener("click", () => {
+            window.activePerfWarehouseGroup = "MeatFish";
+            tabMeatFishPerformance.classList.add("active");
+            tabPerformanceReport.classList.remove("active");
+            tabCategoryPerformance.classList.remove("active");
+            if (tabSupermarketPerformance) tabSupermarketPerformance.classList.remove("active");
+            if (tabExportExcel) tabExportExcel.classList.remove("active");
+            
+            contentPerformanceReport.classList.add("active");
+            contentCategoryPerformance.classList.remove("active");
+            if (contentSupermarketPerformance) contentSupermarketPerformance.classList.remove("active");
+            if (contentExportExcel) contentExportExcel.classList.remove("active");
+            
+            populatePerfFilterOptions();
+            clearPerfFilters();
+        });
+    }
+
     tabCategoryPerformance.addEventListener("click", () => {
+        window.activePerfWarehouseGroup = "All";
         tabCategoryPerformance.classList.add("active");
         tabPerformanceReport.classList.remove("active");
+        if (tabMeatFishPerformance) tabMeatFishPerformance.classList.remove("active");
         if (tabSupermarketPerformance) tabSupermarketPerformance.classList.remove("active");
         if (tabExportExcel) tabExportExcel.classList.remove("active");
         
@@ -1724,8 +1783,10 @@ function setupTabs() {
 
     if (tabSupermarketPerformance && contentSupermarketPerformance) {
         tabSupermarketPerformance.addEventListener("click", () => {
+            window.activePerfWarehouseGroup = "All";
             tabSupermarketPerformance.classList.add("active");
             tabPerformanceReport.classList.remove("active");
+            if (tabMeatFishPerformance) tabMeatFishPerformance.classList.remove("active");
             tabCategoryPerformance.classList.remove("active");
             if (tabExportExcel) tabExportExcel.classList.remove("active");
             
@@ -1740,8 +1801,10 @@ function setupTabs() {
 
     if (tabExportExcel && contentExportExcel) {
         tabExportExcel.addEventListener("click", () => {
+            window.activePerfWarehouseGroup = "All";
             tabExportExcel.classList.add("active");
             tabPerformanceReport.classList.remove("active");
+            if (tabMeatFishPerformance) tabMeatFishPerformance.classList.remove("active");
             tabCategoryPerformance.classList.remove("active");
             if (tabSupermarketPerformance) tabSupermarketPerformance.classList.remove("active");
             
@@ -1767,10 +1830,23 @@ function populatePerfFilterOptions() {
     toBranchOptions.innerHTML = '';
     unitOptions.innerHTML = '';
 
+    // Filter performanceTransfers and transfers based on active tab
+    let filteredPerfTrans = performanceTransfers;
+    let filteredTrans = transfers;
+    if (window.activePerfWarehouseGroup === "MeatFish") {
+        const norm = (str) => (str || "").toString().normalize("NFC").trim().toLowerCase();
+        filteredPerfTrans = performanceTransfers.filter(t => norm(t.fromBranch) === "meatfish - miền đông - scf - quá cảnh");
+        filteredTrans = transfers.filter(t => norm(t.fromBranch) === "meatfish - miền đông - scf - quá cảnh");
+    } else if (window.activePerfWarehouseGroup === "VegBakery") {
+        const norm = (str) => (str || "").toString().normalize("NFC").trim().toLowerCase();
+        filteredPerfTrans = performanceTransfers.filter(t => norm(t.fromBranch) === "kho rau củ" || norm(t.fromBranch) === "kho quá cảnh bánh tươi");
+        filteredTrans = transfers.filter(t => norm(t.fromBranch) === "kho rau củ" || norm(t.fromBranch) === "kho quá cảnh bánh tươi");
+    }
+
     // Get unique sorted values
-    const users = [...new Set(performanceTransfers.map(t => t.nguoiChia).filter(Boolean))].sort();
-    const toBranches = [...new Set(performanceTransfers.map(t => t.noiNhan).filter(Boolean))].sort();
-    const units = [...new Set(transfers.map(t => t.unit).filter(Boolean))].sort();
+    const users = [...new Set(filteredPerfTrans.map(t => t.nguoiChia).filter(Boolean))].sort();
+    const toBranches = [...new Set(filteredPerfTrans.map(t => t.noiNhan).filter(Boolean))].sort();
+    const units = [...new Set(filteredTrans.map(t => t.unit).filter(Boolean))].sort();
 
     // Populate Users list
     users.forEach(user => {
@@ -1798,6 +1874,25 @@ function populatePerfFilterOptions() {
             </label>
         `;
     });
+
+    // Dynamically build category options
+    const uniqueCategories = getActiveCategories();
+    
+    // Update perfFilterCategoryOptions
+    const perfCatContainer = document.getElementById("perfFilterCategoryOptions");
+    if (perfCatContainer) {
+        perfCatContainer.innerHTML = uniqueCategories.map(cat => 
+            `<label class="multiselect-option"><input type="checkbox" value="${cat}"> <span>${cat}</span></label>`
+        ).join("");
+    }
+    
+    // Update catFilterCategoryOptions
+    const catCatContainer = document.getElementById("catFilterCategoryOptions");
+    if (catCatContainer) {
+        catCatContainer.innerHTML = uniqueCategories.map(cat => 
+            `<label class="multiselect-option"><input type="checkbox" value="${cat}"> <span>${cat}</span></label>`
+        ).join("");
+    }
 }
 
 // Setup Event Listeners for Performance Tab
@@ -3929,7 +4024,7 @@ function updatePerfSummary() {
     let totalDiffAbs = 0;
     let totalDiffValue = 0;
 
-    const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+    const categories = getActiveCategories();
     const categoryDiffs = {};
     categories.forEach(cat => {
         categoryDiffs[cat] = 0;
@@ -4120,7 +4215,7 @@ function updatePerfSummary() {
     if (breakdownEl) {
         breakdownEl.innerHTML = "";
         
-        const catOrder = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA", "Khác"];
+        const catOrder = [...getActiveCategories(), "Khác"];
         
         catOrder.forEach(cat => {
             const val = categoryDiffs[cat] || 0;
@@ -4222,6 +4317,51 @@ function renderF1CategoryTable() {
     const tbody = document.getElementById("perfF1CategoryBody");
     if (!tbody) return;
     tbody.innerHTML = "";
+
+    const categories = getActiveCategories();
+
+    // Render dynamic table headers
+    const thead = document.querySelector("#perfF1CategoryTable thead");
+    if (thead) {
+        // Read current select value safely
+        const groupFilterEl = document.getElementById("perfF1GroupFilter");
+        const groupFilterVal = groupFilterEl ? groupFilterEl.value : "All";
+
+        const catColsCount = categories.length;
+        const totalColsSpan = catColsCount + 1; // categories + Total column
+        thead.innerHTML = `
+            <tr>
+                <th rowspan="2" style="text-align: center; vertical-align: middle; width: 60px;">STT</th>
+                <th rowspan="2" id="perfF1TableHeaderName" style="vertical-align: middle; white-space: nowrap; padding: 8px 12px;">
+                    <div style="display: inline-flex; align-items: center; gap: 6px; justify-content: center; width: 100%;">
+                        <span>Nhân sự</span>
+                        <select id="perfF1GroupFilter" style="padding: 2px 4px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--bg-card); color: var(--text-primary); font-size: 11px; font-weight: 600; cursor: pointer; outline: none; margin: 0; display: inline-block; width: auto; vertical-align: middle;">
+                            <option value="All" ${groupFilterVal === 'All' ? 'selected' : ''}>Tất cả</option>
+                            <option value="NVCT" ${groupFilterVal === 'NVCT' ? 'selected' : ''}>NVCT</option>
+                            <option value="F2" ${groupFilterVal === 'F2' ? 'selected' : ''}>F2</option>
+                            <option value="HUYHOANG" ${groupFilterVal === 'HUYHOANG' ? 'selected' : ''}>HUYHOANG</option>
+                        </select>
+                    </div>
+                </th>
+                <th colspan="${totalColsSpan}" style="text-align: center; border-bottom: 1px solid var(--border-color);">Sản lượng chia</th>
+                <th colspan="${totalColsSpan}" style="text-align: center; border-bottom: 1px solid var(--border-color);">Tỷ lệ chia sai</th>
+            </tr>
+            <tr>
+                ${categories.map(cat => `<th style="text-align: right; white-space: nowrap;">${cat}</th>`).join("")}
+                <th style="text-align: right; white-space: nowrap; font-weight: bold; border-left: 1px solid var(--border-color); color: var(--color-primary);">Tổng SL</th>
+                ${categories.map(cat => `<th style="text-align: right; white-space: nowrap;">${cat}</th>`).join("")}
+                <th style="text-align: right; white-space: nowrap; font-weight: bold; border-left: 1px solid var(--border-color); color: var(--color-primary);">Tổng % chia sai</th>
+            </tr>
+        `;
+        
+        // Re-bind the event listener for #perfF1GroupFilter
+        const newGroupFilter = document.getElementById("perfF1GroupFilter");
+        if (newGroupFilter) {
+            newGroupFilter.addEventListener("change", () => {
+                renderF1CategoryTable();
+            });
+        }
+    }
 
     const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
     const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
@@ -4331,7 +4471,7 @@ function renderF1CategoryTable() {
         return;
     }
 
-    const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+
 
     const userAgg = {};
     activeTransfers.forEach(t => {
@@ -4858,7 +4998,7 @@ function renderF1CategoryDateTable() {
         return;
     }
 
-    const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+    const categories = getActiveCategories();
     const dateAgg = {};
 
     activeTransfers.forEach(t => {
@@ -5060,7 +5200,7 @@ function renderCategoryValuePerformanceTable() {
     const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
 
     // Compute current period data
-    const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+    const categories = getActiveCategories();
     const catData = {};
     categories.forEach(cat => {
         catData[cat] = { shipVal: 0, diffVal: 0 };
@@ -5374,7 +5514,7 @@ function downloadCategoryValueTabular() {
     const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
 
     // Compute current period data
-    const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+    const categories = getActiveCategories();
     const catData = {};
     categories.forEach(cat => {
         catData[cat] = { shipVal: 0, diffVal: 0 };
@@ -6264,7 +6404,7 @@ function getFilteredExportData(datasetType) {
             return matchStart && matchEnd;
         });
         
-        const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+        const categories = getActiveCategories();
         const userAgg = {};
         
         activeTransfers.forEach(t => {
@@ -6416,7 +6556,7 @@ function getFilteredExportData(datasetType) {
             return matchStart && matchEnd;
         });
         
-        const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+        const categories = getActiveCategories();
         const dateAgg = {};
         
         activeTransfers.forEach(t => {
@@ -6694,7 +6834,7 @@ function downloadCategoryF1Tabular() {
         return;
     }
 
-    const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+    const categories = getActiveCategories();
     const userAgg = {};
     
     activeTransfers.forEach(t => {
@@ -6803,7 +6943,7 @@ function downloadCategoryDateTabular() {
         return;
     }
 
-    const categories = ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
+    const categories = getActiveCategories();
     const dateAgg = {};
     
     activeTransfers.forEach(t => {

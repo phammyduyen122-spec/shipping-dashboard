@@ -617,17 +617,40 @@ def parse_excel():
         else:
             print("WARNING: category_mapping.json không tồn tại!")
 
+        # Fallback category mapping for remaining MeatFish SKUs
+        FALLBACK_MEATFISH_CATEGORIES = {
+            '11417': '2.FISH AND SEAFOOD',
+            '11499': '2.FISH AND SEAFOOD',
+            '8935058931681': '2.MEAT',
+            '8935058932350': '2.MEAT',
+            '8935058973926': '2.MEAT',
+            '8935319730282': '2.MEAT',
+            '8936190860587': '2.MEAT',
+            '8936190860617': '2.MEAT',
+            '8936190861041': '2.MEAT',
+            '8936190862024': '2.MEAT',
+            '8936190862239': '2.MEAT',
+            '8936194975058': '2.MEAT',
+            '8936239090012': '2.MEAT',
+            '8938547922009': '2.MEAT',
+            '8938547922146': '2.MEAT',
+            '8938547922320': '2.MEAT',
+            '8938547922405': '2.MEAT',
+            '8938547922429': '2.MEAT',
+            'CC00392': 'Khác'
+        }
+
         # Inject nganhHang field into shipping transfers
         for r in records:
             code = r.get("itemCode", "").strip()
             info = mapping.get(code)
-            r["nganhHang"] = info["category"] if info else ""
+            r["nganhHang"] = info["category"] if info else FALLBACK_MEATFISH_CATEGORIES.get(code, "")
 
         # Inject nganhHang field into performance transfers
         for r in perf_records:
             code = r.get("barcode", "").strip()
             info = mapping.get(code)
-            r["nganhHang"] = info["category"] if info else ""
+            r["nganhHang"] = info["category"] if info else FALLBACK_MEATFISH_CATEGORIES.get(code, "")
 
         print(f"Đã xử lý xong {len(records)} bản ghi điều chuyển hàng hợp lệ.")
         

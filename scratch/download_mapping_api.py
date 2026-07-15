@@ -62,7 +62,7 @@ async def main():
             print(f"Flattened total categories: {len(all_flat)}")
             
             # Target categories
-            target_names = ["2.EGGS", "2.DELICA", "2.VEGETABLES", "2.BAKERY", "2.FRUITS"]
+            target_names = ["2.EGGS", "2.DELICA", "2.VEGETABLES", "2.BAKERY", "2.FRUITS", "2.FISH AND SEAFOOD", "2.MEAT"]
             target_cats = []
             
             for item in all_flat:
@@ -74,34 +74,37 @@ async def main():
             target_ids = [c.get("id") for c in target_cats]
             print(f"Target category IDs: {target_ids}")
             
-            # Query variants
-            payload = {
-                "sort_by": "created_at",
-                "sort_type": -1,
-                "skip": 0,
-                "limit": 10000,
-                "deleted": False,
-                "category_ids": target_ids,
-                "created_by": [],
-                "updated_by": []
-            }
-            
-            print("Querying variants list from v2/variants/getList using token...")
-            var_response = await page.request.post(
-                "https://api.kingfood.co/v2/variants/getList",
-                headers=headers,
-                data=json.dumps(payload)
-            )
-            
-            if var_response.status != 200:
-                print(f"Failed to fetch variants list: {var_response.status}")
-                print(await var_response.text())
-                return
+            # Query variants one category ID at a time and merge
+            items = []
+            for cat_id in target_ids:
+                payload = {
+                    "sort_by": "created_at",
+                    "sort_type": -1,
+                    "skip": 0,
+                    "limit": 10000,
+                    "deleted": False,
+                    "category_ids": [cat_id],
+                    "created_by": [],
+                    "updated_by": []
+                }
                 
-            var_data = await var_response.json()
-            items = var_data.get("items", [])
-            total = var_data.get("total", 0)
-            print(f"API returned {len(items)} items (total in database: {total})")
+                print(f"Querying category ID: {cat_id} ...")
+                var_response = await page.request.post(
+                    "https://api.kingfood.co/v2/variants/getList",
+                    headers=headers,
+                    data=json.dumps(payload)
+                )
+                
+                if var_response.status != 200:
+                    print(f"Failed to fetch variants list for {cat_id}: {var_response.status}")
+                    continue
+                    
+                var_data = await var_response.json()
+                cat_items = var_data.get("items", [])
+                items.extend(cat_items)
+                print(f"  Retrieved {len(cat_items)} items.")
+            
+            print(f"Total accumulated items across categories: {len(items)}")
             
             mapping = {}
             for item in items:

@@ -25,24 +25,27 @@ def main():
             gdown.download_folder(url=url, output=temp_dir, quiet=False, use_cookies=False)
         print("All folders downloaded successfully!")
         
-        # Check files downloaded
-        files = glob.glob(os.path.join(temp_dir, "*"))
-        print(f"Files found in downloaded folder: {len(files)}")
-        for f in files:
-            basename = os.path.basename(f)
-            print(f"  - {basename} (size: {os.path.getsize(f)} bytes)")
-            
-            # Copy to correct workspace locations
-            if "chi-tiet-chia-qua-canh" in basename:
-                perf_dir = "performance dashboard"
-                os.makedirs(perf_dir, exist_ok=True)
-                dest = os.path.join(perf_dir, basename)
-                shutil.copy2(f, dest)
-                print(f"    Copied performance file to: {dest}")
-            elif "transfer" in basename:
-                dest = os.path.join(".", basename)
-                shutil.copy2(f, dest)
-                print(f"    Copied transfer file to: {dest}")
+        # Check files downloaded recursively
+        total_files = 0
+        for root, dirs, files_list in os.walk(temp_dir):
+            for file in files_list:
+                f = os.path.join(root, file)
+                basename = file
+                total_files += 1
+                print(f"  - {basename} (size: {os.path.getsize(f)} bytes) from {root}")
+                
+                # Copy to correct workspace locations
+                if "chi-tiet-chia-qua-canh" in basename.lower():
+                    perf_dir = "performance dashboard"
+                    os.makedirs(perf_dir, exist_ok=True)
+                    dest = os.path.join(perf_dir, basename)
+                    shutil.copy2(f, dest)
+                    print(f"    Copied performance file to: {dest}")
+                elif "transfer" in basename.lower():
+                    dest = os.path.join(".", basename)
+                    shutil.copy2(f, dest)
+                    print(f"    Copied transfer file to: {dest}")
+        print(f"Total files found recursively: {total_files}")
                 
         # Clean up temp folder
         shutil.rmtree(temp_dir)

@@ -4642,8 +4642,9 @@ function getCategoryTabGroup(username) {
     if (name.startsWith("f1")) return "NVCT";
     if (name.startsWith("f2") || name.startsWith("f20") || name.startsWith("f4") || name.startsWith("f40")) return "F2";
     if (name.startsWith("huyhoang")) return "HUYHOANG";
-    if (name === "wmsdev" || name.startsWith("bakery")) return "";
-    return "NVCT"; // Full-name staff are CTVs -> NVCT
+    if (name.startsWith("bakery")) return "BAKERY";
+    if (name === "wmsdev") return "";
+    return "CTV";
 }
 
 // Bảng theo dõi hiệu suất phân loại theo Ngành Hàng (Nhóm F1)
@@ -4674,6 +4675,8 @@ function renderF1CategoryTable() {
                             <option value="NVCT" ${groupFilterVal === 'NVCT' ? 'selected' : ''}>NVCT</option>
                             <option value="F2" ${groupFilterVal === 'F2' ? 'selected' : ''}>F2</option>
                             <option value="HUYHOANG" ${groupFilterVal === 'HUYHOANG' ? 'selected' : ''}>HUYHOANG</option>
+                            <option value="CTV" ${groupFilterVal === 'CTV' ? 'selected' : ''}>CTV</option>
+                            <option value="BAKERY" ${groupFilterVal === 'BAKERY' ? 'selected' : ''}>BAKERY</option>
                         </select>
                     </div>
                 </th>
@@ -4703,15 +4706,17 @@ function renderF1CategoryTable() {
     const groupSelector = isCategoryTabActive ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
     const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
     
-    let allowedGroups = ["NVCT", "F2", "HUYHOANG"];
+    let allowedGroups = ["NVCT", "F2", "HUYHOANG", "CTV", "BAKERY"];
     const groupFilterEl = document.getElementById("perfF1GroupFilter");
     const groupFilterVal = groupFilterEl ? groupFilterEl.value : "All";
 
     if (selectedGroups.length > 0) {
         const resolved = [];
-        if (selectedGroups.includes("F1") || selectedGroups.includes("CTV")) resolved.push("NVCT");
+        if (selectedGroups.includes("F1")) resolved.push("NVCT");
         if (selectedGroups.includes("F2")) resolved.push("F2");
         if (selectedGroups.includes("HUYHOANG")) resolved.push("HUYHOANG");
+        if (selectedGroups.includes("CTV")) resolved.push("CTV");
+        if (selectedGroups.includes("BAKERY")) resolved.push("BAKERY");
         allowedGroups = resolved;
         
         if (groupFilterEl) {
@@ -4732,10 +4737,12 @@ function renderF1CategoryTable() {
 
     const titleEl = document.getElementById("perfF1TableTitle");
     if (titleEl) {
-        const isAllGroups = allowedGroups.length === 3 && 
+        const isAllGroups = allowedGroups.length === 5 && 
                             allowedGroups.includes("NVCT") && 
                             allowedGroups.includes("F2") && 
-                            allowedGroups.includes("HUYHOANG");
+                            allowedGroups.includes("HUYHOANG") &&
+                            allowedGroups.includes("CTV") &&
+                            allowedGroups.includes("BAKERY");
         if (isAllGroups) {
             titleEl.innerHTML = "📊 Theo dõi hiệu suất phân loại theo Ngành Hàng (Toàn bộ nhân sự)";
         } else {

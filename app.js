@@ -313,7 +313,7 @@ function getSupermarketStt(branchName) {
 window.activePerfWarehouseGroup = "VegBakery";
 
 function getActiveCategories() {
-    const activeTransfersList = window.transfers || [];
+    const activeTransfersList = transfers || [];
     if (window.activePerfWarehouseGroup === "MeatFish") {
         const norm = (str) => (str || "").toString().normalize("NFC").trim().toLowerCase();
         const cats = Array.from(new Set(
@@ -5736,31 +5736,69 @@ function renderCategoryValuePerformanceTable() {
     tbody.appendChild(trTotal);
 
     // Update the Category Value Stats Cards
-    const elTotal = document.getElementById("catTotalDiffValue");
-    const elVeg = document.getElementById("catVegDiffValue");
-    const elFruit = document.getElementById("catFruitDiffValue");
-    const elBakery = document.getElementById("catBakeryDiffValue");
-    const elEggs = document.getElementById("catEggsDiffValue");
-    const elDelica = document.getElementById("catDelicaDiffValue");
-
-    const setCardValueAndStyle = (el, val) => {
-        if (!el) return;
-        el.innerText = formatVND(val);
-        if (val < 0) {
-            el.style.color = "var(--color-danger)";
-        } else if (val > 0) {
-            el.style.color = "var(--color-info)";
-        } else {
-            el.style.color = "var(--text-primary)";
+    const statsGrid = document.getElementById("catValueStatsGrid");
+    if (statsGrid) {
+        let gridHtml = `
+            <!-- Tổng giá trị lệch -->
+            <div class="stat-card total" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; --color-primary: #4f46e5;">
+                <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                    <span>TỔNG GIÁ TRỊ LỆCH</span>
+                    <span style="color: #4f46e5;">●</span>
+                </div>
+                <div class="stat-value" style="font-size: 20px; margin-bottom: 2px; font-weight: 700; color: ${grandTotalDiff < 0 ? 'var(--color-danger)' : (grandTotalDiff > 0 ? 'var(--color-info)' : 'var(--text-primary)')}">${formatVND(grandTotalDiff)}</div>
+                <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Tổng chênh lệch tất cả ngành hàng</div>
+            </div>
+        `;
+        
+        const catMeta = {
+            "2.VEGETABLES": { label: "LỆCH VEGETABLES", desc: "Ngành hàng Rau Củ", color: "var(--color-primary)" },
+            "2.FRUITS": { label: "LỆCH FRUITS", desc: "Ngành hàng Trái Cây", color: "var(--color-success)" },
+            "2.BAKERY": { label: "LỆCH BAKERY", desc: "Ngành hàng Bánh Mì", color: "var(--color-warning)" },
+            "2.EGGS": { label: "LỆCH EGGS", desc: "Ngành hàng Trứng", color: "var(--color-info)" },
+            "2.DELICA": { label: "LỆCH DELICA", desc: "Ngành hàng Delica", color: "#ec4899" },
+            "2.MEAT": { label: "LỆCH THỊT", desc: "Ngành hàng Thịt", color: "#ef4444" },
+            "2.FISH AND SEAFOOD": { label: "LỆCH THỦY SẢN", desc: "Hải sản tươi sống", color: "#3b82f6" },
+            "2.READY TO COOK": { label: "LỆCH READY TO COOK", desc: "Sơ chế chế biến", color: "#8b5cf6" },
+            "2.FROZEN FOODS": { label: "LỆCH ĐÔNG LẠNH", desc: "Thực phẩm đông lạnh", color: "#06b6d4" },
+            "Khác": { label: "LỆCH KHÁC", desc: "Sản phẩm khác", color: "#6b7280" }
+        };
+        
+        categories.forEach(cat => {
+            const val = Math.round(catData[cat] ? catData[cat].diffVal : 0);
+            const meta = catMeta[cat] || { label: `LỆCH ${cat}`, desc: cat, color: "var(--color-primary)" };
+            const valColor = val < 0 ? "var(--color-danger)" : (val > 0 ? "var(--color-info)" : "var(--text-primary)");
+            
+            gridHtml += `
+                <div class="stat-card" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; border-left: 4px solid ${meta.color};">
+                    <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                        <span>${meta.label}</span>
+                        <span style="color: ${meta.color};">●</span>
+                    </div>
+                    <div class="stat-value" style="font-size: 20px; margin-bottom: 2px; font-weight: 700; color: ${valColor};">${formatVND(val)}</div>
+                    <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">${meta.desc}</div>
+                </div>
+            `;
+        });
+        
+        // Also check if Khác has value
+        const khacVal = Math.round(catData["Khác"] ? catData["Khác"].diffVal : 0);
+        if (khacVal !== 0) {
+            const meta = catMeta["Khác"];
+            const valColor = khacVal < 0 ? "var(--color-danger)" : (khacVal > 0 ? "var(--color-info)" : "var(--text-primary)");
+            gridHtml += `
+                <div class="stat-card" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; border-left: 4px solid ${meta.color};">
+                    <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
+                        <span>${meta.label}</span>
+                        <span style="color: ${meta.color};">●</span>
+                    </div>
+                    <div class="stat-value" style="font-size: 20px; margin-bottom: 2px; font-weight: 700; color: ${valColor};">${formatVND(khacVal)}</div>
+                    <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">${meta.desc}</div>
+                </div>
+            `;
         }
-    };
-
-    setCardValueAndStyle(elTotal, grandTotalDiff);
-    setCardValueAndStyle(elVeg, Math.round(catData["2.VEGETABLES"] ? catData["2.VEGETABLES"].diffVal : 0));
-    setCardValueAndStyle(elFruit, Math.round(catData["2.FRUITS"] ? catData["2.FRUITS"].diffVal : 0));
-    setCardValueAndStyle(elBakery, Math.round(catData["2.BAKERY"] ? catData["2.BAKERY"].diffVal : 0));
-    setCardValueAndStyle(elEggs, Math.round(catData["2.EGGS"] ? catData["2.EGGS"].diffVal : 0));
-    setCardValueAndStyle(elDelica, Math.round(catData["2.DELICA"] ? catData["2.DELICA"].diffVal : 0));
+        
+        statsGrid.innerHTML = gridHtml;
+    }
 }
 
 function downloadCategoryValueTabular() {

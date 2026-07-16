@@ -723,66 +723,8 @@
                 <div class="filters-header" style="margin-bottom: 12px; color: var(--color-primary); font-weight: 700;">
                     📊 <span>Thống kê giá trị chênh lệch chia hàng</span>
                 </div>
-                <div class="stats-grid" style="margin-bottom: 0;">
-                    <!-- Tổng giá trị lệch -->
-                    <div class="stat-card total" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; --color-primary: #4f46e5;">
-                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
-                            <span>TỔNG GIÁ TRỊ LỆCH</span>
-                            <span style="color: #4f46e5;">●</span>
-                        </div>
-                        <div class="stat-value" id="catTotalDiffValue" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đ</div>
-                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Tổng chênh lệch tất cả ngành hàng</div>
-                    </div>
-
-                    <!-- Vegetables -->
-                    <div class="stat-card" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; border-left: 4px solid var(--color-primary);">
-                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
-                            <span>LỆCH VEGETABLES</span>
-                            <span style="color: var(--color-primary);">●</span>
-                        </div>
-                        <div class="stat-value" id="catVegDiffValue" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đ</div>
-                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Ngành hàng Rau Củ</div>
-                    </div>
-
-                    <!-- Fruits -->
-                    <div class="stat-card" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; border-left: 4px solid var(--color-success);">
-                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
-                            <span>LỆCH FRUITS</span>
-                            <span style="color: var(--color-success);">●</span>
-                        </div>
-                        <div class="stat-value" id="catFruitDiffValue" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đ</div>
-                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Ngành hàng Trái Cây</div>
-                    </div>
-
-                    <!-- Bakery -->
-                    <div class="stat-card" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; border-left: 4px solid var(--color-warning);">
-                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
-                            <span>LỆCH BAKERY</span>
-                            <span style="color: var(--color-warning);">●</span>
-                        </div>
-                        <div class="stat-value" id="catBakeryDiffValue" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đ</div>
-                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Ngành hàng Bánh Mì</div>
-                    </div>
-
-                    <!-- Eggs -->
-                    <div class="stat-card" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; border-left: 4px solid var(--color-info);">
-                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
-                            <span>LỆCH EGGS</span>
-                            <span style="color: var(--color-info);">●</span>
-                        </div>
-                        <div class="stat-value" id="catEggsDiffValue" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đ</div>
-                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Ngành hàng Trứng</div>
-                    </div>
-
-                    <!-- Delica -->
-                    <div class="stat-card" style="padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); min-height: 80px; border-left: 4px solid #ec4899;">
-                        <div class="stat-header" style="font-size: 11px; margin-bottom: 4px;">
-                            <span>LỆCH DELICA</span>
-                            <span style="color: #ec4899;">●</span>
-                        </div>
-                        <div class="stat-value" id="catDelicaDiffValue" style="font-size: 20px; margin-bottom: 2px; font-weight: 700;">0 đ</div>
-                        <div class="stat-subtitle" style="font-size: 11px; color: var(--text-muted);">Ngành hàng Delica</div>
-                    </div>
+                <div class="stats-grid" id="catValueStatsGrid" style="margin-bottom: 0;">
+                    <!-- Dynamically generated in app.js -->
                 </div>
             </div>
 
@@ -1108,8 +1050,8 @@
     </div>
 
     <!-- Data Script -->
-    <script src="data.js?v=78"></script>
+    <script src="data.js?v=79"></script>
     <!-- Core App Execution Script -->
-    <script src="app.js?v=78"></script>
+    <script src="app.js?v=79"></script>
 </body>
 </html>

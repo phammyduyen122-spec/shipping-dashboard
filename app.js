@@ -643,6 +643,48 @@ function linkTransfers(rawTransfers) {
         }
     });
 
+    // Pass 5: Match unmatched correctives to ANY original transfer of the same store and item, within 3 days, even if no shortage
+    originals.forEach(orig => {
+        if (orig.matchedCorrectiveQty > 0) return; // Already matched
+        
+        const origDate = new Date(orig.date);
+        const match = correctives.find(c => {
+            if (c.isMerged) return false;
+            if (norm(c.itemCode) !== norm(orig.itemCode)) return false;
+            if (norm(c.toBranch) !== norm(orig.toBranch)) return false;
+            
+            const cDate = new Date(c.date);
+            const diffDays = Math.round((cDate - origDate) / (1000 * 60 * 60 * 24));
+            return Math.abs(diffDays) <= 3 && c.qtyShipped > 0;
+        });
+        
+        if (match) {
+            orig.matchedCorrectiveQty = match.qtyShipped;
+            match.isMerged = true;
+        }
+    });
+
+    // Pass 6: Match remaining unmatched correctives to ANY original transfer of the same item and same user, within 3 days, even if different store and no shortage
+    originals.forEach(orig => {
+        if (orig.matchedCorrectiveQty > 0) return; // Already matched
+        
+        const origDate = new Date(orig.date);
+        const match = correctives.find(c => {
+            if (c.isMerged) return false;
+            if (norm(c.itemCode) !== norm(orig.itemCode)) return false;
+            if (!c.nguoiChia || !orig.nguoiChia || norm(c.nguoiChia) !== norm(orig.nguoiChia)) return false;
+            
+            const cDate = new Date(c.date);
+            const diffDays = Math.round((cDate - origDate) / (1000 * 60 * 60 * 24));
+            return Math.abs(diffDays) <= 3 && c.qtyShipped > 0;
+        });
+        
+        if (match) {
+            orig.matchedCorrectiveQty = match.qtyShipped;
+            match.isMerged = true;
+        }
+    });
+
     return [...originals, ...correctives];
 }
 

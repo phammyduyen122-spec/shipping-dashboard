@@ -546,40 +546,80 @@ def parse_excel():
             return ""
         df_clean['nguoiChia'] = df_clean.apply(get_nguoi_chia, axis=1)
 
-        # Inherit nguoiChia for corrective rows from original rows with matching itemCode, toBranch, and date proximity (within 3 days)
+        # Inherit nguoiChia for corrective rows
         is_orig = df_clean['fromBranch'].isin(['KHO RAU CỦ', 'KHO QUÁ CẢNH BÁNH TƯƠI', 'MeatFish - Miền Đông - SCF - Quá Cảnh'])
-        orig_lookup = {}
+        orig_lookup_by_branch = {}
+        orig_lookup_by_item = {}
+        
         for idx, row in df_clean[is_orig].iterrows():
             if not row['nguoiChia']:
                 continue
-            key = (row['toBranch'], row['itemCode'])
-            if key not in orig_lookup:
-                orig_lookup[key] = []
+            
+            d_str = row['date']
             try:
-                d_obj = datetime.strptime(row['date'], '%Y-%m-%d')
-                orig_lookup[key].append((d_obj, row['nguoiChia']))
+                d_obj = datetime.strptime(d_str, '%Y-%m-%d')
             except:
-                pass
+                continue
+                
+            key_branch = (row['toBranch'], row['itemCode'])
+            if key_branch not in orig_lookup_by_branch:
+                orig_lookup_by_branch[key_branch] = []
+            orig_lookup_by_branch[key_branch].append((d_obj, row['nguoiChia']))
+            
+            key_item = row['itemCode']
+            if key_item not in orig_lookup_by_item:
+                orig_lookup_by_item[key_item] = []
+            orig_lookup_by_item[key_item].append((d_obj, row['nguoiChia'], row['toBranch']))
 
         corr_indices = df_clean[is_corrective].index
         for idx in corr_indices:
             row = df_clean.loc[idx]
-            key = (row['toBranch'], row['itemCode'])
-            candidates = orig_lookup.get(key)
+            key_branch = (row['toBranch'], row['itemCode'])
+            candidates = orig_lookup_by_branch.get(key_branch)
+            
+            best_nc = ""
             if candidates:
                 try:
                     c_date_obj = datetime.strptime(row['date'], '%Y-%m-%d')
-                    best_nc = ""
                     min_diff = timedelta(days=4)
                     for o_date_obj, nc in candidates:
                         diff = abs(o_date_obj - c_date_obj)
                         if diff <= timedelta(days=3) and diff < min_diff:
                             min_diff = diff
                             best_nc = nc
-                    if best_nc:
-                        df_clean.at[idx, 'nguoiChia'] = best_nc
-                except Exception as e_inherit:
+                except:
                     pass
+            
+            # If not found via exact branch match, search by itemCode broad match
+            if not best_nc:
+                candidates_item = orig_lookup_by_item.get(row['itemCode'])
+                if candidates_item:
+                    try:
+                        c_date_obj = datetime.strptime(row['date'], '%Y-%m-%d')
+                        valid_candidates = []
+                        for o_date_obj, nc, orig_tb in candidates_item:
+                            diff = abs(o_date_obj - c_date_obj)
+                            if diff <= timedelta(days=3):
+                                valid_candidates.append((diff, nc, orig_tb))
+                        
+                        if valid_candidates:
+                            # Prefer users who divided for the target store 'row[toBranch]' on any item
+                            users_for_target_branch = set()
+                            for diff, nc, orig_tb in valid_candidates:
+                                if orig_tb == row['toBranch']:
+                                    users_for_target_branch.add(nc)
+                            
+                            if users_for_target_branch:
+                                valid_candidates = [vc for vc in valid_candidates if vc[1] in users_for_target_branch]
+                            
+                            if valid_candidates:
+                                valid_candidates.sort(key=lambda x: x[0])
+                                best_nc = valid_candidates[0][1]
+                    except:
+                        pass
+            
+            if best_nc:
+                df_clean.at[idx, 'nguoiChia'] = best_nc
         
         # Filter out rows with all empty or invalid values
         df_clean = df_clean[df_clean['itemCode'] != 'nan']

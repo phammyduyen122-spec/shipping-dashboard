@@ -19703,6 +19703,1590 @@
     "categoryPath": "1.FRESH FOOD > 2.FISH AND SEAFOOD > 3.LIVE FISH AND SEAFOOD > 4.Cá Sống > 5.Cá Nước Ngọt Sống > 6.Cá Nước Ngọt Sống",
     "unit": "VIETNAM-1000-g-NO/0-1-0"
   },
+  "11659": {
+    "itemName": "CÚC LƯỚI (BÓ)",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-400-g-NO/0-15-0"
+  },
+  "VC00031546": {
+    "itemName": "CÚC LƯỚI (BÓ)",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-400-g-NO/0-15-0"
+  },
+  "11660": {
+    "itemName": "CÚC MẪU ĐƠN (BÔNG)",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-50-g-NO/0-15-0"
+  },
+  "VC00031545": {
+    "itemName": "CÚC MẪU ĐƠN (BÔNG)",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-50-g-NO/0-15-0"
+  },
+  "11658": {
+    "itemName": "CÚC ROSSI (BÓ)",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-15-0"
+  },
+  "VC00031544": {
+    "itemName": "CÚC ROSSI (BÓ)",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-15-0"
+  },
+  "11657": {
+    "itemName": "CÚC TỨ QUÝ (BÓ)",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-200-g-NO/0-15-0"
+  },
+  "VC00031543": {
+    "itemName": "CÚC TỨ QUÝ (BÓ)",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-200-g-NO/0-15-0"
+  },
+  "11311": {
+    "itemName": "HOA CÁT TƯỜNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-5-0"
+  },
+  "VC00028955": {
+    "itemName": "HOA CÁT TƯỜNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-5-0"
+  },
+  "11310": {
+    "itemName": "HOA CÚC NHÁNH",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-700-g-NO/0-5-0"
+  },
+  "VC00028954": {
+    "itemName": "HOA CÚC NHÁNH",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-700-g-NO/0-5-0"
+  },
+  "8935077376784": {
+    "itemName": "DALAT HASFARM - HOA ĐỒNG TIỀN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-700-g-NO/0-7-0"
+  },
+  "VC00027943": {
+    "itemName": "DALAT HASFARM - HOA ĐỒNG TIỀN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-700-g-NO/0-7-0"
+  },
+  "10970": {
+    "itemName": "HOA CẨM CHƯỚNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-5-0"
+  },
+  "VC00025468": {
+    "itemName": "HOA CẨM CHƯỚNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-5-0"
+  },
+  "10917": {
+    "itemName": "HOA TIỂU TÚ CẦU",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-5-0"
+  },
+  "VC00025123": {
+    "itemName": "HOA TIỂU TÚ CẦU",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-5-0"
+  },
+  "10848": {
+    "itemName": "GIỎ HOA SEN ĐÁ ",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Giỏ Hoa > 6.Giỏ Hoa",
+    "unit": "VIETNAM-1000-g-NO/0-10-0"
+  },
+  "VC00024622": {
+    "itemName": "GIỎ HOA SEN ĐÁ ",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Giỏ Hoa > 6.Giỏ Hoa",
+    "unit": "VIETNAM-1000-g-NO/0-10-0"
+  },
+  "8935077380934": {
+    "itemName": "GIỎ HOA HÂN HOAN SIZE S",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Giỏ Hoa > 6.Giỏ Hoa",
+    "unit": "VIETNAM-1000-g-NO/0-3-0"
+  },
+  "VC00024559": {
+    "itemName": "GIỎ HOA HÂN HOAN SIZE S",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Giỏ Hoa > 6.Giỏ Hoa",
+    "unit": "VIETNAM-1000-g-NO/0-3-0"
+  },
+  "8935077380279": {
+    "itemName": "GIỎ HOA NỤ CƯỜI VIỆT SIZE L",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Giỏ Hoa > 6.Giỏ Hoa",
+    "unit": "VIETNAM-1000-g-NO/0-3-0"
+  },
+  "VC00024558": {
+    "itemName": "GIỎ HOA NỤ CƯỜI VIỆT SIZE L",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Giỏ Hoa > 6.Giỏ Hoa",
+    "unit": "VIETNAM-1000-g-NO/0-3-0"
+  },
+  "8935077380767": {
+    "itemName": "DALAT HASFARM - CÚC HOÀN CẦU",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-10000-g-NO/0-10-0"
+  },
+  "VC00024413": {
+    "itemName": "DALAT HASFARM - CÚC HOÀN CẦU",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-10000-g-NO/0-10-0"
+  },
+  "8935077397000": {
+    "itemName": "KHÔNG DÙNG - CÚC NHÁNH HF KM",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-5-0"
+  },
+  "VC00024368": {
+    "itemName": "KHÔNG DÙNG - CÚC NHÁNH HF KM",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-5-0"
+  },
+  "10788": {
+    "itemName": "CF - CÀNH HOA ĐỊA LAN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-30-0"
+  },
+  "VC00024289": {
+    "itemName": "CF - CÀNH HOA ĐỊA LAN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-30-0"
+  },
+  "10783": {
+    "itemName": "CÀNH ĐÀO HÀ NỘI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-10-0"
+  },
+  "VC00024243": {
+    "itemName": "CÀNH ĐÀO HÀ NỘI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-10-0"
+  },
+  "10752": {
+    "itemName": "CÀNH ĐÀO ĐÔNG ĐỎ",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-30-0"
+  },
+  "VC00024145": {
+    "itemName": "CÀNH ĐÀO ĐÔNG ĐỎ",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-30-0"
+  },
+  "10751": {
+    "itemName": "CÀNH HOA MẬN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-10-0"
+  },
+  "VC00024144": {
+    "itemName": "CÀNH HOA MẬN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-10-0"
+  },
+  "10750": {
+    "itemName": "CÀNH MAO LƯƠNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-7-0"
+  },
+  "VC00024143": {
+    "itemName": "CÀNH MAO LƯƠNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-7-0"
+  },
+  "10749": {
+    "itemName": "SEN ĐÁ",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-1000-g-NO/0-60-0"
+  },
+  "VC00024142": {
+    "itemName": "SEN ĐÁ",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-1000-g-NO/0-60-0"
+  },
+  "10743": {
+    "itemName": "NỤ TẦM XUÂN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-15-0"
+  },
+  "VC00024097": {
+    "itemName": "NỤ TẦM XUÂN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-15-0"
+  },
+  "10742": {
+    "itemName": "KHÔNG DÙNG -CÀNH ĐÀO ĐÔNG ĐỎ",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-500-g-NO/0-30-0"
+  },
+  "VC00024096": {
+    "itemName": "KHÔNG DÙNG -CÀNH ĐÀO ĐÔNG ĐỎ",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-500-g-NO/0-30-0"
+  },
+  "10714": {
+    "itemName": "CÀNH ĐÀO SAKURA",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1-cây-NO/0-7-0"
+  },
+  "VC00023950": {
+    "itemName": "CÀNH ĐÀO SAKURA",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1-cây-NO/0-7-0"
+  },
+  "10688": {
+    "itemName": "HOA GẠO ",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1-túi-NO/0-10-0"
+  },
+  "VC00023435": {
+    "itemName": "HOA GẠO ",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1-túi-NO/0-10-0"
+  },
+  "8935077380873": {
+    "itemName": "DALAT HASFARM - HOA MIX HẠNH PHÚC S",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-3-0"
+  },
+  "VC00023304": {
+    "itemName": "DALAT HASFARM - HOA MIX HẠNH PHÚC S",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-3-0"
+  },
+  "10682": {
+    "itemName": "HOA LY KÉP",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-5-0"
+  },
+  "VC00023302": {
+    "itemName": "HOA LY KÉP",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-5-0"
+  },
+  "10681": {
+    "itemName": "HOA TUYẾT MAI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-7-0"
+  },
+  "VC00023301": {
+    "itemName": "HOA TUYẾT MAI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-7-0"
+  },
+  "10680": {
+    "itemName": "HOA LAY ƠN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-5-0"
+  },
+  "VC00023300": {
+    "itemName": "HOA LAY ƠN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-5-0"
+  },
+  "10679": {
+    "itemName": "KHÔNG DÙNG - HOA LAY ƠN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-5-0"
+  },
+  "VC00023299": {
+    "itemName": "KHÔNG DÙNG - HOA LAY ƠN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-5-0"
+  },
+  "10768": {
+    "itemName": "KHÔNG DÙNG - HOA TUYẾT MAI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-5-0"
+  },
+  "VC00023298": {
+    "itemName": "KHÔNG DÙNG - HOA TUYẾT MAI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-5-0"
+  },
+  "10677": {
+    "itemName": "KHÔNG DÙNG - HOA LY KÉP",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-10-0"
+  },
+  "VC00023297": {
+    "itemName": "KHÔNG DÙNG - HOA LY KÉP",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-10-0"
+  },
+  "8935077355086": {
+    "itemName": "DALAT HASFARM - TÙNG THƠM TRÊN 80CM",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-1-cây-NO/0-365-0"
+  },
+  "VC00023265": {
+    "itemName": "DALAT HASFARM - TÙNG THƠM TRÊN 80CM",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-1-cây-NO/0-365-0"
+  },
+  "8935077355062": {
+    "itemName": "DALAT HASFARM - TÙNG THƠM TRÊN 40CM",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-1-cây-NO/0-365-0"
+  },
+  "VC00023264": {
+    "itemName": "DALAT HASFARM - TÙNG THƠM TRÊN 40CM",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-1-cây-NO/0-365-0"
+  },
+  "8935077378238": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH 6",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-30-0"
+  },
+  "VC00023157": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH 6",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-30-0"
+  },
+  "8935077318531": {
+    "itemName": "DALAT HASFARM - CHẬU LAVENDER GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-5-0"
+  },
+  "VC00022735": {
+    "itemName": "DALAT HASFARM - CHẬU LAVENDER GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-5-0"
+  },
+  "10601": {
+    "itemName": "LANGBIANG - HOA SAO XANH",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-3-0"
+  },
+  "VC00022418": {
+    "itemName": "LANGBIANG - HOA SAO XANH",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-3-0"
+  },
+  "8935077378252": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH 8",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-30-0"
+  },
+  "VC00022235": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH 8",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-30-0"
+  },
+  "8935077355437": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH HF5",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-30-0"
+  },
+  "VC00022187": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH HF5",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-30-0"
+  },
+  "8935077355697": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH HF3",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-30-0"
+  },
+  "VC00022186": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH HF3",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-30-0"
+  },
+  "8935077378269": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH 1",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-30-0"
+  },
+  "VC00022185": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH 1",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-30-0"
+  },
+  "8935077378184": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH 3",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-15-0"
+  },
+  "VC00021849": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH 3",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-15-0"
+  },
+  "8935077355000": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH HF1",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-15-0"
+  },
+  "VC00021844": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH HF1",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-15-0"
+  },
+  "8935077378207": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH 2",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-15-0"
+  },
+  "VC00021771": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH 2",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-300-g-NO/0-15-0"
+  },
+  "8935077378191": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH 5",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-800-g-NO/0-15-0"
+  },
+  "VC00021770": {
+    "itemName": "DALAT HASFARM - CHẬU CÂY XANH 5",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-800-g-NO/0-15-0"
+  },
+  "8935077348163": {
+    "itemName": "DALAT HASFARM - CÚC TANA",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-220-g-NO/0-5-0"
+  },
+  "VC00021637": {
+    "itemName": "DALAT HASFARM - CÚC TANA",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-220-g-NO/0-5-0"
+  },
+  "10472": {
+    "itemName": "LANGBIANG - CÚC PINGPONG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-5-0"
+  },
+  "VC00021419": {
+    "itemName": "LANGBIANG - CÚC PINGPONG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-5-0"
+  },
+  "8935077380569": {
+    "itemName": "DALAT HASFARM - BÓ HOA CẨM CHƯỚNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-200-g-NO/0-3-0"
+  },
+  "VC00021317": {
+    "itemName": "DALAT HASFARM - BÓ HOA CẨM CHƯỚNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-200-g-NO/0-3-0"
+  },
+  "8936114400905": {
+    "itemName": " CHẬU CÂY HƯƠNG THẢO",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-200-g-NO/0-5-0"
+  },
+  "VC00021311": {
+    "itemName": " CHẬU CÂY HƯƠNG THẢO",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-200-g-NO/0-5-0"
+  },
+  "8935077397437": {
+    "itemName": "DALAT HASFARM - HOA KIẾT TƯỜNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-5-0"
+  },
+  "VC00020924": {
+    "itemName": "DALAT HASFARM - HOA KIẾT TƯỜNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-300-g-NO/0-5-0"
+  },
+  "8935077397154": {
+    "itemName": "KHÔNG DÙNG - CHẬU SỐNG ĐỜI TRUNG KÉP",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-7-0"
+  },
+  "VC00020816": {
+    "itemName": "KHÔNG DÙNG - CHẬU SỐNG ĐỜI TRUNG KÉP",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-7-0"
+  },
+  "8935077380682": {
+    "itemName": "DALAT HASFARM - MẪU ĐƠN 1 BÔNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00020095": {
+    "itemName": "DALAT HASFARM - MẪU ĐƠN 1 BÔNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077380040": {
+    "itemName": "DALAT HASFARM - CHẬU CẨM TÚ CẦU GÓI M",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00020094": {
+    "itemName": "DALAT HASFARM - CHẬU CẨM TÚ CẦU GÓI M",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077380088": {
+    "itemName": "DALAT HASFARM - CHẬU THU HẢI ĐƯỜNG GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00020093": {
+    "itemName": "DALAT HASFARM - CHẬU THU HẢI ĐƯỜNG GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077380750": {
+    "itemName": "DALAT HASFARM - GIỎ HOA THANH VŨ S",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Giỏ Hoa > 6.Giỏ Hoa",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00020092": {
+    "itemName": "DALAT HASFARM - GIỎ HOA THANH VŨ S",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Giỏ Hoa > 6.Giỏ Hoa",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077358018": {
+    "itemName": "DALAT HASFARM - LAN VŨ NỮ",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00020090": {
+    "itemName": "DALAT HASFARM - LAN VŨ NỮ",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077376883": {
+    "itemName": "DALAT HASFARM - HOA MÕM SÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00020068": {
+    "itemName": "DALAT HASFARM - HOA MÕM SÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "10411": {
+    "itemName": "HOA THANH LIỄU",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-400-g-NO/0-5-0"
+  },
+  "VC00019851": {
+    "itemName": "HOA THANH LIỄU",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-400-g-NO/0-5-0"
+  },
+  "10367": {
+    "itemName": "HOA ĐỒNG TIỀN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-500-g-NO/0-7-0"
+  },
+  "VC00018204": {
+    "itemName": "HOA ĐỒNG TIỀN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-500-g-NO/0-7-0"
+  },
+  "10366": {
+    "itemName": "LANGBIANG - BABY SAO MÀU BÓ 250G",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00018203": {
+    "itemName": "LANGBIANG - BABY SAO MÀU BÓ 250G",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "10365": {
+    "itemName": "LANGBIANG - BABY SAO TRẮNG BÓ 250G",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00018202": {
+    "itemName": "LANGBIANG - BABY SAO TRẮNG BÓ 250G",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "10364": {
+    "itemName": "LANGBIANG - THỦY TIÊN ",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00018201": {
+    "itemName": "LANGBIANG - THỦY TIÊN ",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "10363": {
+    "itemName": "LANGBIANG - CÚC TANA BÓ 350G",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00018200": {
+    "itemName": "LANGBIANG - CÚC TANA BÓ 350G",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "10362": {
+    "itemName": "LANGBIANG - CÚC MẪU ĐƠN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00018199": {
+    "itemName": "LANGBIANG - CÚC MẪU ĐƠN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077355789": {
+    "itemName": "DALAT HASFARM - CHẬU THU HẢI ĐƯỜNG TRUNG ( 8 CHẬU )",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00017351": {
+    "itemName": "DALAT HASFARM - CHẬU THU HẢI ĐƯỜNG TRUNG ( 8 CHẬU )",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356830": {
+    "itemName": "DALAT HASFARM - CHẬU OẢI HƯƠNG TRUNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00017302": {
+    "itemName": "DALAT HASFARM - CHẬU OẢI HƯƠNG TRUNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356526": {
+    "itemName": "DALAT HASFARM - CHẬU DƯƠNG SĨ MINI (Cái)",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00011359": {
+    "itemName": "DALAT HASFARM - CHẬU DƯƠNG SĨ MINI (Cái)",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077310511": {
+    "itemName": "DALAT HASFARM - CÚC ĐƠN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-5-0"
+  },
+  "VC00008396": {
+    "itemName": "DALAT HASFARM - CÚC ĐƠN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-1000-g-NO/0-5-0"
+  },
+  "8935077320077": {
+    "itemName": "DALAT HASFARM - CẨM CHƯỚNG NHÁNH",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008395": {
+    "itemName": "DALAT HASFARM - CẨM CHƯỚNG NHÁNH",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077326000": {
+    "itemName": "DALAT HASFARM - CẨM CHƯỚNG ĐƠN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008394": {
+    "itemName": "DALAT HASFARM - CẨM CHƯỚNG ĐƠN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077330380": {
+    "itemName": "DALAT HASFARM - HOA HỒNG 5 CÀNH",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008393": {
+    "itemName": "DALAT HASFARM - HOA HỒNG 5 CÀNH",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077359091": {
+    "itemName": "DALAT HASFARM - CALIMERO",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008392": {
+    "itemName": "DALAT HASFARM - CALIMERO",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077340600": {
+    "itemName": "DALAT HASFARM - HOA LILY",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008391": {
+    "itemName": "DALAT HASFARM - HOA LILY",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077357400": {
+    "itemName": "DALAT HASFARM - THỦY TIÊN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008390": {
+    "itemName": "DALAT HASFARM - THỦY TIÊN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077376531": {
+    "itemName": "DALAT HASFARM - SAO TÍM",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008389": {
+    "itemName": "DALAT HASFARM - SAO TÍM",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077377255": {
+    "itemName": "DALAT HASFARM - CHUỖI NGỌC",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008388": {
+    "itemName": "DALAT HASFARM - CHUỖI NGỌC",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077356007": {
+    "itemName": "DALAT HASFARM - CHẬU CÚC",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-1500-g-NO/0-10-0"
+  },
+  "VC00008387": {
+    "itemName": "DALAT HASFARM - CHẬU CÚC",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-1500-g-NO/0-10-0"
+  },
+  "8935077356243": {
+    "itemName": "DALAT HASFARM - CHẬU CÚC TRUNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008386": {
+    "itemName": "DALAT HASFARM - CHẬU CÚC TRUNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356151": {
+    "itemName": "DALAT HASFARM - CHẬU SỐNG ĐỜI TRUNG KÉP",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-1500-g-NO/0-10-0"
+  },
+  "VC00008385": {
+    "itemName": "DALAT HASFARM - CHẬU SỐNG ĐỜI TRUNG KÉP",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-1500-g-NO/0-10-0"
+  },
+  "8935077356328": {
+    "itemName": "DALAT HASFARM - CHẬU HỒNG MÔN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008384": {
+    "itemName": "DALAT HASFARM - CHẬU HỒNG MÔN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356137": {
+    "itemName": "DALAT HASFARM - CHẬU THU HẢI ĐƯỜNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008383": {
+    "itemName": "DALAT HASFARM - CHẬU THU HẢI ĐƯỜNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356205": {
+    "itemName": "DALAT HASFARM - CHẬU ĐỒNG TIỀN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008382": {
+    "itemName": "DALAT HASFARM - CHẬU ĐỒNG TIỀN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356342": {
+    "itemName": "DALAT HASFARM - CHẬU ANH THẢO TRUNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008381": {
+    "itemName": "DALAT HASFARM - CHẬU ANH THẢO TRUNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356472": {
+    "itemName": "DALAT HASFARM - CHẬU HOA HỒNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008380": {
+    "itemName": "DALAT HASFARM - CHẬU HOA HỒNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356199": {
+    "itemName": "DALAT HASFARM - CHẬU TRẠNG NGUYÊN TRUNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008379": {
+    "itemName": "DALAT HASFARM - CHẬU TRẠNG NGUYÊN TRUNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077370003": {
+    "itemName": "DALAT HASFARM - CÚC NHÁNH LOCAL",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008375": {
+    "itemName": "DALAT HASFARM - CÚC NHÁNH LOCAL",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077380286": {
+    "itemName": "DALAT HASFARM - GIỎ HOA THANH VŨ L",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Giỏ Hoa > 6.Giỏ Hoa",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008374": {
+    "itemName": "DALAT HASFARM - GIỎ HOA THANH VŨ L",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Giỏ Hoa > 6.Giỏ Hoa",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077372090": {
+    "itemName": "DALAT HASFARM - CÚC ĐƠN LOCAL",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008373": {
+    "itemName": "DALAT HASFARM - CÚC ĐƠN LOCAL",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077356601": {
+    "itemName": "DALAT HASFARM - CHẬU SEN MINI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008362": {
+    "itemName": "DALAT HASFARM - CHẬU SEN MINI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356236": {
+    "itemName": "DALAT HASFARM - CHẬU CÚC MINI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008199": {
+    "itemName": "DALAT HASFARM - CHẬU CÚC MINI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077362121": {
+    "itemName": "DALAT HASFARM - ĐẤT HỮU CƠ 5L",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008126": {
+    "itemName": "DALAT HASFARM - ĐẤT HỮU CƠ 5L",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077356113": {
+    "itemName": "DALAT HASFARM - CHẬU TIỂU QUỲNH",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008125": {
+    "itemName": "DALAT HASFARM - CHẬU TIỂU QUỲNH",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077378108": {
+    "itemName": "DALAT HASFARM - CHẬU SÂM NHUNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008050": {
+    "itemName": "DALAT HASFARM - CHẬU SÂM NHUNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356595": {
+    "itemName": "DALAT HASFARM - CHẬU PHONG LỘC HOA",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008022": {
+    "itemName": "DALAT HASFARM - CHẬU PHONG LỘC HOA",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356366": {
+    "itemName": "DALAT HASFARM - CHẬU NGUYỆT QUẾ MINI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008021": {
+    "itemName": "DALAT HASFARM - CHẬU NGUYỆT QUẾ MINI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356397": {
+    "itemName": "DALAT HASFARM - CHẬU TIỂU HỒ ĐIỆP (1 CÀNH)",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008020": {
+    "itemName": "DALAT HASFARM - CHẬU TIỂU HỒ ĐIỆP (1 CÀNH)",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356380": {
+    "itemName": "DALAT HASFARM - CHẬU TIỂU HỒ ĐIỆP (2 CÀNH)",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008019": {
+    "itemName": "DALAT HASFARM - CHẬU TIỂU HỒ ĐIỆP (2 CÀNH)",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356632": {
+    "itemName": "DALAT HASFARM - CHẬU CALIMERO",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008016": {
+    "itemName": "DALAT HASFARM - CHẬU CALIMERO",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356458": {
+    "itemName": "DALAT HASFARM - CHẬU CẨM CHƯỚNG TRUNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008015": {
+    "itemName": "DALAT HASFARM - CHẬU CẨM CHƯỚNG TRUNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356229": {
+    "itemName": "DALAT HASFARM - CHẬU TULIP",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008014": {
+    "itemName": "DALAT HASFARM - CHẬU TULIP",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077347005": {
+    "itemName": "DALAT HASFARM - KIẾT TƯỜNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008013": {
+    "itemName": "DALAT HASFARM - KIẾT TƯỜNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077377347": {
+    "itemName": "DALAT HASFARM - THẠCH THẢO",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008012": {
+    "itemName": "DALAT HASFARM - THẠCH THẢO",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077377415": {
+    "itemName": "DALAT HASFARM - CÚC ROSSI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008010": {
+    "itemName": "DALAT HASFARM - CÚC ROSSI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077382570": {
+    "itemName": "DALAT HASFARM - HOA BIBI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008009": {
+    "itemName": "DALAT HASFARM - HOA BIBI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077380385": {
+    "itemName": "DALAT HASFARM - HỒNG 1 BÔNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008008": {
+    "itemName": "DALAT HASFARM - HỒNG 1 BÔNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077380354": {
+    "itemName": "DALAT HASFARM - BÓ HOA CHÂN TÌNH M",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008007": {
+    "itemName": "DALAT HASFARM - BÓ HOA CHÂN TÌNH M",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077380330": {
+    "itemName": "DALAT HASFARM - BÓ HOA ĐIỆP VŨ M",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00008006": {
+    "itemName": "DALAT HASFARM - BÓ HOA ĐIỆP VŨ M",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077380019": {
+    "itemName": "DALAT HASFARM - CHẬU HOA HỒNG GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00008005": {
+    "itemName": "DALAT HASFARM - CHẬU HOA HỒNG GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077380071": {
+    "itemName": "DALAT HASFARM - BÓ HOA PHÚC AN L",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00007989": {
+    "itemName": "DALAT HASFARM - BÓ HOA PHÚC AN L",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077356588": {
+    "itemName": "DALAT HASFARM - CHẬU CẨM TÚ CẦU TRUNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00007984": {
+    "itemName": "DALAT HASFARM - CHẬU CẨM TÚ CẦU TRUNG",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077301120": {
+    "itemName": "DALAT HASFARM - CÚC NHÁNH",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-700-g-NO/0-5-0"
+  },
+  "VC00007869": {
+    "itemName": "DALAT HASFARM - CÚC NHÁNH",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-700-g-NO/0-5-0"
+  },
+  "8935077380316": {
+    "itemName": "DALAT HASFARM - CHẬU SỐNG ĐỜI TRUNG ĐƠN GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00007269": {
+    "itemName": "DALAT HASFARM - CHẬU SỐNG ĐỜI TRUNG ĐƠN GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356038": {
+    "itemName": "DALAT HASFARM - CHẬU SỐNG ĐỜI ĐƠN LỚN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00007247": {
+    "itemName": "DALAT HASFARM - CHẬU SỐNG ĐỜI ĐƠN LỚN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077378030": {
+    "itemName": "DALAT HASFARM - CHẬU TÀI LỘC (5 CÂY)",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00007227": {
+    "itemName": "DALAT HASFARM - CHẬU TÀI LỘC (5 CÂY)",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077380378": {
+    "itemName": "DALAT HASFARM - CHẬU TRẠNG NGUYÊN GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00007220": {
+    "itemName": "DALAT HASFARM - CHẬU TRẠNG NGUYÊN GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077380026": {
+    "itemName": "DALAT HASFARM - CHẬU PICO GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00007219": {
+    "itemName": "DALAT HASFARM - CHẬU PICO GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077380361": {
+    "itemName": "DALAT HASFARM - CHẬU HỒNG MÔN GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00007211": {
+    "itemName": "DALAT HASFARM - CHẬU HỒNG MÔN GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077380101": {
+    "itemName": "DALAT HASFARM - CHẬU ANH THẢO TRUNG GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00007092": {
+    "itemName": "DALAT HASFARM - CHẬU ANH THẢO TRUNG GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077380002": {
+    "itemName": "DALAT HASFARM - CHẬU ĐỒNG TIỀN GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00007091": {
+    "itemName": "DALAT HASFARM - CHẬU ĐỒNG TIỀN GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077380057": {
+    "itemName": "DALAT HASFARM - CHẬU SEN ĐÁ",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00007090": {
+    "itemName": "DALAT HASFARM - CHẬU SEN ĐÁ",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356670": {
+    "itemName": "DALAT HASFARM - CHẬU HOA HỒNG LỚN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00007070": {
+    "itemName": "DALAT HASFARM - CHẬU HOA HỒNG LỚN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077397819": {
+    "itemName": "DALAT HASFARM - Chậu Dương Sĩ Gói",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00006734": {
+    "itemName": "DALAT HASFARM - Chậu Dương Sĩ Gói",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356175": {
+    "itemName": "DALAT HASFARM - CHẬU SỐNG ĐỜI MINI KÉP",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00006557": {
+    "itemName": "DALAT HASFARM - CHẬU SỐNG ĐỜI MINI KÉP",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356465": {
+    "itemName": "DALAT HASFARM - CHẬU CÚC HỌA MI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00006556": {
+    "itemName": "DALAT HASFARM - CHẬU CÚC HỌA MI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077380125": {
+    "itemName": "DALAT HASFARM - BÓ HOA CHÂN TÌNH S",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00006555": {
+    "itemName": "DALAT HASFARM - BÓ HOA CHÂN TÌNH S",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077380309": {
+    "itemName": "DALAT HASFARM - BÓ HOA ĐIỆP VŨ S",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00006554": {
+    "itemName": "DALAT HASFARM - BÓ HOA ĐIỆP VŨ S",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077356168": {
+    "itemName": "DALAT HASFARM - CHẬU SỐNG ĐỜI MINI ĐƠN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00006553": {
+    "itemName": "DALAT HASFARM - CHẬU SỐNG ĐỜI MINI ĐƠN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077356144": {
+    "itemName": "DALAT HASFARM - CHẬU SỐNG ĐỜI TRUNG ĐƠN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00006552": {
+    "itemName": "DALAT HASFARM - CHẬU SỐNG ĐỜI TRUNG ĐƠN",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077342390": {
+    "itemName": "DALAT HASFARM - HOA LILY KÉP",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "VC00006551": {
+    "itemName": "DALAT HASFARM - HOA LILY KÉP",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Cành > 6.Hoa Cành",
+    "unit": "VIETNAM-350-g-NO/0-5-0"
+  },
+  "8935077356076": {
+    "itemName": "DALAT HASFARM - CHẬU LILY MÀU",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00006539": {
+    "itemName": "DALAT HASFARM - CHẬU LILY MÀU",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077380347": {
+    "itemName": "DALAT HASFARM - GIỎ HOA ĐIỆP VŨ L",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Giỏ Hoa > 6.Giỏ Hoa",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00004158": {
+    "itemName": "DALAT HASFARM - GIỎ HOA ĐIỆP VŨ L",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Giỏ Hoa > 6.Giỏ Hoa",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077380248": {
+    "itemName": "DALAT HASFARM - CHẬU CẨM CHƯỚNG GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00004156": {
+    "itemName": "DALAT HASFARM - CHẬU CẨM CHƯỚNG GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "8935077380323": {
+    "itemName": "DALAT HASFARM - CHẬU SỐNG ĐỜI TRUNG KÉP GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
+  "VC00004153": {
+    "itemName": "DALAT HASFARM - CHẬU SỐNG ĐỜI TRUNG KÉP GÓI",
+    "category": "2.FLOWERS",
+    "categoryPath": "1.FRESH FOOD > 2.FLOWERS > 3.FLOWERS > 4.Hoa Tươi > 5.Hoa Chậu > 6.Hoa Chậu",
+    "unit": "VIETNAM-700-g-NO/0-10-0"
+  },
   "11786": {
     "itemName": "CHÔM CHÔM NHÃN HỘP 900G",
     "category": "2.FRUITS",

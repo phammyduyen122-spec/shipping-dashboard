@@ -320,6 +320,7 @@ function getActiveCategories() {
         "2.BAKERY",
         "2.EGGS",
         "2.DELICA",
+        "2.FLOWERS",
         "2.MEAT",
         "2.FISH AND SEAFOOD",
         "2.READY TO COOK",

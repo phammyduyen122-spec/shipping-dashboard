@@ -314,6 +314,25 @@ window.activePerfWarehouseGroup = "VegBakery";
 
 function getActiveCategories() {
     const activeTransfersList = transfers || [];
+    const order = [
+        "2.VEGETABLES",
+        "2.FRUITS",
+        "2.BAKERY",
+        "2.EGGS",
+        "2.DELICA",
+        "2.MEAT",
+        "2.FISH AND SEAFOOD",
+        "2.READY TO COOK",
+        "2.FROZEN FOODS"
+    ];
+    const sortFn = (a, b) => {
+        let idxA = order.indexOf(a);
+        let idxB = order.indexOf(b);
+        if (idxA === -1) idxA = 999;
+        if (idxB === -1) idxB = 999;
+        return idxA - idxB;
+    };
+
     if (window.activePerfWarehouseGroup === "MeatFish") {
         const norm = (str) => (str || "").toString().normalize("NFC").trim().toLowerCase();
         const cats = Array.from(new Set(
@@ -321,8 +340,8 @@ function getActiveCategories() {
                 .filter(t => norm(t.fromBranch) === "meatfish - miền đông - scf - quá cảnh")
                 .map(t => t.nguoiChia ? t.nganhHang : null)
                 .filter(Boolean)
-        )).sort();
-        return cats.length > 0 ? cats : ["2.MEAT-FISH"];
+        )).sort(sortFn);
+        return cats.length > 0 ? cats : ["2.MEAT", "2.FISH AND SEAFOOD", "2.READY TO COOK", "2.FROZEN FOODS", "2.FRUITS"];
     } else if (window.activePerfWarehouseGroup === "VegBakery") {
         const norm = (str) => (str || "").toString().normalize("NFC").trim().toLowerCase();
         const cats = Array.from(new Set(
@@ -330,10 +349,10 @@ function getActiveCategories() {
                 .filter(t => norm(t.fromBranch) === "kho rau củ" || norm(t.fromBranch) === "kho quá cảnh bánh tươi")
                 .map(t => t.nguoiChia ? t.nganhHang : null)
                 .filter(Boolean)
-        )).sort();
+        )).sort(sortFn);
         return cats.length > 0 ? cats : ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
     } else {
-        const cats = Array.from(new Set(activeTransfersList.map(t => t.nguoiChia ? t.nganhHang : null).filter(Boolean))).sort();
+        const cats = Array.from(new Set(activeTransfersList.map(t => t.nguoiChia ? t.nganhHang : null).filter(Boolean))).sort(sortFn);
         return cats.length > 0 ? cats : ["2.VEGETABLES", "2.FRUITS", "2.BAKERY", "2.EGGS", "2.DELICA"];
     }
 }

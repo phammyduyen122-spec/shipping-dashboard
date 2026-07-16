@@ -3804,10 +3804,9 @@ function renderPerfSummaryTable() {
         if (statusText !== "Hao hụt" && statusText !== "Đang chuyển") {
             const rowChenhLech = row.qtyReceived === -1 ? 0 : (row.qtyReceived - row.qtyShipped);
             if (rowChenhLech < 0) {
-                rowRemainingShortage = rowChenhLech + slBoSung;
-            } else if (rowChenhLech > 0) {
-                rowChiaSaiST = rowChenhLech;
+                rowRemainingShortage = rowChenhLech;
             }
+            rowChiaSaiST = slBoSung;
         }
 
         const rowChenhLechConLai = rowRemainingShortage + rowChiaSaiST;

@@ -550,6 +550,13 @@ function linkTransfers(rawTransfers) {
         }
     });
 
+    // Sort originals by shortfall descending to prioritize matching the largest shortages first
+    originals.sort((a, b) => {
+        const shortfallA = a.qtyShipped - a.qtyReceived;
+        const shortfallB = b.qtyShipped - b.qtyReceived;
+        return shortfallB - shortfallA;
+    });
+
     const correctiveMap = {};
     correctives.forEach(c => {
         const key = `${norm(c.toBranch)}_${norm(c.itemCode)}`;
@@ -658,6 +665,23 @@ function linkTransfers(rawTransfers) {
             if (c.isMerged) return false;
             if (norm(c.itemCode) !== norm(orig.itemCode)) return false;
             if (!c.nguoiChia || !orig.nguoiChia || norm(c.nguoiChia) !== norm(orig.nguoiChia)) return false;
+            return c.date === orig.date && c.qtyShipped > 0;
+        });
+        
+        if (match) {
+            orig.matchedCorrectiveQty = match.qtyShipped;
+            match.isMerged = true;
+        }
+    });
+
+    // Pass 7: Match remaining unmatched correctives to ANY original transfer of the same item and same day, even if different store and user (to achieve full net-off at warehouse/day level)
+    originals.forEach(orig => {
+        if (orig.matchedCorrectiveQty > 0) return; // Already matched
+        if (orig.qtyShipped <= orig.qtyReceived) return; // Must have a shortage to net-off
+        
+        const match = correctives.find(c => {
+            if (c.isMerged) return false;
+            if (norm(c.itemCode) !== norm(orig.itemCode)) return false;
             return c.date === orig.date && c.qtyShipped > 0;
         });
         

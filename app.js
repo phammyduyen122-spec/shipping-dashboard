@@ -710,7 +710,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const rawPerfTransfers = window.performanceTransfers || [];
     performanceTransfers = rawPerfTransfers.filter(t => {
         const name = (t.nguoiChia || "").trim().toLowerCase().normalize("NFC");
-        const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát"];
+        const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát", "trần duy khánh", "tran duy khanh"];
         return name !== "" && !excluded.includes(name);
     });
 
@@ -727,7 +727,7 @@ document.addEventListener("DOMContentLoaded", () => {
     transfers = processedTransfers.map(t => {
         if (t.nguoiChia) {
             const name = t.nguoiChia.trim().toLowerCase().normalize("NFC");
-            const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát"];
+            const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát", "trần duy khánh", "tran duy khanh"];
             if (name === "" || excluded.includes(name)) {
                 t.nguoiChia = "";
             }
@@ -3300,7 +3300,7 @@ function applyPerfFiltersAndRender() {
             return false;
         }
         const name = t.nguoiChia.trim().toLowerCase().normalize("NFC");
-        const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát"];
+        const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát", "trần duy khánh", "tran duy khanh"];
         if (name === "" || excluded.includes(name)) {
             return false;
         }
@@ -4083,9 +4083,8 @@ function renderPerfSummaryTable() {
             <td>${item.nganhHang || "Khác"}</td>
             <td style="text-align: right; color: var(--text-secondary);">${formatPrice(price)}</td>
             <td style="text-align: right; font-weight: 500;">${formatNumber(totalShared)}</td>
-            <td style="text-align: right; ${styleRemainingShortage}">${formatDiffNumber(item.remainingShortage)}</td>
-            <td style="text-align: right; ${styleChiaSaiST}">${formatDiffNumber(item.chiaSaiST)}</td>
             <td style="text-align: right; ${diffStyle}">${formatDiffNumber(item.chenhLechConLai)}</td>
+            <td style="text-align: right; ${styleChiaSaiST}">${formatDiffNumber(item.chiaSaiST)}</td>
             <td style="text-align: right; ${valLechStyle}">${formatVND(valLech)}</td>
             <td style="text-align: right; ${pctStyle}">${pctText}</td>
         `;
@@ -4127,9 +4126,8 @@ function renderPerfSummaryTable() {
             <td colspan="5"></td>
             <td style="text-align: right; color: var(--text-muted);">-</td>
             <td style="text-align: right; font-weight: bold; color: var(--color-primary);">${formatNumber(grandTotalShared)}</td>
-            <td style="text-align: right; ${grandTotalRemainingShortage < 0 ? 'color: var(--color-danger);' : ''}">${formatDiffNumber(grandTotalRemainingShortage)}</td>
-            <td style="text-align: right; ${grandTotalChiaSaiST > 0 ? 'color: var(--color-info);' : ''}">${formatDiffNumber(grandTotalChiaSaiST)}</td>
             <td style="text-align: right; ${grandTotalDiff < 0 ? 'color: var(--color-danger);' : (grandTotalDiff > 0 ? 'color: var(--color-info);' : '')}">${formatDiffNumber(grandTotalDiff)}</td>
+            <td style="text-align: right; ${grandTotalChiaSaiST > 0 ? 'color: var(--color-info);' : ''}">${formatDiffNumber(grandTotalChiaSaiST)}</td>
             <td style="text-align: right; ${grandTotalVal < 0 ? 'color: var(--color-danger);' : (grandTotalVal > 0 ? 'color: var(--color-info);' : '')}">${formatVND(grandTotalVal)}</td>
             <td style="text-align: right; color: var(--color-success);">${grandTotalDisplayText}</td>
         `;
@@ -4482,7 +4480,7 @@ function updatePerfSummary() {
                 return false;
             }
             const name = t.nguoiChia.trim().toLowerCase().normalize("NFC");
-            const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát"];
+            const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát", "trần duy khánh", "tran duy khanh"];
             if (name === "" || excluded.includes(name)) {
                 return false;
             }
@@ -7444,7 +7442,7 @@ function exportSummaryToCSV() {
         totalSharedLookup[key] += t.qtyShipped;
     });
 
-    const headers = ["STT", "Ngày chia hàng", "Nhân sự chia", "Barcode", "Tên sản phẩm", "Đơn vị tính", "Ngành hàng", "Giá mua", "SL chia", "SL lệch còn lại", "Chia sai ST", "SL còn lại", "Giá trị lệch", "% Lệch"];
+    const headers = ["STT", "Ngày chia hàng", "Nhân sự chia", "Barcode", "Tên sản phẩm", "Đơn vị tính", "Ngành hàng", "Giá mua", "SL chia", "SL chênh lệch", "Chia sai ST", "Giá trị lệch", "% Lệch"];
     const rows = [];
 
     lastSortedSummary.forEach((item, index) => {
@@ -7467,9 +7465,8 @@ function exportSummaryToCSV() {
             item.nganhHang || "Khác",
             price,
             totalShared,
-            item.remainingShortage,
-            item.chiaSaiST,
             item.chenhLechConLai,
+            item.chiaSaiST,
             valLech,
             pctText
         ]);
@@ -7508,9 +7505,8 @@ function exportSummaryToCSV() {
         "",
         "",
         grandTotalShared,
-        grandTotalRemainingShortage,
-        grandTotalChiaSaiST,
         grandTotalDiff,
+        grandTotalChiaSaiST,
         grandTotalVal,
         grandTotalDisplayText
     ]);

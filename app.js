@@ -559,7 +559,7 @@ function linkTransfers(rawTransfers) {
         correctiveMap[key].push(c);
     });
 
-    // Pass 1: Match by generatedDoc code link (highest priority)
+    // Pass 1: Match by generatedDoc code link (highest priority, same day only)
     originals.forEach(orig => {
         const key = `${norm(orig.toBranch)}_${norm(orig.itemCode)}`;
         const candidates = correctiveMap[key];
@@ -567,6 +567,7 @@ function linkTransfers(rawTransfers) {
             const origGen = norm(orig.generatedDoc);
             const match = candidates.find(c => {
                 if (c.isMerged) return false;
+                if (c.date !== orig.date) return false;
                 const cCode = norm(c.transferCode);
                 return cCode !== "" && origGen.includes(cCode);
             });
@@ -577,39 +578,18 @@ function linkTransfers(rawTransfers) {
         }
     });
 
-    // Pass 2: Fallback matches prioritizing date proximity (0 days first, then up to 3 days, symmetric)
-    for (let maxDiff = 0; maxDiff <= 3; maxDiff++) {
-        originals.forEach(orig => {
-            if (orig.matchedCorrectiveQty > 0) return; // Already matched
-            if (orig.qtyShipped <= orig.qtyReceived) return; // No shortfall
-            
-            const key = `${norm(orig.toBranch)}_${norm(orig.itemCode)}`;
-            const candidates = correctiveMap[key];
-            if (candidates) {
-                const origDate = new Date(orig.date);
-                const match = candidates.find(c => {
-                    if (c.isMerged) return false;
-                    const cDate = new Date(c.date);
-                    const diffDays = Math.round((cDate - origDate) / (1000 * 60 * 60 * 24));
-                    return Math.abs(diffDays) <= maxDiff && c.qtyShipped > 0;
-                });
-                if (match) {
-                    orig.matchedCorrectiveQty = match.qtyShipped;
-                    match.isMerged = true;
-                }
-            }
-        });
-    }
-
-    // Pass 3: If original received quantity is 0 (ST entered 0), match with any remaining unmatched corrective transfer for the same store and item
+    // Pass 2: Fallback matches same day only
     originals.forEach(orig => {
         if (orig.matchedCorrectiveQty > 0) return; // Already matched
-        if (orig.qtyReceived !== 0) return; // Only apply if ST entered 0
+        if (orig.qtyShipped <= orig.qtyReceived) return; // No shortfall
         
         const key = `${norm(orig.toBranch)}_${norm(orig.itemCode)}`;
         const candidates = correctiveMap[key];
         if (candidates) {
-            const match = candidates.find(c => !c.isMerged && c.qtyShipped > 0);
+            const match = candidates.find(c => {
+                if (c.isMerged) return false;
+                return c.date === orig.date && c.qtyShipped > 0;
+            });
             if (match) {
                 orig.matchedCorrectiveQty = match.qtyShipped;
                 match.isMerged = true;
@@ -617,24 +597,34 @@ function linkTransfers(rawTransfers) {
         }
     });
 
-    // Pass 4: Mismatched store wrong-division fallback
+    // Pass 3: If original received quantity is 0 (ST entered 0), match with any remaining unmatched corrective transfer for the same store, item, and same day
+    originals.forEach(orig => {
+        if (orig.matchedCorrectiveQty > 0) return; // Already matched
+        if (orig.qtyReceived !== 0) return; // Only apply if ST entered 0
+        
+        const key = `${norm(orig.toBranch)}_${norm(orig.itemCode)}`;
+        const candidates = correctiveMap[key];
+        if (candidates) {
+            const match = candidates.find(c => !c.isMerged && c.date === orig.date && c.qtyShipped > 0);
+            if (match) {
+                orig.matchedCorrectiveQty = match.qtyShipped;
+                match.isMerged = true;
+            }
+        }
+    });
+
+    // Pass 4: Mismatched store wrong-division fallback (same day only)
     // If an original transfer has a shortfall, is not yet matched, and there is an unmatched corrective transfer
-    // with the same itemCode, same nguoiChia, and within 3 days date proximity.
+    // with the same itemCode, same nguoiChia, and same day.
     originals.forEach(orig => {
         if (orig.matchedCorrectiveQty > 0) return; // Already matched
         if (orig.qtyShipped <= orig.qtyReceived) return; // No shortfall
         
-        const origDate = new Date(orig.date);
         const match = correctives.find(c => {
             if (c.isMerged) return false;
             if (norm(c.itemCode) !== norm(orig.itemCode)) return false;
-            
-            // Match nguoiChia (must be non-empty and equal)
             if (!c.nguoiChia || !orig.nguoiChia || norm(c.nguoiChia) !== norm(orig.nguoiChia)) return false;
-            
-            const cDate = new Date(c.date);
-            const diffDays = Math.round((cDate - origDate) / (1000 * 60 * 60 * 24));
-            return Math.abs(diffDays) <= 3 && c.qtyShipped > 0;
+            return c.date === orig.date && c.qtyShipped > 0;
         });
         
         if (match) {
@@ -643,19 +633,15 @@ function linkTransfers(rawTransfers) {
         }
     });
 
-    // Pass 5: Match unmatched correctives to ANY original transfer of the same store and item, within 3 days, even if no shortage
+    // Pass 5: Match unmatched correctives to ANY original transfer of the same store and item, same day, even if no shortage
     originals.forEach(orig => {
         if (orig.matchedCorrectiveQty > 0) return; // Already matched
         
-        const origDate = new Date(orig.date);
         const match = correctives.find(c => {
             if (c.isMerged) return false;
             if (norm(c.itemCode) !== norm(orig.itemCode)) return false;
             if (norm(c.toBranch) !== norm(orig.toBranch)) return false;
-            
-            const cDate = new Date(c.date);
-            const diffDays = Math.round((cDate - origDate) / (1000 * 60 * 60 * 24));
-            return Math.abs(diffDays) <= 3 && c.qtyShipped > 0;
+            return c.date === orig.date && c.qtyShipped > 0;
         });
         
         if (match) {
@@ -664,19 +650,15 @@ function linkTransfers(rawTransfers) {
         }
     });
 
-    // Pass 6: Match remaining unmatched correctives to ANY original transfer of the same item and same user, within 3 days, even if different store and no shortage
+    // Pass 6: Match remaining unmatched correctives to ANY original transfer of the same item and same user, same day, even if different store and no shortage
     originals.forEach(orig => {
         if (orig.matchedCorrectiveQty > 0) return; // Already matched
         
-        const origDate = new Date(orig.date);
         const match = correctives.find(c => {
             if (c.isMerged) return false;
             if (norm(c.itemCode) !== norm(orig.itemCode)) return false;
             if (!c.nguoiChia || !orig.nguoiChia || norm(c.nguoiChia) !== norm(orig.nguoiChia)) return false;
-            
-            const cDate = new Date(c.date);
-            const diffDays = Math.round((cDate - origDate) / (1000 * 60 * 60 * 24));
-            return Math.abs(diffDays) <= 3 && c.qtyShipped > 0;
+            return c.date === orig.date && c.qtyShipped > 0;
         });
         
         if (match) {

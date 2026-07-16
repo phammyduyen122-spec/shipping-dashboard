@@ -3546,6 +3546,8 @@ function renderPerfSummaryTable() {
                 qtyReceived: 0,
                 qtyShipped: 0,
                 slBoSung: 0,
+                remainingShortage: 0,
+                chiaSaiST: 0,
                 chenhLechConLai: 0,
                 absDiff: 0,
                 valLech: 0
@@ -3560,19 +3562,26 @@ function renderPerfSummaryTable() {
         summaryAgg[key].slBoSung += slBoSung;
         
         // Sum final discrepancies, ignoring normal "Hao hụt" (<15% KG) and "Đang chuyển"
-        // Formula: SL còn lại = SL chênh lệch âm (phiếu PT tạo từ Kho rau củ) + số lượng tạo BS (tạo từ kho clch)
         const statusText = statusInfo.statusText;
-        let rowChenhLechConLai = 0;
+        let rowRemainingShortage = 0;
+        let rowChiaSaiST = 0;
         if (statusText !== "Hao hụt" && statusText !== "Đang chuyển") {
             const rowChenhLech = row.qtyReceived === -1 ? 0 : (row.qtyReceived - row.qtyShipped);
-            const rowChenhLechAm = rowChenhLech < 0 ? rowChenhLech : 0;
-            rowChenhLechConLai = rowChenhLechAm + slBoSung;
+            if (rowChenhLech < 0) {
+                rowRemainingShortage = rowChenhLech + slBoSung;
+            } else if (rowChenhLech > 0) {
+                rowChiaSaiST = rowChenhLech;
+            }
         }
 
+        const rowChenhLechConLai = rowRemainingShortage + rowChiaSaiST;
+
+        summaryAgg[key].remainingShortage += rowRemainingShortage;
+        summaryAgg[key].chiaSaiST += rowChiaSaiST;
         summaryAgg[key].chenhLechConLai += rowChenhLechConLai;
         summaryAgg[key].absDiff += Math.abs(rowChenhLechConLai);
 
-        // Financial discrepancy value based on SL lệch còn lại
+        // Financial discrepancy value based on final remaining discrepancy
         const price = window.productPrices ? (window.productPrices[row.itemCode] || 0) : 0;
         summaryAgg[key].valLech += price * rowChenhLechConLai;
     });
@@ -3685,6 +3694,14 @@ function renderPerfSummaryTable() {
                 valA = a.qtyShipped || 0;
                 valB = b.qtyShipped || 0;
                 break;
+            case "remainingShortage":
+                valA = a.remainingShortage || 0;
+                valB = b.remainingShortage || 0;
+                break;
+            case "chiaSaiST":
+                valA = a.chiaSaiST || 0;
+                valB = b.chiaSaiST || 0;
+                break;
             case "chenhLechConLai":
                 valA = a.chenhLechConLai || 0;
                 valB = b.chenhLechConLai || 0;
@@ -3727,6 +3744,9 @@ function renderPerfSummaryTable() {
 
         const key = `${item.date}_${item.user}_${item.barcode}_${item.unit}`;
         const totalShared = totalSharedLookup[key] || 0;
+        
+        const styleRemainingShortage = item.remainingShortage < 0 ? 'color: var(--color-danger); font-weight: 500;' : '';
+        const styleChiaSaiST = item.chiaSaiST > 0 ? 'color: var(--color-info); font-weight: 500;' : '';
         const diffStyle = item.chenhLechConLai < 0 
             ? 'color: var(--color-danger); font-weight: 500;' 
             : (item.chenhLechConLai > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
@@ -3755,6 +3775,8 @@ function renderPerfSummaryTable() {
             <td>${item.nganhHang || "Khác"}</td>
             <td style="text-align: right; color: var(--text-secondary);">${formatPrice(price)}</td>
             <td style="text-align: right; font-weight: 500;">${formatNumber(totalShared)}</td>
+            <td style="text-align: right; ${styleRemainingShortage}">${formatDiffNumber(item.remainingShortage)}</td>
+            <td style="text-align: right; ${styleChiaSaiST}">${formatDiffNumber(item.chiaSaiST)}</td>
             <td style="text-align: right; ${diffStyle}">${formatDiffNumber(item.chenhLechConLai)}</td>
             <td style="text-align: right; ${valLechStyle}">${formatVND(valLech)}</td>
             <td style="text-align: right; ${pctStyle}">${pctText}</td>
@@ -3765,6 +3787,8 @@ function renderPerfSummaryTable() {
     // Append Grand Total row
     if (sortedSummary.length > 0) {
         let grandTotalShared = 0;
+        let grandTotalRemainingShortage = 0;
+        let grandTotalChiaSaiST = 0;
         let grandTotalDiff = 0;
         let grandTotalAbsDiff = 0;
         let grandTotalVal = 0;
@@ -3773,6 +3797,8 @@ function renderPerfSummaryTable() {
             const key = `${item.date}_${item.user}_${item.barcode}_${item.unit}`;
             const totalShared = totalSharedLookup[key] || 0;
             grandTotalShared += totalShared;
+            grandTotalRemainingShortage += item.remainingShortage;
+            grandTotalChiaSaiST += item.chiaSaiST;
             grandTotalDiff += item.chenhLechConLai;
             grandTotalAbsDiff += item.absDiff;
 
@@ -3793,6 +3819,8 @@ function renderPerfSummaryTable() {
             <td colspan="5"></td>
             <td style="text-align: right; color: var(--text-muted);">-</td>
             <td style="text-align: right; font-weight: bold; color: var(--color-primary);">${formatNumber(grandTotalShared)}</td>
+            <td style="text-align: right; ${grandTotalRemainingShortage < 0 ? 'color: var(--color-danger);' : ''}">${formatDiffNumber(grandTotalRemainingShortage)}</td>
+            <td style="text-align: right; ${grandTotalChiaSaiST > 0 ? 'color: var(--color-info);' : ''}">${formatDiffNumber(grandTotalChiaSaiST)}</td>
             <td style="text-align: right; ${grandTotalDiff < 0 ? 'color: var(--color-danger);' : (grandTotalDiff > 0 ? 'color: var(--color-info);' : '')}">${formatDiffNumber(grandTotalDiff)}</td>
             <td style="text-align: right; ${grandTotalVal < 0 ? 'color: var(--color-danger);' : (grandTotalVal > 0 ? 'color: var(--color-info);' : '')}">${formatVND(grandTotalVal)}</td>
             <td style="text-align: right; color: var(--color-success);">${grandTotalDisplayText}</td>
@@ -7045,7 +7073,7 @@ function exportSummaryToCSV() {
         totalSharedLookup[key] += t.qtyShipped;
     });
 
-    const headers = ["STT", "Ngày chia hàng", "Nhân sự chia", "Barcode", "Tên sản phẩm", "Đơn vị tính", "Ngành hàng", "Giá mua", "SL chia", "SL lệch còn lại", "Giá trị lệch", "% Lệch"];
+    const headers = ["STT", "Ngày chia hàng", "Nhân sự chia", "Barcode", "Tên sản phẩm", "Đơn vị tính", "Ngành hàng", "Giá mua", "SL chia", "SL lệch còn lại", "Chia sai ST", "SL còn lại", "Giá trị lệch", "% Lệch"];
     const rows = [];
 
     lastSortedSummary.forEach((item, index) => {
@@ -7056,7 +7084,7 @@ function exportSummaryToCSV() {
         const pctText = `${pctLech.toFixed(2)}%`;
 
         const price = window.productPrices ? (window.productPrices[item.barcode] || 0) : 0;
-        const valLech = Math.round(price * item.chenhLechConLai);
+        const valLech = item.valLech;
 
         rows.push([
             index + 1,
@@ -7068,6 +7096,8 @@ function exportSummaryToCSV() {
             item.nganhHang || "Khác",
             price,
             totalShared,
+            item.remainingShortage,
+            item.chiaSaiST,
             item.chenhLechConLai,
             valLech,
             pctText
@@ -7076,6 +7106,8 @@ function exportSummaryToCSV() {
 
     // Append the Grand Total row
     let grandTotalShared = 0;
+    let grandTotalRemainingShortage = 0;
+    let grandTotalChiaSaiST = 0;
     let grandTotalDiff = 0;
     let grandTotalAbsDiff = 0;
     let grandTotalVal = 0;
@@ -7084,11 +7116,12 @@ function exportSummaryToCSV() {
         const key = `${item.date}_${item.user}_${item.barcode}_${item.unit}`;
         const totalShared = totalSharedLookup[key] || 0;
         grandTotalShared += totalShared;
+        grandTotalRemainingShortage += item.remainingShortage;
+        grandTotalChiaSaiST += item.chiaSaiST;
         grandTotalDiff += item.chenhLechConLai;
         grandTotalAbsDiff += item.absDiff;
 
-        const price = window.productPrices ? (window.productPrices[item.barcode] || 0) : 0;
-        grandTotalVal += Math.round(price * item.chenhLechConLai);
+        grandTotalVal += item.valLech;
     });
 
     const grandTotalErrorRate = grandTotalShared > 0 ? (grandTotalAbsDiff / grandTotalShared) * 100 : 0;
@@ -7104,6 +7137,8 @@ function exportSummaryToCSV() {
         "",
         "",
         grandTotalShared,
+        grandTotalRemainingShortage,
+        grandTotalChiaSaiST,
         grandTotalDiff,
         grandTotalVal,
         grandTotalDisplayText

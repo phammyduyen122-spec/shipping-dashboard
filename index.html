@@ -579,15 +579,30 @@
                         <label for="perfTableFilterUnit" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Đơn vị tính:</label>
                         <input type="text" id="perfTableFilterUnit" class="input-field" placeholder="Nhập đơn vị để lọc..." style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%;">
                     </div>
-                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 130px;">
-                        <label for="perfTableFilterStatus" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Trạng thái:</label>
-                        <select id="perfTableFilterStatus" class="input-field" style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-primary); color: var(--text-primary);">
-                            <option value="">Tất cả</option>
-                            <option value="lệch">Bị lệch</option>
-                            <option value="thiếu">Thiếu</option>
-                            <option value="dư">Dư</option>
-                            <option value="đủ">Không lệch</option>
-                        </select>
+                    <div class="filter-group dropdown-search-wrapper" style="flex: 1; min-width: 150px; display: flex; align-items: center; gap: 8px;">
+                        <label class="filter-label" style="font-size: 12px; color: var(--text-muted); white-space: nowrap; margin: 0;">Trạng thái:</label>
+                        <div class="multiselect-container" id="perfTableFilterStatusContainer" style="width: 100%;">
+                            <div class="multiselect-select" style="height: 34px; padding: 6px 12px; font-size: 13px;">
+                                <span class="multiselect-value">-- Tất cả trạng thái --</span>
+                                <span class="multiselect-arrow">▾</span>
+                            </div>
+                            <div class="multiselect-dropdown">
+                                <div class="multiselect-options-list">
+                                    <label class="multiselect-option">
+                                        <input type="checkbox" value="lệch"> <span>Bị lệch</span>
+                                    </label>
+                                    <label class="multiselect-option">
+                                        <input type="checkbox" value="thiếu"> <span>Thiếu</span>
+                                    </label>
+                                    <label class="multiselect-option">
+                                        <input type="checkbox" value="dư"> <span>Dư</span>
+                                    </label>
+                                    <label class="multiselect-option">
+                                        <input type="checkbox" value="đủ"> <span>Không lệch</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -1093,8 +1108,8 @@
     </div>
 
     <!-- Data Script -->
-    <script src="data.js?v=76"></script>
+    <script src="data.js?v=77"></script>
     <!-- Core App Execution Script -->
-    <script src="app.js?v=76"></script>
+    <script src="app.js?v=77"></script>
 </body>
 </html>

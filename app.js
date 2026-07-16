@@ -1489,7 +1489,12 @@ function setupMultiSelectDropdown(containerId) {
     const optionsList = container.querySelector(".multiselect-options-list");
 
     let filterFn = applyFiltersAndRender;
-    if (containerId.includes("cat")) {
+    if (containerId.includes("perfTable")) {
+        filterFn = () => {
+            currentPerfPage = 1;
+            renderPerfTable();
+        };
+    } else if (containerId.includes("cat")) {
         filterFn = renderF1CategoryTable;
     } else if (containerId.includes("perf")) {
         filterFn = applyPerfFiltersAndRender;
@@ -2129,6 +2134,7 @@ function setupPerfEventListeners() {
     setupMultiSelectDropdown("perfFilterToBranchContainer");
     setupMultiSelectDropdown("perfFilterUnitContainer");
     setupMultiSelectDropdown("perfFilterCategoryContainer");
+    setupMultiSelectDropdown("perfTableFilterStatusContainer");
     
     document.getElementById("perfFilterStartDate").addEventListener("change", applyPerfFiltersAndRender);
     document.getElementById("perfFilterEndDate").addEventListener("change", applyPerfFiltersAndRender);
@@ -2251,13 +2257,7 @@ function setupPerfEventListeners() {
         });
     }
 
-    const tableFilterStatus = document.getElementById("perfTableFilterStatus");
-    if (tableFilterStatus) {
-        tableFilterStatus.addEventListener("change", () => {
-            currentPerfPage = 1;
-            renderPerfTable();
-        });
-    }
+
 
     // Inline filters for summary table
     const summaryFilterDate = document.getElementById("perfSummaryFilterDate");
@@ -3147,13 +3147,16 @@ function clearPerfFilters() {
     const tableFilterBarcode = document.getElementById("perfTableFilterBarcode");
     const tableFilterName = document.getElementById("perfTableFilterName");
     const tableFilterUnit = document.getElementById("perfTableFilterUnit");
-    const tableFilterStatus = document.getElementById("perfTableFilterStatus");
+    const tableFilterStatusContainer = document.getElementById("perfTableFilterStatusContainer");
     if (tableFilterDate) tableFilterDate.value = "";
     if (tableFilterUser) tableFilterUser.value = "";
     if (tableFilterBarcode) tableFilterBarcode.value = "";
     if (tableFilterName) tableFilterName.value = "";
     if (tableFilterUnit) tableFilterUnit.value = "";
-    if (tableFilterStatus) tableFilterStatus.value = "";
+    if (tableFilterStatusContainer) {
+        tableFilterStatusContainer.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = false);
+        updateSelectLabel(tableFilterStatusContainer, tableFilterStatusContainer.querySelector(".multiselect-value"));
+    }
     
     const perfF1UserSearch = document.getElementById("perfF1UserSearch");
     if (perfF1UserSearch) perfF1UserSearch.value = "";
@@ -4151,7 +4154,7 @@ function getFilteredPerfDiscrepantData() {
     const barcodeFilterText = document.getElementById("perfTableFilterBarcode") ? document.getElementById("perfTableFilterBarcode").value.toLowerCase().trim() : "";
     const nameFilterText = document.getElementById("perfTableFilterName") ? document.getElementById("perfTableFilterName").value.toLowerCase().trim() : "";
     const unitFilterText = document.getElementById("perfTableFilterUnit") ? document.getElementById("perfTableFilterUnit").value.toLowerCase().trim() : "";
-    const statusFilter = document.getElementById("perfTableFilterStatus") ? document.getElementById("perfTableFilterStatus").value : "";
+    const selectedStatuses = Array.from(document.querySelectorAll("#perfTableFilterStatusContainer input[type='checkbox']:checked")).map(cb => cb.value);
 
     return filteredPerfTransfers.filter(row => {
         const statusInfo = calculateStatus(row);
@@ -4159,14 +4162,15 @@ function getFilteredPerfDiscrepantData() {
         const status = statusInfo.statusText; // Thiếu, Dư, Đủ, Hao hụt, Đang chuyển
         
         // Status filter matching logic
-        if (statusFilter === "thiếu") {
-            if (status !== "Thiếu") return false;
-        } else if (statusFilter === "dư") {
-            if (status !== "Dư") return false;
-        } else if (statusFilter === "đủ") {
-            if (status !== "Đủ" && status !== "Hao hụt" && diff !== 0) return false;
-        } else if (statusFilter === "lệch") {
-            if (diff === 0 || status === "Hao hụt" || status === "Đang chuyển") return false;
+        if (selectedStatuses.length > 0) {
+            let matchStatus = false;
+            for (const s of selectedStatuses) {
+                if (s === "thiếu" && status === "Thiếu") matchStatus = true;
+                else if (s === "dư" && status === "Dư") matchStatus = true;
+                else if (s === "đủ" && (status === "Đủ" || status === "Hao hụt" || diff === 0)) matchStatus = true;
+                else if (s === "lệch" && (diff !== 0 && status !== "Hao hụt" && status !== "Đang chuyển")) matchStatus = true;
+            }
+            if (!matchStatus) return false;
         } else {
             // Default (Tất cả): only show discrepant rows
             if (diff === 0 || status === "Hao hụt" || status === "Đang chuyển") return false;

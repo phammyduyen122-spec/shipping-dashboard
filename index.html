@@ -579,6 +579,16 @@
                         <label for="perfTableFilterUnit" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Đơn vị tính:</label>
                         <input type="text" id="perfTableFilterUnit" class="input-field" placeholder="Nhập đơn vị để lọc..." style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%;">
                     </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 130px;">
+                        <label for="perfTableFilterStatus" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Trạng thái:</label>
+                        <select id="perfTableFilterStatus" class="input-field" style="padding: 6px 12px; font-size: 13px; height: 34px; margin: 0; width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="">Tất cả</option>
+                            <option value="lệch">Bị lệch</option>
+                            <option value="thiếu">Thiếu</option>
+                            <option value="dư">Dư</option>
+                            <option value="đủ">Không lệch</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <div class="table-wrapper">
@@ -587,18 +597,17 @@
                             <tr>
                                 <th data-perf-sort="ngayChuyen" class="sort-asc">Ngày chuyển</th>
                                 <th data-perf-sort="maPhieu">Mã Phiếu</th>
+                                <th data-perf-sort="sttSieuThi">STT siêu thị</th>
                                 <th data-perf-sort="noiNhan">Nơi nhận</th>
                                 <th data-perf-sort="barcode">Barcode</th>
                                 <th data-perf-sort="tenSanPham">Tên sản phẩm</th>
                                 <th data-perf-sort="donVi">Đơn vị</th>
                                 <th data-perf-sort="nganhHang">Ngành hàng</th>
-                                <th style="text-align: right;">Giá mua</th>
                                 <th data-perf-sort="qtyShipped" style="text-align: right;">SL chuyển</th>
                                 <th data-perf-sort="qtyReceived" style="text-align: right;">SL nhận</th>
                                 <th data-perf-sort="chenhLech" style="text-align: right;">Chênh lệch</th>
                                 <th data-perf-sort="slBoSung" style="text-align: right;">Bổ sung</th>
                                 <th data-perf-sort="diff" style="text-align: right;">CL còn lại</th>
-                                <th style="text-align: right;">Giá trị lệch</th>
                                 <th data-perf-sort="nguoiChia">Người chia hàng</th>
                                 <th data-perf-sort="trangThai">Trạng thái</th>
                             </tr>
@@ -1084,8 +1093,8 @@
     </div>
 
     <!-- Data Script -->
-    <script src="data.js?v=74"></script>
+    <script src="data.js?v=75"></script>
     <!-- Core App Execution Script -->
-    <script src="app.js?v=74"></script>
+    <script src="app.js?v=75"></script>
 </body>
 </html>

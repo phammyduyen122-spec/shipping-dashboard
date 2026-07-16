@@ -1,3 +1,229 @@
+const supermarketSttMapping = {
+    "KFM_HCM_TPH - S1.0.38 BLOCK A5 DIAMOND CELADON CITY": 1,
+    "KFM_HCM_TDU - S06.06 VINHOMES GRAND PARK": 2,
+    "KFM_HCM_NBE - 166E LÊ VĂN LƯƠNG": 3,
+    "KFM_HCM_Q07 - 31 TÂN MỸ": 4,
+    "KFM_HCM_Q10 - BB17 TRƯỜNG SƠN": 5,
+    "KFM_HCM_BTH - 54 VŨ HUY TẤN": 6,
+    "KFM_HCM_BCH - 10 PHẠM HÙNG": 7,
+    "KFM_HCM_TDU - 02 TẠ HIỆN": 8,
+    "KFM_HCM_Q07 - LÔ CD L1-12 Q7 RIVERSIDE ĐÀO TRÍ": 9,
+    "KFM_HCM_TBI - 236A LÊ VĂN SỸ": 10,
+    "KFM_HCM_TDU - D1-1.24 SAFIRA KHANG ĐIỀN": 11,
+    "KFM_HCM_TDU - BLOCK B IMPERIA AN PHÚ": 12,
+    "KFM_HCM_BTH - 42 NGUYỄN VĂN ĐẬU": 13,
+    "KFM_HCM_Q07 - 97 LÊ THỊ CHỢ": 14,
+    "KFM_HCM_TDU - THE ART GIA HÒA": 15,
+    "KFM_HCM_TDU - S10.02 VINHOMES GRAND PARK": 16,
+    "KFM_HCM_Q07 - C0.01 RIVERSIDE PHÚ MỸ HƯNG": 17,
+    "KFM_HCM_TDU - 63 ĐƯỜNG SỐ 3": 18,
+    "KFM_HCM_TDU - 02 NGUYỄN THỊ NHUNG": 19,
+    "KFM_HCM_Q07 - 571 HUỲNH TẤN PHÁT": 20,
+    "KFM_HCM_BTA - AK4 AKARI CITY": 21,
+    "KFM_HCM_Q07 - SH16 ECO GREEN": 22,
+    "KFM_HCM_TPH - 85 CÂY KEO": 23,
+    "KFM_HCM_TDU - GH5 VINHOMES GRAND PARK": 24,
+    "KFM_HCM_Q07 - 436 NGUYỄN THỊ THẬP": 25,
+    "KFM_HCM_Q08 - 01.18 PEGASUITE": 26,
+    "KFM_HCM_Q07 - 09 LÂM VĂN BỀN": 27,
+    "KFM_HCM_BCH - A7-8 VALORA MIZUKI": 28,
+    "KFM_HCM_Q07 - 0105 B4 ERA TOWN": 29,
+    "KFM_HCM_TDU - 59 QUỐC HƯƠNG": 30,
+    "KFM_HCM_TBI - 22 HOÀNG HOA THÁM": 31,
+    "KFM_HCM_TDU - 1426 NGUYỄN DUY TRINH": 32,
+    "KFM_HCM_PNH - T1-5 TMDV ORCHARD GARDEN": 33,
+    "KFM_HCM_Q07 - BLOCK A HIMLAM RIVERSIDE Q7": 34,
+    "KFM_HCM_TDU - 17 HỒ THỊ NHUNG": 35,
+    "KFM_HCM_NBE - SH14-15 SAIGON SOUTH RESIDENCES": 36,
+    "KFM_HCM_BTH - 108 NGÔ TẤT TỐ": 37,
+    "KFM_HCM_TDU - SAV_04-00.03 THE SUN AVENUE": 38,
+    "KFM_HCM_TBI - BLOCK C HARMONA": 39,
+    "KFM_HCM_TDU - S1.05 VINHOMES GRAND PARK": 40,
+    "KFM_HCM_BTH - 107 BÌNH QUỚI": 41,
+    "KFM_HCM_GVA - 308 LÊ VĂN THỌ": 42,
+    "KFM_HCM_Q03 - 14 HUỲNH TỊNH CỦA": 43,
+    "KFM_HCM_Q04 - 98 KHÁNH HỘI": 44,
+    "KFM_HCM_Q10 - 7/29 THÀNH THÁI": 45,
+    "KFM_HCM_BTH - 86B VŨ TÙNG": 46,
+    "KFM_HCM_TDU - TMDV CITIHOME CÁT LÁI": 47,
+    "KFM_HCM_TDU - 305 NGUYỄN DUY TRINH": 48,
+    "KFM_HCM_Q07 - 233 PHẠM HỮU LẦU": 49,
+    "KFM_HCM_TDU - BS11 VINHOMES GRAND PARK": 50,
+    "KFM_HCM_Q06 - 126 CHỢ LỚN": 51,
+    "KFM_HCM_TDU - A0.01 EHOMES PHÚ HỮU": 52,
+    "KFM_HCM_Q10 - 103 HÒA HƯNG": 53,
+    "KFM_HCM_Q10 - JASMINE 1 HÀ ĐÔ CENTROSA": 54,
+    "KFM_HCM_TPH - 116 GÒ DẦU": 55,
+    "KFM_HCM_NBE - 5/3D HUỲNH TẤN PHÁT": 56,
+    "KFM_HCM_TDU - S03.05 VINHOMES GRAND PARK": 57,
+    "KFM_HCM_TDU - 160A NGUYỄN THỊ ĐỊNH": 58,
+    "KFM_HCM_GVA - 372 DƯƠNG QUẢNG HÀM": 59,
+    "KFM_HCM_GVA - 15 NGUYÊN HỒNG": 60,
+    "KFM_HCM_TDU - 05 ĐƯỜNG D3 PHƯỚC LONG": 61,
+    "KFM_HCM_GVA - 195 THỐNG NHẤT": 62,
+    "KFM_HCM_Q03 - 10D KỲ ĐỒNG": 63,
+    "KFM_BDU_DAN - 27 TÂN LẬP": 64,
+    "KFM_HCM_Q07 - R13 HƯNG VƯỢNG 2": 65,
+    "KFM_HCM_BTA - 66/70 BÌNH THÀNH": 66,
+    "KFM_HCM_Q07 - E72 PHÚ THUẬN": 67,
+    "KFM_HCM_TDU - A1.04 JAMILA KHANG ĐIỀN": 68,
+    "KFM_HCM_TBI - 165 HOÀNG HOA THÁM": 69,
+    "KFM_HCM_BCH - 68 ĐƯỜNG SỐ 1 KHU DÂN CƯ 6B INTRESCO": 70,
+    "KFM_HCM_Q07 - 17 ĐƯỜNG SỐ 16, KHU NAM VIÊN MIDTOWN": 71,
+    "KFM_HCM_TDU - S07.02 VINHOMES GRAND PARK": 72,
+    "KFM_HCM_Q07 - B0.02 SCENIC VALLEY 2": 73,
+    "KFM_BDU_DAN - S01.11 BLOCK A1 CHARM SAPPHIRE": 74,
+    "KFM_HCM_TDU - 60 LƯƠNG ĐỊNH CỦA": 75,
+    "KFM_HCM_Q07 - 43 BÙI VĂN BA": 76,
+    "KFM_HCM_Q08 - BLOCK C DIAMOND RIVERSIDE": 77,
+    "KFM_HCM_BCH - D-2.01A WESTGATE AN GIA": 78,
+    "KFM_HCM_BTA - 99 ĐƯỜNG SỐ 7": 79,
+    "KFM_HCM_TBI - 64A CỬU LONG": 80,
+    "KFM_HCM_GVA - 410 PHAN HUY ÍCH": 81,
+    "KFM_HCM_Q7 - 01 ĐƯỜNG SỐ 10 TÂN KIỂNG": 82,
+    "KFM_HCM_Q03 - 274 LÊ VĂN SỸ": 83,
+    "KFM_HCM_TDU - 74 ĐƯỜNG SỐ 1 CHUNG CƯ SKY 9": 84,
+    "KFM_HCM_GVA - 371 NGUYỄN KIỆM": 85,
+    "KFM_HCM_GVA - 299 NGUYỄN VĂN KHỐI": 86,
+    "KFM_HCM_Q12 - AS19 BLOCK A PROSPER PLAZA": 87,
+    "KFM_HCM_BTA - TMDV19 PRIVIA KHANG ĐIỀN": 88,
+    "KFM_HCM_TDU - BA-S03 NEW CITY": 89,
+    "KFM_HCM_TDU - 41 VŨ TÔNG PHAN": 90,
+    "KFM_HCM_TDU - 46 TRẦN NÃO": 91,
+    "KFM_HCM_Q12 - 678 NGUYỄN VĂN QUÁ": 92,
+    "KFM_BDU_DAN - SH01 BCONS GARDEN": 93,
+    "KFM_HCM_BTH - 216 PHAN VĂN HÂN": 94,
+    "KFM_HCM_BCH - 511 QUỐC LỘ 50": 95,
+    "KFM_HCM_TPH - 128 VƯỜN LÀI": 96,
+    "KFM_HCM_Q1 - 93 CÔ GIANG": 97,
+    "KFM_HCM_BTH - 484B LÊ QUANG ĐỊNH": 98,
+    "KFM_HCM_TDU - 128A KHA VẠN CÂN": 99,
+    "KFM_HCM_Q08 - 320 HƯNG PHÚ": 100,
+    "KFM_HCM_GVA - 446 PHẠM VĂN BẠCH": 101,
+    "KFM_HCM_TDU - 38E CÂY KEO": 102,
+    "KFM_HCM_Q07 - A14 THE INFINITY RIVIERA POINT": 103,
+    "KFM_HCM_TPH - 48 CN1": 104,
+    "KFM_HCM_BTA - 46 NGUYỄN THỊ TÚ": 105,
+    "KFM_HCM_BCH - BLOCK G CONIC SKYWAY": 106,
+    "KFM_BDU_TAN - SH04 THE RIVANA": 107,
+    "KFM_HCM_TPH - 66 TRƯƠNG VĨNH KÝ": 108,
+    "KFM_HCM_TBI - 108 BÙI THỊ XUÂN": 109,
+    "KFM_HCM_TDU - 222 LÊ VĂN THỊNH": 110,
+    "KFM_HCM_BTA - A10-0.02 EHOME 3": 111,
+    "KFM_HCM_Q07 - X1.013 SUNRISE CITY NORTH": 112,
+    "KFM_HCM_Q12 - 170 NGUYỄN THỊ BÚP": 113,
+    "KFM_HCM_TDU - 136 HIỆP BÌNH": 114,
+    "KFM_HCM_TDU - D01.14 MT EASTMARK CITY": 115,
+    "KFM_HCM_TDU - 115 MAN THIỆN": 116,
+    "KFM_HCM_TDU - 539 ĐỖ XUÂN HỢP": 117,
+    "KFM_HCM_Q12 - 76 TRẦN THỊ CỜ": 118,
+    "KFM_BDU_TAN - B.01.04 THÁP B OPAL SKYLINE": 119,
+    "KFM_HCM_BCH - TMDV2 MIZUKI PARK": 120,
+    "KFM_HCM_PNH - 154 NGUYỄN TRỌNG TUYỂN": 121,
+    "KFM_HCM_Q08 - 296 HOÀNG NGÂN": 122,
+    "KFM_HCM_TDU - 29B ĐƯỜNG SỐ 30 4S LINH ĐÔNG": 123,
+    "KFM_HCM_GVA - TM0.03 CH3 CITYLAND PARK HILL": 124,
+    "KFM_HCM_TPH - 50 LƯƠNG MINH NGUYỆT": 125,
+    "KFM_BDU_TAN - BLOCK A EMERALD GOLF VIEW": 126,
+    "KFM_HCM_Q10 - 74 VĨNH VIỄN": 127,
+    "KFM_HCM_Q06 - 123 LÝ CHIÊU HOÀNG": 128,
+    "KFM_HCM_Q07 - 39 LÝ PHỤC MAN": 129,
+    "KFM_HCM_Q07 - 106 TRẦN TRỌNG CUNG": 130,
+    "KFM_HCM_TPH - 83 KHUÔNG VIỆT": 131,
+    "KFM_HCM_TPH - RS4 RICHSTAR": 132,
+    "KFM_HCM_NBE - 222 LÊ VĂN LƯƠNG": 133,
+    "KFM_BDU_DAN - 01-06 TMDV HIM LAM PHÚ ĐÔNG": 134,
+    "KFM_HCM_Q07 - A01-06 HOÀNG ANH THANH BÌNH": 135,
+    "KFM_HCM_Q06 - 229A TÂN HÒA ĐÔNG": 136,
+    "KFM_HCM_GVA - 20 LÊ ĐỨC THỌ": 137,
+    "KFM_HCM_TDU - B-SH.06 URBAN GREEN": 138,
+    "KFM_HCM_TDU - 0.01 CHUNG CƯ AN CƯ AN PHÚ": 139,
+    "KFM_HCM_Q12 - BLOCK B1 HƯNG NGÂN GARDEN": 140,
+    "KFM_HCM_BTA - 197 ĐƯỜNG SỐ 1 AN LẠC": 141,
+    "KFM_HCM_TPH - 379 THẠCH LAM": 142,
+    "KFM_HCM_TDU - 02 LÊ LỢI": 143,
+    "KFM_HCM_Q09 - 367 NGUYỄN VĂN TĂNG": 144,
+    "KFM_HCM_TBI - 48 TRẦN VĂN QUANG": 145,
+    "KFM_HCM_TDU - 09 ĐÀO TRINH NHẤT": 146,
+    "KFM_HCM_Q07 - 956 HUỲNH TẤN PHÁT": 147,
+    "KFM_HCM_Q08 - B01.05 DREAM HOME PALACE": 148,
+    "KFM_HCM_Q07 - B1.01 CHUNG CƯ GOLDEN STAR": 149,
+    "KFM_HCM_Q03 - 125 NGUYỄN PHÚC NGUYÊN": 150,
+    "KFM_HCM_BTA - 4535 NGUYỄN CỬU PHÚ": 151,
+    "KFM_HCM_Q06 - 145 ĐƯỜNG SỐ 23 BÌNH PHÚ": 152,
+    "KFM_HCM_TDU - 101C DƯƠNG ĐÌNH HỘI": 153,
+    "KFM_HCM_Q06 - B1.00.01 HIM LAM CHỢ LỚN": 154,
+    "KFM_HCM_TBI - 91 NGUYỄN PHÚC CHU": 155,
+    "KFM_HCM_Q03 - 116 BÀN CỜ": 156,
+    "KFM_HCM_TDU - 560 NGUYỄN DUY TRINH": 157,
+    "KFM_HCM_Q07 - BLOCK K HAPPY VALLEY": 158,
+    "KFM_HCM_TBI - BLOCK A CHUNG CƯ PHÚC YÊN 2": 159,
+    "KFM_HCM_BTH - 127 TÂN CẢNG": 160,
+    "KFM_HCM_NBE - A2.SH28-30 THE PARK RESIDENCE": 161,
+    "KFM_HCM_TDU - A1.02 HIM LAM PHÚ AN": 162,
+    "KFM_HCM_Q07 - 1016/21 CHUNG CƯ SKY GARDEN 2-R1-2": 163,
+    "KFM_BDU_DAN - B2.01.05 THÁP B OPAL BOULEVARD": 164,
+    "KFM_HCM_NBE - G16 CELESTA RISE": 165,
+    "KFM_HCM_Q01 - 35 NGUYỄN HỮU CẦU": 166,
+    "KFM_HCM_NBE - A.1.05 SUNRISE RIVERSIDE": 167,
+    "KFM_HCM_TDU - BS15 VINHOMES GRAND PARK": 168,
+    "KFM_HCM_BTH - 61 BÙI ĐÌNH TÚY": 169,
+    "KFM_HCM_TDU - TM1.15 CHUNG CƯ 9 VIEW": 170,
+    "KFM_HCM_TPH - S2.0.28 BLOCK A6 ALNATA PLUS CELADON CITY": 171,
+    "KFM_HCM_TPH - 91 NGUYỄN SƠN": 172,
+    "KFM_HCM_Q08 - 819 PHẠM THẾ HIỂN": 173,
+    "KFM_HCM_TBI - BPB-01.08 BOTANICA PREMIER": 174,
+    "KFM_HCM_Q11 - CH0.08 CHUNG CƯ THUẬN VIỆT": 175,
+    "KFM_BDU_DAN - 9 ĐƯỜNG M, KHU PHỐ NHỊ ĐỒNG 2": 176,
+    "KFM_HCM_BCH - L1.08 SAIGON MIA": 177,
+    "KFM_HCM_PNH - GM-1.06 GOLDEN MANSION": 178,
+    "KFM_HCM_TPH - H.38 MELODY RESIDENCES ÂU CƠ": 179,
+    "KFM_HCM_TPH - 52 THOẠI NGỌC HẦU": 180,
+    "KFM_HCM_TBI - 76 BÀU CÁT": 181,
+    "KFM_HCM_TDU - B6-D.TMDV.02 MASTERI CENTER POINT": 182,
+    "KFM_HCM_TDU - SH5-SH6 HOMYLAND RIVERSIDE": 183,
+    "KFM_HCM_Q12 - 135 TÂN THỚI NHẤT 17": 184,
+    "KFM_HCM_TDU - 299 LIÊN PHƯỜNG": 185,
+    "KFM_HCM_TBI - 56 ĐƯỜNG A4": 186,
+    "KFM_HCM_TDU - 86C ĐƯỜNG 339 PHƯỚC LONG": 187,
+    "KFM_HCM_TDU - S08.02 VINHOMES GRAND PARK": 188,
+    "KFM_HCM_BCH - 32A ĐƯỜNG SỐ 10 BÌNH HƯNG": 189,
+    "KFM_HCM_Q04 - TM.B.06 MILLENNIUM BẾN VÂN ĐỒN": 190,
+    "KFM_HCM_GVA - 81/2 ĐƯỜNG 59 AN HỘI TÂY": 191,
+    "KFM_HCM_Q12 - H36 KHU NHÀ Ở THỚI AN ĐƯỜNG LÊ THỊ RIÊNG": 192,
+    "KFM_HCM_Q07 - A1.03 SUNRISE CITY VIEW": 193,
+    "KFM_HCM_TDU - 146 ĐƯỜNG D1 PHƯỚC LONG": 194,
+    "KFM_HCM_TDU - SH-1C 2 ĐƯỜNG A5 KDC PALM RESIDENCE": 195,
+    "KFM_HCM_Q07 - 116 ĐƯỜNG SỐ 8 KDC NAM LONG": 196,
+    "KFM_HCM_TDU - 10A ĐƯỜNG SỐ 20 CHUNG CƯ OPAL GARDEN": 197,
+    "KFM_HCM_TDU - 173 LÊ VĂN CHÍ": 198,
+    "KFM_HCM_BTA - 235 ĐƯỜNG SỐ 6 AN LẠC": 199,
+    "29-31 ĐẶNG VĂN NGỮ, PHƯỜNG 10, QUẬN PHÚ NHUẬN": 200
+};
+
+// Get sequence number for supermarket from normalized name
+function getSupermarketStt(branchName) {
+    if (!branchName) return "-";
+    const norm = (str) => (str || "").toString().normalize("NFC").trim().toUpperCase();
+    const branchUpper = norm(branchName);
+    
+    // Direct match
+    if (supermarketSttMapping[branchUpper] !== undefined) {
+        return supermarketSttMapping[branchUpper];
+    }
+    
+    // Partial match (e.g. check if the keys are contained in the branch name or vice versa)
+    const keys = Object.keys(supermarketSttMapping);
+    for (const key of keys) {
+        if (branchUpper.includes(key) || key.includes(branchUpper)) {
+            return supermarketSttMapping[key];
+        }
+    }
+    
+    return "-";
+}
+
+
 // Shipping Dashboard Application Logic
 
 // Decompress data from data.js
@@ -2025,6 +2251,14 @@ function setupPerfEventListeners() {
         });
     }
 
+    const tableFilterStatus = document.getElementById("perfTableFilterStatus");
+    if (tableFilterStatus) {
+        tableFilterStatus.addEventListener("change", () => {
+            currentPerfPage = 1;
+            renderPerfTable();
+        });
+    }
+
     // Inline filters for summary table
     const summaryFilterDate = document.getElementById("perfSummaryFilterDate");
     const summaryFilterUser = document.getElementById("perfSummaryFilterUser");
@@ -2913,11 +3147,13 @@ function clearPerfFilters() {
     const tableFilterBarcode = document.getElementById("perfTableFilterBarcode");
     const tableFilterName = document.getElementById("perfTableFilterName");
     const tableFilterUnit = document.getElementById("perfTableFilterUnit");
+    const tableFilterStatus = document.getElementById("perfTableFilterStatus");
     if (tableFilterDate) tableFilterDate.value = "";
     if (tableFilterUser) tableFilterUser.value = "";
     if (tableFilterBarcode) tableFilterBarcode.value = "";
     if (tableFilterName) tableFilterName.value = "";
     if (tableFilterUnit) tableFilterUnit.value = "";
+    if (tableFilterStatus) tableFilterStatus.value = "";
     
     const perfF1UserSearch = document.getElementById("perfF1UserSearch");
     if (perfF1UserSearch) perfF1UserSearch.value = "";
@@ -3840,6 +4076,12 @@ function sortFilteredPerfData() {
                 valA = a.date || "";
                 valB = b.date || "";
                 break;
+            case "sttSieuThi":
+                valA = getSupermarketStt(a.toBranch);
+                valB = getSupermarketStt(b.toBranch);
+                valA = typeof valA === "number" ? valA : 9999;
+                valB = typeof valB === "number" ? valB : 9999;
+                break;
             case "maPhieu":
                 valA = a.transferCode || "";
                 valB = b.transferCode || "";
@@ -3910,13 +4152,26 @@ function getFilteredPerfDiscrepantData() {
     const barcodeFilterText = document.getElementById("perfTableFilterBarcode") ? document.getElementById("perfTableFilterBarcode").value.toLowerCase().trim() : "";
     const nameFilterText = document.getElementById("perfTableFilterName") ? document.getElementById("perfTableFilterName").value.toLowerCase().trim() : "";
     const unitFilterText = document.getElementById("perfTableFilterUnit") ? document.getElementById("perfTableFilterUnit").value.toLowerCase().trim() : "";
+    const statusFilter = document.getElementById("perfTableFilterStatus") ? document.getElementById("perfTableFilterStatus").value : "";
 
     return filteredPerfTransfers.filter(row => {
         const statusInfo = calculateStatus(row);
         const diff = statusInfo.chenhLechConLai;
-        if (diff === 0) return false;
-        const status = statusInfo.statusText;
-        if (status === "Hao hụt") return false;
+        const status = statusInfo.statusText; // Thiếu, Dư, Đủ, Hao hụt, Đang chuyển
+        
+        // Status filter matching logic
+        if (statusFilter === "thiếu") {
+            if (status !== "Thiếu") return false;
+        } else if (statusFilter === "dư") {
+            if (status !== "Dư") return false;
+        } else if (statusFilter === "đủ") {
+            if (status !== "Đủ" && status !== "Hao hụt" && diff !== 0) return false;
+        } else if (statusFilter === "lệch") {
+            if (diff === 0 || status === "Hao hụt" || status === "Đang chuyển") return false;
+        } else {
+            // Default (Tất cả): only show discrepant rows
+            if (diff === 0 || status === "Hao hụt" || status === "Đang chuyển") return false;
+        }
         
         // Apply inline table filters
         if (dateFilterText !== "") {
@@ -4004,22 +4259,23 @@ function renderPerfTable() {
             ? 'color: var(--color-danger); font-weight: 500;' 
             : (valLech > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
 
+        const sttSieuThi = getSupermarketStt(row.toBranch);
+
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td>${formattedDate}</td>
             <td><strong>${row.transferCode}</strong></td>
+            <td style="text-align: center; font-weight: 500; color: var(--color-primary);">${sttSieuThi}</td>
             <td>${row.toBranch}</td>
             <td><strong style="color: var(--color-primary);">${row.itemCode}</strong></td>
             <td>${row.itemName}</td>
             <td>${row.unit}</td>
             <td>${row.nganhHang || "Khác"}</td>
-            <td style="text-align: right; color: var(--text-secondary);">${formatPrice(price)}</td>
             <td style="text-align: right; font-weight: 500;">${formatNumber(row.qtyShipped)}</td>
             <td style="text-align: right; font-weight: 500;">${formatNumber(row.qtyReceived)}</td>
             <td style="text-align: right; font-weight: 500;">${rawDiffText}</td>
             <td style="text-align: right; font-weight: 500; color: var(--color-primary);">${formatNumber(slBoSung)}</td>
             <td style="text-align: right; ${diffStyle}">${diffText}</td>
-            <td style="text-align: right; ${valLechStyle}">${formatVND(valLech)}</td>
             <td><span style="font-weight:500;">${row.nguoiChia || "Không rõ"}</span></td>
             <td><span class="badge ${badgeClass}">${status}</span></td>
         `;
@@ -4287,32 +4543,29 @@ function exportPerfToCSV() {
     }
 
     let csvContent = "\uFEFF"; // UTF-8 BOM representation
-    csvContent += "Ngày chuyển,Mã Phiếu,Nơi nhận,Barcode,Tên sản phẩm,Đơn vị,Ngành hàng,Giá mua,SL chuyển,SL nhận,Chênh lệch,Bổ sung,CL còn lại,Giá trị lệch,Người chia hàng,Trạng thái\n";
+    csvContent += "Ngày chuyển,Mã Phiếu,STT siêu thị,Nơi nhận,Barcode,Tên sản phẩm,Đơn vị,Ngành hàng,SL chuyển,SL nhận,Chênh lệch,Bổ sung,CL còn lại,Người chia hàng,Trạng thái\n";
 
     discrepantData.forEach(t => {
         const statusInfo = calculateStatus(t);
         const diff = statusInfo.chenhLechConLai;
         const rawDiff = t.qtyReceived - t.qtyShipped;
         const slBoSung = t.matchedCorrectiveQty || 0;
-        
-        const price = window.productPrices ? (window.productPrices[t.itemCode] || 0) : 0;
-        const valLech = Math.round(price * diff);
+        const sttSieuThi = getSupermarketStt(t.toBranch);
 
         const row = [
             t.date,
             `"${t.transferCode.replace(/"/g, '""')}"`,
+            sttSieuThi,
             `"${t.toBranch.replace(/"/g, '""')}"`,
             `"${t.itemCode.replace(/"/g, '""')}"`,
             `"${t.itemName.replace(/"/g, '""')}"`,
             `"${t.unit.replace(/"/g, '""')}"`,
             `"${(t.nganhHang || "Khác").replace(/"/g, '""')}"`,
-            price,
             t.qtyShipped,
             t.qtyReceived,
             rawDiff,
             slBoSung,
             diff,
-            valLech,
             `"${(t.nguoiChia || "").replace(/"/g, '""')}"`,
             `"${getPerfStatus(t)}"`
         ];

@@ -3560,17 +3560,21 @@ function renderPerfSummaryTable() {
         summaryAgg[key].slBoSung += slBoSung;
         
         // Sum final discrepancies, ignoring normal "Hao hụt" (<15% KG) and "Đang chuyển"
+        // Formula: SL còn lại = SL chênh lệch âm (phiếu PT tạo từ Kho rau củ) + số lượng tạo BS (tạo từ kho clch)
         const statusText = statusInfo.statusText;
-        const diff = (statusText === "Hao hụt" || statusText === "Đang chuyển") ? 0 : statusInfo.chenhLechConLai;
-        summaryAgg[key].chenhLechConLai += diff;
-        if (statusText === "Thiếu" || statusText === "Dư") {
-            summaryAgg[key].absDiff += Math.abs(diff);
+        let rowChenhLechConLai = 0;
+        if (statusText !== "Hao hụt" && statusText !== "Đang chuyển") {
+            const rowChenhLech = row.qtyReceived === -1 ? 0 : (row.qtyReceived - row.qtyShipped);
+            const rowChenhLechAm = rowChenhLech < 0 ? rowChenhLech : 0;
+            rowChenhLechConLai = rowChenhLechAm + slBoSung;
         }
 
-        // Financial discrepancy value including "Hao hụt"
+        summaryAgg[key].chenhLechConLai += rowChenhLechConLai;
+        summaryAgg[key].absDiff += Math.abs(rowChenhLechConLai);
+
+        // Financial discrepancy value based on SL lệch còn lại
         const price = window.productPrices ? (window.productPrices[row.itemCode] || 0) : 0;
-        const actualDiffForValue = (statusText === "Đang chuyển") ? 0 : statusInfo.chenhLechConLai;
-        summaryAgg[key].valLech += price * actualDiffForValue;
+        summaryAgg[key].valLech += price * rowChenhLechConLai;
     });
 
     let sortedSummary = Object.values(summaryAgg);

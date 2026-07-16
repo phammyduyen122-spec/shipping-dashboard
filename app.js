@@ -617,6 +617,32 @@ function linkTransfers(rawTransfers) {
         }
     });
 
+    // Pass 4: Mismatched store wrong-division fallback
+    // If an original transfer has a shortfall, is not yet matched, and there is an unmatched corrective transfer
+    // with the same itemCode, same nguoiChia, and within 3 days date proximity.
+    originals.forEach(orig => {
+        if (orig.matchedCorrectiveQty > 0) return; // Already matched
+        if (orig.qtyShipped <= orig.qtyReceived) return; // No shortfall
+        
+        const origDate = new Date(orig.date);
+        const match = correctives.find(c => {
+            if (c.isMerged) return false;
+            if (norm(c.itemCode) !== norm(orig.itemCode)) return false;
+            
+            // Match nguoiChia (must be non-empty and equal)
+            if (!c.nguoiChia || !orig.nguoiChia || norm(c.nguoiChia) !== norm(orig.nguoiChia)) return false;
+            
+            const cDate = new Date(c.date);
+            const diffDays = Math.round((cDate - origDate) / (1000 * 60 * 60 * 24));
+            return Math.abs(diffDays) <= 3 && c.qtyShipped > 0;
+        });
+        
+        if (match) {
+            orig.matchedCorrectiveQty = match.qtyShipped;
+            match.isMerged = true;
+        }
+    });
+
     return [...originals, ...correctives];
 }
 
@@ -987,7 +1013,7 @@ function calculateStatus(t) {
 
     // Determine status (Thiếu, Đủ, Dư, Hao hụt) based on Chênh lệch còn lại (chenhLechConLai)
     if (chenhLechConLai < 0) {
-        if (t.unit && t.unit.toLowerCase() === "kg" && t.qtyShipped > 0 && (Math.abs(chenhLechConLai) / t.qtyShipped) < 0.15) {
+        if (t.unit && t.unit.toLowerCase() === "kg" && t.qtyShipped > 0 && (Math.abs(chenhLechConLai) / t.qtyShipped) < 0.15 && slBoSung === 0) {
             statusText = "Hao hụt";
             badgeClass = "badge-haohut";
         } else {
@@ -2086,11 +2112,11 @@ function populatePerfFilterOptions() {
     let filteredTrans = transfers;
     if (window.activePerfWarehouseGroup === "MeatFish") {
         const norm = (str) => (str || "").toString().normalize("NFC").trim().toLowerCase();
-        filteredPerfTrans = performanceTransfers.filter(t => norm(t.fromBranch) === "meatfish - miền đông - scf - quá cảnh");
+        filteredPerfTrans = performanceTransfers.filter(t => norm(t.fromBranch || t.noiChuyen) === "meatfish - miền đông - scf - quá cảnh");
         filteredTrans = transfers.filter(t => norm(t.fromBranch) === "meatfish - miền đông - scf - quá cảnh");
     } else if (window.activePerfWarehouseGroup === "VegBakery") {
         const norm = (str) => (str || "").toString().normalize("NFC").trim().toLowerCase();
-        filteredPerfTrans = performanceTransfers.filter(t => norm(t.fromBranch) === "kho rau củ" || norm(t.fromBranch) === "kho quá cảnh bánh tươi");
+        filteredPerfTrans = performanceTransfers.filter(t => norm(t.fromBranch || t.noiChuyen) === "kho rau củ" || norm(t.fromBranch || t.noiChuyen) === "kho quá cảnh bánh tươi");
         filteredTrans = transfers.filter(t => norm(t.fromBranch) === "kho rau củ" || norm(t.fromBranch) === "kho quá cảnh bánh tươi");
     }
 

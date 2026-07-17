@@ -89,7 +89,7 @@ body {
 
 /* Container */
 .dashboard-container {
-    max-width: 1440px;
+    max-width: 98%;
     margin: 0 auto;
     padding: 24px;
     width: 100%;

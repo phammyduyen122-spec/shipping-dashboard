@@ -421,23 +421,27 @@
                         <label for="perfF1CategoryFilterDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Tìm ngày:</label>
                         <input type="text" id="perfF1CategoryFilterDate" class="input-field" placeholder="dd/mm/yyyy..." style="padding: 4px 8px; font-size: 12px; height: 30px; margin: 0; width: 100%;">
                     </div>
+                    <div style="display: flex; align-items: center; gap: 8px; width: 220px;">
+                        <label style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Nhóm nhân sự:</label>
+                        <div class="multiselect-container" id="catFilterF1GroupContainer" style="width: 100%;">
+                            <div class="multiselect-select" style="padding: 4px 8px; font-size: 12px; height: 30px;">
+                                <span class="multiselect-value">-- Tất cả nhóm --</span>
+                                <span class="multiselect-arrow">▾</span>
+                            </div>
+                            <div class="multiselect-dropdown">
+                                <div class="multiselect-options-list" id="catFilterF1GroupOptions">
+                                    <!-- Populated dynamically in app.js -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="table-wrapper">
                     <table id="perfF1CategoryTable">
                         <thead>
                             <tr>
                                 <th rowspan="2" style="text-align: center; vertical-align: middle; width: 60px;">STT</th>
-                                <th rowspan="2" id="perfF1TableHeaderName" style="vertical-align: middle; white-space: nowrap; padding: 8px 12px;">
-                                    <div style="display: inline-flex; align-items: center; gap: 6px; justify-content: center; width: 100%;">
-                                        <span>Nhân sự</span>
-                                        <select id="perfF1GroupFilter" style="padding: 2px 4px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--bg-card); color: var(--text-primary); font-size: 11px; font-weight: 600; cursor: pointer; outline: none; margin: 0; display: inline-block; width: auto; vertical-align: middle;">
-                                            <option value="All" selected>Tất cả</option>
-                                            <option value="NVCT">NVCT</option>
-                                            <option value="F2">F2</option>
-                                            <option value="HUYHOANG">HUYHOANG</option>
-                                        </select>
-                                    </div>
-                                </th>
+                                <th rowspan="2" id="perfF1TableHeaderName" style="vertical-align: middle; white-space: nowrap; padding: 8px 12px; text-align: center;">Nhân sự</th>
                                 <th colspan="6" style="text-align: center; border-bottom: 1px solid var(--border-color);">Sản lượng chia</th>
                                 <th colspan="6" style="text-align: center; border-bottom: 1px solid var(--border-color);">Tỷ lệ chia sai</th>
                             </tr>
@@ -1049,8 +1053,8 @@
     </div>
 
     <!-- Data Script -->
-    <script src="data.js?v=87"></script>
+    <script src="data.js?v=88"></script>
     <!-- Core App Execution Script -->
-    <script src="app.js?v=87"></script>
+    <script src="app.js?v=88"></script>
 </body>
 </html>

@@ -1679,6 +1679,8 @@ function updateSelectLabel(container, labelEl) {
         defaultText = "-- Tất cả ngành hàng --";
     } else if (container.id.includes("Branch")) {
         defaultText = "-- Tất cả siêu thị --";
+    } else if (container.id === "catFilterF1GroupContainer") {
+        defaultText = "-- Tất cả nhóm --";
     }
         
     if (checked.length === 0) {
@@ -2068,6 +2070,7 @@ function setupTabs() {
         if (contentExportExcel) contentExportExcel.classList.remove("active");
         
         populatePerfFilterOptions();
+        populateCategoryGroupOptions();
         clearPerfFilters();
     });
 
@@ -2086,6 +2089,7 @@ function setupTabs() {
             if (contentExportExcel) contentExportExcel.classList.remove("active");
             
             populatePerfFilterOptions();
+            populateCategoryGroupOptions();
             clearPerfFilters();
         });
     }
@@ -2220,6 +2224,34 @@ function populatePerfFilterOptions() {
     }
 }
 
+// Populate the options for the F1 Category group filter dynamically
+function populateCategoryGroupOptions() {
+    const container = document.getElementById("catFilterF1GroupOptions");
+    if (!container) return;
+    container.innerHTML = "";
+    
+    let groups = [];
+    if (window.activePerfWarehouseGroup === "MeatFish") {
+        groups = ["HUYHOANG", "MEATFISH"];
+    } else {
+        groups = ["NVCT", "F1", "F2", "HUYHOANG", "BAKERY"];
+    }
+    
+    groups.forEach(g => {
+        container.innerHTML += `
+            <label class="multiselect-option">
+                <input type="checkbox" value="${g}"> <span>${g}</span>
+            </label>
+        `;
+    });
+    
+    // Reset the select label
+    const selectLabel = document.querySelector("#catFilterF1GroupContainer .multiselect-value");
+    if (selectLabel) {
+        selectLabel.innerText = "-- Tất cả nhóm --";
+    }
+}
+
 // Setup Event Listeners for Performance Tab
 function setupPerfEventListeners() {
     setupMultiSelectDropdown("perfFilterGroupContainer");
@@ -2229,6 +2261,9 @@ function setupPerfEventListeners() {
     setupMultiSelectDropdown("perfFilterUnitContainer");
     setupMultiSelectDropdown("perfFilterCategoryContainer");
     setupMultiSelectDropdown("perfTableFilterStatusContainer");
+    setupMultiSelectDropdown("catFilterF1GroupContainer");
+    
+    populateCategoryGroupOptions();
     
     document.getElementById("perfFilterStartDate").addEventListener("change", applyPerfFiltersAndRender);
     document.getElementById("perfFilterEndDate").addEventListener("change", applyPerfFiltersAndRender);
@@ -3286,6 +3321,13 @@ function clearPerfFilters() {
     if (perfFilterCategoryContainer) {
         perfFilterCategoryContainer.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = false);
         updateSelectLabel(perfFilterCategoryContainer, perfFilterCategoryContainer.querySelector(".multiselect-value"));
+    }
+
+    // Reset F1 Category group filter checkboxes
+    const catFilterF1GroupContainer = document.getElementById("catFilterF1GroupContainer");
+    if (catFilterF1GroupContainer) {
+        catFilterF1GroupContainer.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = false);
+        updateSelectLabel(catFilterF1GroupContainer, catFilterF1GroupContainer.querySelector(".multiselect-value"));
     }
     
     hidePerfItemDropdownList();
@@ -4685,12 +4727,18 @@ function exportPerfToCSV() {
 function getCategoryTabGroup(username) {
     if (!username) return "";
     const name = username.trim().toLowerCase();
-    if (name.startsWith("f1")) return "NVCT";
-    if (name.startsWith("f2") || name.startsWith("f20") || name.startsWith("f4") || name.startsWith("f40")) return "F2";
-    if (name.startsWith("huyhoang")) return "HUYHOANG";
-    if (name.startsWith("bakery")) return "BAKERY";
-    if (name === "wmsdev") return "";
-    return "CTV";
+    
+    if (window.activePerfWarehouseGroup === "MeatFish") {
+        if (name.startsWith("huyhoang")) return "HUYHOANG";
+        return "MEATFISH";
+    } else {
+        if (name.startsWith("f1")) return "F1";
+        if (name.startsWith("f2") || name.startsWith("f20") || name.startsWith("f4") || name.startsWith("f40")) return "F2";
+        if (name.startsWith("huyhoang")) return "HUYHOANG";
+        if (name.startsWith("bakery")) return "BAKERY";
+        if (username.trim().includes(" ")) return "NVCT";
+        return "CTV";
+    }
 }
 
 // Bảng theo dõi hiệu suất phân loại theo Ngành Hàng (Nhóm F1)
@@ -4704,28 +4752,12 @@ function renderF1CategoryTable() {
     // Render dynamic table headers
     const thead = document.querySelector("#perfF1CategoryTable thead");
     if (thead) {
-        // Read current select value safely
-        const groupFilterEl = document.getElementById("perfF1GroupFilter");
-        const groupFilterVal = groupFilterEl ? groupFilterEl.value : "All";
-
         const catColsCount = categories.length;
         const totalColsSpan = catColsCount + 1; // categories + Total column
         thead.innerHTML = `
             <tr>
                 <th rowspan="2" style="text-align: center; vertical-align: middle; width: 60px;">STT</th>
-                <th rowspan="2" id="perfF1TableHeaderName" style="vertical-align: middle; white-space: nowrap; padding: 8px 12px;">
-                    <div style="display: inline-flex; align-items: center; gap: 6px; justify-content: center; width: 100%;">
-                        <span>Nhân sự</span>
-                        <select id="perfF1GroupFilter" style="padding: 2px 4px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--bg-card); color: var(--text-primary); font-size: 11px; font-weight: 600; cursor: pointer; outline: none; margin: 0; display: inline-block; width: auto; vertical-align: middle;">
-                            <option value="All" ${groupFilterVal === 'All' ? 'selected' : ''}>Tất cả</option>
-                            <option value="NVCT" ${groupFilterVal === 'NVCT' ? 'selected' : ''}>NVCT</option>
-                            <option value="F2" ${groupFilterVal === 'F2' ? 'selected' : ''}>F2</option>
-                            <option value="HUYHOANG" ${groupFilterVal === 'HUYHOANG' ? 'selected' : ''}>HUYHOANG</option>
-                            <option value="CTV" ${groupFilterVal === 'CTV' ? 'selected' : ''}>CTV</option>
-                            <option value="BAKERY" ${groupFilterVal === 'BAKERY' ? 'selected' : ''}>BAKERY</option>
-                        </select>
-                    </div>
-                </th>
+                <th rowspan="2" id="perfF1TableHeaderName" style="vertical-align: middle; white-space: nowrap; padding: 8px 12px; text-align: center;">Nhân sự</th>
                 <th colspan="${totalColsSpan}" style="text-align: center; border-bottom: 1px solid var(--border-color);">Sản lượng chia</th>
                 <th colspan="${totalColsSpan}" style="text-align: center; border-bottom: 1px solid var(--border-color);">Tỷ lệ chia sai</th>
             </tr>
@@ -4736,46 +4768,18 @@ function renderF1CategoryTable() {
                 <th style="text-align: right; white-space: nowrap; font-weight: bold; border-left: 1px solid var(--border-color); color: var(--color-primary);">Tổng % chia sai</th>
             </tr>
         `;
-        
-        // Re-bind the event listener for #perfF1GroupFilter
-        const newGroupFilter = document.getElementById("perfF1GroupFilter");
-        if (newGroupFilter) {
-            newGroupFilter.addEventListener("change", () => {
-                renderF1CategoryTable();
-            });
-        }
     }
 
-    const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
-    const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
-
-    const groupSelector = isCategoryTabActive ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
-    const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
-    
-    let allowedGroups = ["NVCT", "F2", "HUYHOANG", "CTV", "BAKERY"];
-    const groupFilterEl = document.getElementById("perfF1GroupFilter");
-    const groupFilterVal = groupFilterEl ? groupFilterEl.value : "All";
-
-    if (selectedGroups.length > 0) {
-        const resolved = [];
-        if (selectedGroups.includes("F1")) resolved.push("NVCT");
-        if (selectedGroups.includes("F2")) resolved.push("F2");
-        if (selectedGroups.includes("HUYHOANG")) resolved.push("HUYHOANG");
-        if (selectedGroups.includes("CTV")) resolved.push("CTV");
-        if (selectedGroups.includes("BAKERY")) resolved.push("BAKERY");
-        allowedGroups = resolved;
-        
-        if (groupFilterEl) {
-            if (resolved.length === 1) {
-                groupFilterEl.value = resolved[0];
-            } else {
-                groupFilterEl.value = "All";
-            }
-        }
+    let allowedGroups = [];
+    if (window.activePerfWarehouseGroup === "MeatFish") {
+        allowedGroups = ["HUYHOANG", "MEATFISH"];
     } else {
-        if (groupFilterVal !== "All") {
-            allowedGroups = [groupFilterVal];
-        }
+        allowedGroups = ["NVCT", "F1", "F2", "HUYHOANG", "BAKERY"];
+    }
+
+    const selectedGroups = Array.from(document.querySelectorAll("#catFilterF1GroupContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    if (selectedGroups.length > 0) {
+        allowedGroups = selectedGroups;
     }
 
     const titleGroupText = allowedGroups.join(" + ");
@@ -4783,12 +4787,8 @@ function renderF1CategoryTable() {
 
     const titleEl = document.getElementById("perfF1TableTitle");
     if (titleEl) {
-        const isAllGroups = allowedGroups.length === 5 && 
-                            allowedGroups.includes("NVCT") && 
-                            allowedGroups.includes("F2") && 
-                            allowedGroups.includes("HUYHOANG") &&
-                            allowedGroups.includes("CTV") &&
-                            allowedGroups.includes("BAKERY");
+        const isAllGroups = (window.activePerfWarehouseGroup === "MeatFish" && allowedGroups.length === 2) ||
+                            (window.activePerfWarehouseGroup !== "MeatFish" && allowedGroups.length === 5);
         if (isAllGroups) {
             titleEl.innerHTML = "📊 Theo dõi hiệu suất phân loại theo Ngành Hàng (Toàn bộ nhân sự)";
         } else {
@@ -4798,15 +4798,15 @@ function renderF1CategoryTable() {
 
     const tableStartEl = document.getElementById("perfF1CategoryStartDate");
     const tableEndEl = document.getElementById("perfF1CategoryEndDate");
-    const globalStartEl = document.getElementById(isCategoryTabActive ? "catFilterStartDate" : "perfFilterStartDate");
-    const globalEndEl = document.getElementById(isCategoryTabActive ? "catFilterEndDate" : "perfFilterEndDate");
+    const globalStartEl = document.getElementById("perfFilterStartDate");
+    const globalEndEl = document.getElementById("perfFilterEndDate");
 
     const startDateQuery = (tableStartEl && tableStartEl.value) ? tableStartEl.value : (globalStartEl ? globalStartEl.value : "");
     const endDateQuery = (tableEndEl && tableEndEl.value) ? tableEndEl.value : (globalEndEl ? globalEndEl.value : "");
     
     const perfF1CategoryFilterDate = document.getElementById("perfF1CategoryFilterDate") ? document.getElementById("perfF1CategoryFilterDate").value.toLowerCase().trim() : "";
     
-    const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    const selectedUsers = Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
 
     const selectedCats = Array.from(document.querySelectorAll("#catFilterCategoryContainer input[type='checkbox']:checked")).map(cb => cb.value);
@@ -7206,44 +7206,40 @@ function downloadCSV(headers, rows, filename) {
 
 // Export Category Performance by divided personnel in row-by-row (tabular) format
 function downloadCategoryF1Tabular() {
-    const catGroupEl = document.getElementById("catFilterGroupContainer");
-    const groupSelector = catGroupEl ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
-    const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
-    
-    let activeGroups = [];
-    const groupFilterEl = document.getElementById("perfF1GroupFilter");
-    const groupFilterVal = groupFilterEl ? groupFilterEl.value : "All";
-
-    if (selectedGroups.length > 0) {
-        activeGroups = selectedGroups;
+    let allowedGroups = [];
+    if (window.activePerfWarehouseGroup === "MeatFish") {
+        allowedGroups = ["HUYHOANG", "MEATFISH"];
     } else {
-        if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
-        } else {
-            activeGroups = [groupFilterVal];
-        }
+        allowedGroups = ["NVCT", "F1", "F2", "HUYHOANG", "BAKERY"];
     }
 
-    const catStartEl = document.getElementById("catFilterStartDate");
-    const catEndEl = document.getElementById("catFilterEndDate");
-    const startDateQuery = catStartEl ? catStartEl.value : (document.getElementById("perfFilterStartDate") ? document.getElementById("perfFilterStartDate").value : "");
-    const endDateQuery = catEndEl ? catEndEl.value : (document.getElementById("perfFilterEndDate") ? document.getElementById("perfFilterEndDate").value : "");
+    const selectedGroups = Array.from(document.querySelectorAll("#catFilterF1GroupContainer input[type='checkbox']:checked")).map(cb => cb.value);
+    if (selectedGroups.length > 0) {
+        allowedGroups = selectedGroups;
+    }
+
+    const tableStartEl = document.getElementById("perfF1CategoryStartDate");
+    const tableEndEl = document.getElementById("perfF1CategoryEndDate");
+    const globalStartEl = document.getElementById("perfFilterStartDate");
+    const globalEndEl = document.getElementById("perfFilterEndDate");
+
+    const startDateQuery = (tableStartEl && tableStartEl.value) ? tableStartEl.value : (globalStartEl ? globalStartEl.value : "");
+    const endDateQuery = (tableEndEl && tableEndEl.value) ? tableEndEl.value : (globalEndEl ? globalEndEl.value : "");
+    
+    const perfF1CategoryFilterDate = document.getElementById("perfF1CategoryFilterDate") ? document.getElementById("perfF1CategoryFilterDate").value.toLowerCase().trim() : "";
     
     const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
 
     const activeTransfers = transfers.filter(t => {
         if (!isMainBranch(t.fromBranch)) return false;
         if (!t.nguoiChia) return false;
-        const name = t.nguoiChia.trim().toLowerCase();
         
-        let matchGroupPrefix = false;
-        for (const g of activeGroups) {
-            if (name.startsWith(g.toLowerCase())) {
-                matchGroupPrefix = true;
-                break;
-            }
+        const userGroup = getCategoryTabGroup(t.nguoiChia);
+        if (!userGroup || !allowedGroups.includes(userGroup)) {
+            return false;
         }
-        if (!matchGroupPrefix) return false;
+        
+        const name = t.nguoiChia.trim().toLowerCase();
 
         if (localUserSearch !== "") {
             if (!name.includes(localUserSearch)) return false;
@@ -7251,7 +7247,9 @@ function downloadCategoryF1Tabular() {
 
         const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
         const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;
-        return matchStartDate && matchEndDate;
+        const matchFilterDate = perfF1CategoryFilterDate === "" || matchDateQuery(t.date, perfF1CategoryFilterDate);
+
+        return matchStartDate && matchEndDate && matchFilterDate;
     });
 
     if (activeTransfers.length === 0) {

@@ -4147,10 +4147,10 @@ function renderPerfSummaryTable() {
             <td>${item.itemName}</td>
             <td>${item.unit}</td>
             <td>${item.nganhHang || "Khác"}</td>
-            <td style="text-align: right; color: var(--text-secondary);">${formatPrice(price)}</td>
             <td style="text-align: right; font-weight: 500;">${formatNumber(totalShared)}</td>
-            <td style="text-align: right; ${diffStyle}">${formatDiffNumber(item.chenhLechConLai)}</td>
+            <td style="text-align: right; ${styleRemainingShortage}">${formatDiffNumber(item.remainingShortage)}</td>
             <td style="text-align: right; ${styleChiaSaiST}">${formatDiffNumber(item.chiaSaiST)}</td>
+            <td style="text-align: right; ${diffStyle}">${formatDiffNumber(item.chenhLechConLai)}</td>
             <td style="text-align: right; ${valLechStyle}">${formatVND(valLech)}</td>
             <td style="text-align: right; ${pctStyle}">${pctText}</td>
         `;
@@ -4190,10 +4190,10 @@ function renderPerfSummaryTable() {
             <td style="text-align: center;">-</td>
             <td><strong>TỔNG CỘNG</strong></td>
             <td colspan="5"></td>
-            <td style="text-align: right; color: var(--text-muted);">-</td>
             <td style="text-align: right; font-weight: bold; color: var(--color-primary);">${formatNumber(grandTotalShared)}</td>
-            <td style="text-align: right; ${grandTotalDiff < 0 ? 'color: var(--color-danger);' : (grandTotalDiff > 0 ? 'color: var(--color-info);' : '')}">${formatDiffNumber(grandTotalDiff)}</td>
+            <td style="text-align: right; ${grandTotalRemainingShortage < 0 ? 'color: var(--color-danger);' : ''}">${formatDiffNumber(grandTotalRemainingShortage)}</td>
             <td style="text-align: right; ${grandTotalChiaSaiST > 0 ? 'color: var(--color-info);' : ''}">${formatDiffNumber(grandTotalChiaSaiST)}</td>
+            <td style="text-align: right; ${grandTotalDiff < 0 ? 'color: var(--color-danger);' : (grandTotalDiff > 0 ? 'color: var(--color-info);' : '')}">${formatDiffNumber(grandTotalDiff)}</td>
             <td style="text-align: right; ${grandTotalVal < 0 ? 'color: var(--color-danger);' : (grandTotalVal > 0 ? 'color: var(--color-info);' : '')}">${formatVND(grandTotalVal)}</td>
             <td style="text-align: right; color: var(--color-success);">${grandTotalDisplayText}</td>
         `;
@@ -7464,7 +7464,7 @@ function exportSummaryToCSV() {
         totalSharedLookup[key] += t.qtyShipped;
     });
 
-    const headers = ["STT", "Ngày chia hàng", "Nhân sự chia", "Barcode", "Tên sản phẩm", "Đơn vị tính", "Ngành hàng", "Giá mua", "SL chia", "SL chênh lệch", "Chia sai ST", "Giá trị lệch", "% Lệch"];
+    const headers = ["STT", "Ngày chia hàng", "Nhân sự chia", "Barcode", "Tên sản phẩm", "Đơn vị tính", "Ngành hàng", "SL chia", "SL chênh lệch", "Chia sai ST", "CL còn lại", "Giá trị lệch", "% Lệch"];
     const rows = [];
 
     lastSortedSummary.forEach((item, index) => {
@@ -7474,7 +7474,6 @@ function exportSummaryToCSV() {
         const pctLech = totalShared > 0 ? (item.absDiff / totalShared) * 100 : 0;
         const pctText = `${pctLech.toFixed(2)}%`;
 
-        const price = window.productPrices ? (window.productPrices[item.barcode] || 0) : 0;
         const valLech = item.valLech;
 
         rows.push([
@@ -7485,10 +7484,10 @@ function exportSummaryToCSV() {
             item.itemName,
             item.unit,
             item.nganhHang || "Khác",
-            price,
             totalShared,
-            item.chenhLechConLai,
+            item.remainingShortage,
             item.chiaSaiST,
+            item.chenhLechConLai,
             valLech,
             pctText
         ]);
@@ -7525,10 +7524,10 @@ function exportSummaryToCSV() {
         "",
         "",
         "",
-        "",
         grandTotalShared,
-        grandTotalDiff,
+        grandTotalRemainingShortage,
         grandTotalChiaSaiST,
+        grandTotalDiff,
         grandTotalVal,
         grandTotalDisplayText
     ]);

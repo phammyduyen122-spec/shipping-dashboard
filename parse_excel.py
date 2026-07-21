@@ -293,9 +293,6 @@ def parse_excel():
                     return str(val)
 
             dfs_perf = []
-            if len(existing_perf) > 0:
-                df_existing_perf = pd.DataFrame(existing_perf)
-                dfs_perf.append(df_existing_perf)
             for perf_file in recent_perf_files:
                 print(f"Đang đọc file Excel hiệu suất chia hàng: {perf_file}")
                 try:
@@ -415,9 +412,6 @@ def parse_excel():
         }
         
         dfs_transfers = []
-        if len(existing_trans) > 0:
-            df_existing_trans = pd.DataFrame(existing_trans)
-            dfs_transfers.append(df_existing_trans)
         for excel_file in recent_excel_files:
             print(f"Đang đọc file Excel điều chuyển: {excel_file}")
             try:

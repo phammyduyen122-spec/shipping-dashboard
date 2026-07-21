@@ -734,7 +734,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const rawPerfTransfers = window.performanceTransfers || [];
     performanceTransfers = rawPerfTransfers.filter(t => {
         const name = (t.nguoiChia || "").trim().toLowerCase().normalize("NFC");
-        const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát", "trần duy khánh", "tran duy khanh"];
+        const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát", "trần duy khánh", "tran duy khanh", "trần duy nam", "tran duy nam"];
         return name !== "" && !excluded.includes(name);
     });
 
@@ -751,7 +751,7 @@ document.addEventListener("DOMContentLoaded", () => {
     transfers = processedTransfers.map(t => {
         if (t.nguoiChia) {
             const name = t.nguoiChia.trim().toLowerCase().normalize("NFC");
-            const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát", "trần duy khánh", "tran duy khanh"];
+            const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát", "trần duy khánh", "tran duy khanh", "trần duy nam", "tran duy nam"];
             if (name === "" || excluded.includes(name)) {
                 t.nguoiChia = "";
             }
@@ -3366,7 +3366,7 @@ function applyPerfFiltersAndRender() {
             return false;
         }
         const name = t.nguoiChia.trim().toLowerCase().normalize("NFC");
-        const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát", "trần duy khánh", "tran duy khanh"];
+        const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát", "trần duy khánh", "tran duy khanh", "trần duy nam", "tran duy nam"];
         if (name === "" || excluded.includes(name)) {
             return false;
         }
@@ -4546,7 +4546,7 @@ function updatePerfSummary() {
                 return false;
             }
             const name = t.nguoiChia.trim().toLowerCase().normalize("NFC");
-            const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát", "trần duy khánh", "tran duy khanh"];
+            const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát", "trần duy khánh", "tran duy khanh", "trần duy nam", "tran duy nam"];
             if (name === "" || excluded.includes(name)) {
                 return false;
             }
@@ -4726,7 +4726,9 @@ function exportPerfToCSV() {
 // Helper to classify staff for Category performance tab
 function getCategoryTabGroup(username) {
     if (!username) return "";
-    const name = username.trim().toLowerCase();
+    const name = username.trim().toLowerCase().normalize("NFC");
+    const excluded = ["nhan quang hiếu", "nhân quang hiếu", "nhan quang hieu", "nhân quang hieu", "huỳnh tấn phát", "huynh tan phat", "huynh tấn phát", "huỳnh tấn phat", "huỳnh tan phát", "huynh tan phát", "trần duy khánh", "tran duy khanh", "trần duy nam", "tran duy nam"];
+    if (excluded.includes(name)) return "";
     
     if (window.activePerfWarehouseGroup === "MeatFish") {
         if (name.startsWith("huyhoang")) return "HUYHOANG";
@@ -4901,32 +4903,10 @@ function renderF1CategoryTable() {
         if (qtyVal === 0) {
             return "text-align: right;";
         }
-        if (isTotal) {
-            // Total column threshold: > 2000 -> 0.5% tolerance, <= 2000 -> 0.2% tolerance
-            // (low error < tolerance is green, high error >= tolerance is red)
-            const limit = qtyVal > 2000 ? 0.5 : 0.2;
-            if (rateVal < limit) {
-                return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
-            } else {
-                return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
-            }
+        if (rateVal < 0.5) {
+            return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
         } else {
-            // Category-wise threshold: > 500 -> 0.2%/0.5% thresholds, <= 500 -> 0.1% threshold
-            if (qtyVal > 500) {
-                if (rateVal < 0.2) {
-                    return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
-                } else if (rateVal <= 0.5) {
-                    return "background-color: rgba(245, 158, 11, 0.15); color: var(--color-warning); font-weight: bold; text-align: right;";
-                } else {
-                    return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
-                }
-            } else {
-                if (rateVal < 0.1) {
-                    return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
-                } else {
-                    return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
-                }
-            }
+            return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
         }
     };
 
@@ -5229,12 +5209,10 @@ function renderVegetablesLevel3Table() {
 
     const getRateStyle = (rateVal, qtyVal) => {
         if (qtyVal === 0) return "text-align: right;";
-        if (rateVal > 0.5) {
-            return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
-        } else if (rateVal < 0.2) {
+        if (rateVal < 0.5) {
             return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
         } else {
-            return "background-color: rgba(245, 158, 11, 0.15); color: var(--color-warning); font-weight: bold; text-align: right;";
+            return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
         }
     };
 
@@ -5421,10 +5399,8 @@ function renderF1CategoryDateTable() {
 
     const getStyleForDailyCat = (rateVal, qtyVal) => {
         if (qtyVal === 0) return "text-align: right;";
-        if (rateVal < 0.2) {
+        if (rateVal < 0.5) {
             return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
-        } else if (rateVal <= 0.5) {
-            return "background-color: rgba(245, 158, 11, 0.15); color: var(--color-warning); font-weight: bold; text-align: right;";
         } else {
             return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
         }
@@ -6274,10 +6250,8 @@ function renderVegetablesLevel3DateTable() {
 
     const getStyleForDailyCat = (rateVal, qtyVal) => {
         if (qtyVal === 0) return "text-align: right;";
-        if (rateVal < 0.2) {
+        if (rateVal < 0.5) {
             return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
-        } else if (rateVal <= 0.5) {
-            return "background-color: rgba(245, 158, 11, 0.15); color: var(--color-warning); font-weight: bold; text-align: right;";
         } else {
             return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
         }
@@ -6686,10 +6660,8 @@ function renderTopSkuDiscrepancyTable() {
 
     const getStyleForDailyCat = (rateVal, qtyVal) => {
         if (qtyVal === 0) return "text-align: right;";
-        if (rateVal < 0.2) {
+        if (rateVal < 0.5) {
             return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
-        } else if (rateVal <= 0.5) {
-            return "background-color: rgba(245, 158, 11, 0.15); color: var(--color-warning); font-weight: bold; text-align: right;";
         } else {
             return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
         }

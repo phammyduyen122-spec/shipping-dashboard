@@ -10,7 +10,9 @@ import unicodedata
 EXCLUDED_USERS = {
     'nhan quang hiếu', 'nhân quang hiếu', 'nhan quang hieu', 'nhân quang hieu',
     'huỳnh tấn phát', 'huynh tan phat', 'huynh tấn phát', 'huỳnh tấn phat',
-    'huỳnh tan phát', 'huynh tan phát'
+    'huỳnh tan phát', 'huynh tan phát',
+    'trần duy khánh', 'tran duy khanh',
+    'trần duy nam', 'tran duy nam'
 }
 
 def get_best_file_for_date(directory, prefix, date_obj):

@@ -223,6 +223,22 @@ function getSupermarketStt(branchName) {
     return "-";
 }
 
+// Helper function to normalize any date input format (YYYY-MM-DD or DD/MM/YYYY) to YYYY-MM-DD for reliable string comparisons
+function normalizeDateToYMD(str) {
+    if (!str) return "";
+    const s = str.toString().trim();
+    if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+        return s.substring(0, 10);
+    }
+    if (/^\d{1,2}\/\d{1,2}\/\d{4}/.test(s)) {
+        const parts = s.split("/");
+        const d = parts[0].padStart(2, '0');
+        const m = parts[1].padStart(2, '0');
+        const y = parts[2];
+        return `${y}-${m}-${d}`;
+    }
+    return s;
+}
 
 // Shipping Dashboard Application Logic
 
@@ -1551,8 +1567,11 @@ function applyFiltersAndRender() {
         const matchUnit = selectedUnits.length === 0 || selectedUnits.includes(transfer.unit);
         
         // Match dates
-        const matchStartDate = startDateQuery === "" || transfer.date >= startDateQuery;
-        const matchEndDate = endDateQuery === "" || transfer.date <= endDateQuery;
+        const normItemDate = normalizeDateToYMD(transfer.date);
+        const normStart = normalizeDateToYMD(startDateQuery);
+        const normEnd = normalizeDateToYMD(endDateQuery);
+        const matchStartDate = normStart === "" || normItemDate >= normStart;
+        const matchEndDate = normEnd === "" || normItemDate <= normEnd;
         
         // Match category
         const matchCategory = selectedCategories.length === 0 || selectedCategories.includes(transfer.nganhHang);
@@ -3406,8 +3425,11 @@ function applyPerfFiltersAndRender() {
         const matchUnit = selectedUnits.length === 0 || selectedUnits.includes(t.unit);
         
         // Match dates
-        const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
-        const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;
+        const normItemDate = normalizeDateToYMD(t.date);
+        const normStart = normalizeDateToYMD(startDateQuery);
+        const normEnd = normalizeDateToYMD(endDateQuery);
+        const matchStartDate = normStart === "" || normItemDate >= normStart;
+        const matchEndDate = normEnd === "" || normItemDate <= normEnd;
         
         // Match category
         const matchCategory = selectedPerfCategories.length === 0 || selectedPerfCategories.includes(t.nganhHang);
@@ -4312,7 +4334,9 @@ function getFilteredPerfDiscrepantData() {
         
         // Apply inline table filters
         if (dateFilterText !== "") {
-            if (!matchDateQuery(row.date, dateFilterText)) return false;
+            const normRowDate = normalizeDateToYMD(row.date);
+            const normQuery = normalizeDateToYMD(dateFilterText);
+            if (normQuery !== "" && normRowDate !== normQuery && !matchDateQuery(row.date, dateFilterText)) return false;
         }
         if (userFilterText !== "") {
             const rowUser = (row.nguoiChia || "").toLowerCase();

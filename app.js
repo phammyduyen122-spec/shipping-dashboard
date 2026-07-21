@@ -713,7 +713,7 @@ let selectedSummaryProductCodes = [];
 let currentPerfPage = 1;
 const perfRowsPerPage = 8;
 let currentPerfSortColumn = "ngayChuyen";
-let currentPerfSortDirection = "asc";
+let currentPerfSortDirection = "desc";
 
 let currentSummarySortColumn = "date";
 let currentSummarySortDirection = "desc";

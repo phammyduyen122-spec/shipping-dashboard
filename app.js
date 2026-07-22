@@ -4501,12 +4501,47 @@ function updatePerfSummary() {
                 categoryDiffs["Khác"] += diff;
             }
         }
-        
-        // Sum total discrepancy value (deficits) including "Hao hụt"
-        if (diff < 0) {
-            const price = window.productPrices ? (window.productPrices[t.itemCode] || 0) : 0;
-            totalDiffValue += diff * price;
+    });
+
+    // Calculate totalDiffValue as the sum of aggregated valLech (matching the Summary Table)
+    const summaryAggTemp = {};
+    filteredPerfTransfers.forEach(row => {
+        const user = row.nguoiChia || "Không rõ";
+        const barcode = row.itemCode || "";
+        const unit = row.unit || "";
+        const date = row.date || "";
+        const key = `${date}_${user}_${barcode}_${unit}`;
+
+        const statusInfo = calculateStatus(row);
+        if (statusInfo.statusText === "Đang chuyển") {
+            return;
         }
+
+        if (!summaryAggTemp[key]) {
+            summaryAggTemp[key] = {
+                valLech: 0
+            };
+        }
+
+        const slBoSung = row.matchedCorrectiveQty || 0;
+        const statusText = statusInfo.statusText;
+        let rowRemainingShortage = 0;
+        let rowChiaSaiST = 0;
+        if (statusText !== "Hao hụt" && statusText !== "Đang chuyển") {
+            const rowChenhLech = row.qtyReceived === -1 ? 0 : (row.qtyReceived - row.qtyShipped);
+            if (rowChenhLech < 0) {
+                rowRemainingShortage = rowChenhLech;
+            }
+            rowChiaSaiST = slBoSung;
+        }
+
+        const rowChenhLechConLai = rowRemainingShortage + rowChiaSaiST;
+        const price = window.productPrices ? (window.productPrices[row.itemCode] || 0) : 0;
+        summaryAggTemp[key].valLech += price * rowChenhLechConLai;
+    });
+
+    Object.values(summaryAggTemp).forEach(item => {
+        totalDiffValue += item.valLech;
     });
 
     const perfTotalReqEl = document.getElementById("perfTotalReq");

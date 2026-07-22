@@ -227,7 +227,7 @@ def parse_excel():
                     perf_dates.append((f, d))
             if perf_dates:
                 max_date = max(d for f, d in perf_dates)
-                cutoff = max_date - timedelta(days=8)
+                cutoff = max_date - timedelta(days=3)
                 recent_perf_files = [f for f, d in perf_dates if d >= cutoff]
                 recent_perf_files.sort()
                 print(f"Lọc file hiệu suất (max date: {max_date.strftime('%Y-%m-%d')}): Giữ {len(recent_perf_files)} / {len(perf_dates)} files.")
@@ -381,9 +381,8 @@ def parse_excel():
             d = get_date_from_filename(f)
             if d:
                 trans_dates.append((f, d))
-        if trans_dates:
             max_date = max(d for f, d in trans_dates)
-            cutoff = max_date - timedelta(days=8)
+            cutoff = max_date - timedelta(days=3)
             recent_excel_files = [f for f, d in trans_dates if d >= cutoff]
             recent_excel_files.sort()
             print(f"Lọc file điều chuyển (max date: {max_date.strftime('%Y-%m-%d')}): Giữ {len(recent_excel_files)} / {len(trans_dates)} files.")

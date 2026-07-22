@@ -19,10 +19,11 @@ def main():
     
     print(f"Downloading Google Drive folders to {temp_dir}...")
     try:
-        for url in urls:
+        for i, url in enumerate(urls):
             print(f"Downloading folder: {url} ...")
-            # download_folder downloads all files in the folder to the target directory
-            gdown.download_folder(url=url, output=temp_dir, quiet=False, use_cookies=False)
+            target_sub = os.path.join(temp_dir, f"folder_{i}")
+            os.makedirs(target_sub, exist_ok=True)
+            gdown.download_folder(url=url, output=target_sub, quiet=False, use_cookies=False)
         print("All folders downloaded successfully!")
         
         # Check files downloaded recursively
@@ -35,14 +36,25 @@ def main():
                 print(f"  - {basename} (size: {os.path.getsize(f)} bytes) from {root}")
                 
                 # Copy to correct workspace locations
+                # If path contains folder_1 or "thịt"/"cá", it is Meat & Fish -> _thit_ca
+                # Otherwise it is Vegetables -> no suffix
+                normalized_path = f.replace("\\", "/").lower()
+                if "folder_1" in normalized_path or "thịt" in normalized_path or "thit" in normalized_path or "ca" in normalized_path or "cá" in normalized_path:
+                    suffix = "_thit_ca"
+                else:
+                    suffix = ""
+                
+                name_parts = os.path.splitext(basename)
+                final_name = f"{name_parts[0]}{suffix}{name_parts[1]}"
+
                 if "chi-tiet-chia-qua-canh" in basename.lower():
                     perf_dir = "performance dashboard"
                     os.makedirs(perf_dir, exist_ok=True)
-                    dest = os.path.join(perf_dir, basename)
+                    dest = os.path.join(perf_dir, final_name)
                     shutil.copy2(f, dest)
                     print(f"    Copied performance file to: {dest}")
                 elif "transfer" in basename.lower():
-                    dest = os.path.join(".", basename)
+                    dest = os.path.join(".", final_name)
                     shutil.copy2(f, dest)
                     print(f"    Copied transfer file to: {dest}")
         print(f"Total files found recursively: {total_files}")

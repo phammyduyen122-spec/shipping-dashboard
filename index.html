@@ -817,190 +817,14 @@
                 </div>
             </div>
 
-            <!-- Bảng Top 10 SKU chia lệch theo nhóm ngành hàng -->
-            <div class="table-card" style="margin-bottom: 24px;">
-                <div class="table-header-row" style="background-color: rgba(245, 158, 11, 0.05); border-bottom: 1px solid rgba(245, 158, 11, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                    <span class="table-title" style="color: var(--color-warning); display: flex; align-items: center; gap: 8px; margin: 0;">
-                        ⚠️ Top 10 SKU chia lệch nhiều nhất theo Ngành Hàng
-                    </span>
-                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <label for="topSkuCategoryFilter" style="font-size: 12px; font-weight: 600; color: var(--color-warning);">Ngành hàng:</label>
-                            <select id="topSkuCategoryFilter" class="input-field" style="width: auto; padding: 4px 28px 4px 12px; font-size: 12px; height: 30px; margin: 0; background-color: var(--bg-primary); border-color: var(--color-warning); color: var(--color-warning); font-weight: 600; cursor: pointer; border-radius: var(--radius-sm);">
-                                <option value="All" selected>Tất cả ngành hàng</option>
-                                <option value="2.VEGETABLES">2.VEGETABLES</option>
-                                <option value="2.FRUITS">2.FRUITS</option>
-                                <option value="2.BAKERY">2.BAKERY</option>
-                                <option value="2.EGGS">2.EGGS</option>
-                                <option value="2.DELICA">2.DELICA</option>
-                            </select>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <label for="topSkuBranchFilter" style="font-size: 12px; font-weight: 600; color: var(--color-warning);">Siêu thị:</label>
-                            <select id="topSkuBranchFilter" class="input-field" style="width: 160px; padding: 4px 28px 4px 12px; font-size: 12px; height: 30px; margin: 0; background-color: var(--bg-primary); border-color: var(--color-warning); color: var(--color-warning); font-weight: 600; cursor: pointer; border-radius: var(--radius-sm);">
-                                <option value="All" selected>Tất cả siêu thị</option>
-                            </select>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <label for="topSkuMinValFilter" style="font-size: 12px; font-weight: 600; color: var(--color-warning);">Lệch từ:</label>
-                            <input type="number" id="topSkuMinValFilter" class="input-field" style="width: 100px; height: 30px; margin: 0; padding: 4px 8px; font-size: 12px; border-color: var(--color-warning); color: var(--text-primary); border-radius: var(--radius-sm);" placeholder="Ví dụ: 100000" min="0">
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <label for="topSkuSortCriteria" style="font-size: 12px; font-weight: 600; color: var(--color-warning);">Tiêu chí:</label>
-                            <select id="topSkuSortCriteria" class="input-field" style="width: auto; padding: 4px 28px 4px 12px; font-size: 12px; height: 30px; margin: 0; background-color: var(--bg-primary); border-color: var(--color-warning); color: var(--color-warning); font-weight: 600; cursor: pointer; border-radius: var(--radius-sm);">
-                                <option value="qty" selected>SL lệch</option>
-                                <option value="value">Giá trị lệch</option>
-                                <option value="percent">% SL lệch</option>
-                            </select>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <input type="text" id="topSkuSearchInput" class="table-filter-input" style="width: 150px; margin: 0; padding: 6px 12px; border-color: var(--color-warning);" placeholder="Tìm SKU...">
-                        </div>
-                        <button class="btn btn-secondary" id="topSkuBtnExport" style="border-color: var(--color-warning); color: var(--color-warning); height: 30px; padding: 4px 12px; font-size: 12px;">
-                            <span>📥 Xuất Excel</span>
-                        </button>
-                    </div>
-                </div>
 
-                <div class="table-wrapper">
-                    <table id="topSkuDiscrepancyTable">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; width: 60px;">STT</th>
-                                <th>Barcode</th>
-                                <th>Tên sản phẩm</th>
-                                <th style="text-align: center; width: 80px;">ĐVT</th>
-                                <th>Ngành hàng</th>
-                                <th style="text-align: right;">Giá mua</th>
-                                <th style="text-align: right;">SL chuyển</th>
-                                <th style="text-align: right;">SL nhận</th>
-                                <th style="text-align: right; color: var(--color-danger);">Chênh lệch</th>
-                                <th style="text-align: right; color: var(--color-danger);">Giá trị lệch</th>
-                                <th style="text-align: right; color: var(--color-danger);">% Lệch (Bộ lọc)</th>
-                                <th style="text-align: right; color: var(--color-warning);">% Lệch (D-1)</th>
-                                <th style="text-align: center; color: var(--text-primary);">So sánh D-1</th>
-                            </tr>
-                        </thead>
-                        <tbody id="topSkuDiscrepancyBody">
-                            <!-- Dynamic content -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
 
         </div>
 
 
 
-    <!-- Modal for Adding New Record -->
-    <div class="modal-overlay" id="addRecordModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Thêm thông tin điều chuyển hàng</h3>
-                <button class="modal-close" id="modalCloseBtn">&times;</button>
-            </div>
-            <form id="addRecordForm">
-                <div class="modal-body">
-                    <!-- Date Input -->
-                    <div class="filter-group">
-                        <label class="filter-label">Ngày chuyển hàng</label>
-                        <input type="date" id="newRecordDate" class="input-field" required>
-                    </div>
-                    
-                    <!-- Branch Inputs -->
-                    <div class="filter-group">
-                        <label class="filter-label">Nơi chuyển</label>
-                        <input type="text" id="newRecordFromBranch" class="input-field" placeholder="Ví dụ: KHO RAU CỦ" required list="fromBranchSuggestions">
-                        <datalist id="fromBranchSuggestions">
-                            <option value="Tổng kho miền Nam">
-                            <option value="Chi nhánh Quận 1">
-                            <option value="Chi nhánh Quận 3">
-                            <option value="Chi nhánh Bình Thạnh">
-                            <option value="Chi nhánh Gò Vấp">
-                            <option value="Chi nhánh Thủ Đức">
-                        </datalist>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Nơi nhận</label>
-                        <input type="text" id="newRecordToBranch" class="input-field" placeholder="Ví dụ: Chi nhánh Quận 1" required list="toBranchSuggestions">
-                        <datalist id="toBranchSuggestions">
-                            <option value="Tổng kho miền Nam">
-                            <option value="Chi nhánh Quận 1">
-                            <option value="Chi nhánh Quận 3">
-                            <option value="Chi nhánh Bình Thạnh">
-                            <option value="Chi nhánh Gò Vấp">
-                            <option value="Chi nhánh Thủ Đức">
-                        </datalist>
-                    </div>
 
-                    <div class="filter-group dropdown-search-wrapper">
-                        <label class="filter-label">Barcode</label>
-                        <input type="text" id="newRecordItemCode" class="input-field" placeholder="Nhập barcode (ví dụ: 11712)..." required autocomplete="off">
-                        <div id="modalItemDropdownList" class="dropdown-search-list"></div>
-                    </div>
-                    
-                    <!-- Item details (Autofilled or manually input) -->
-                    <div class="filter-group">
-                        <label class="filter-label">Tên Sản phẩm</label>
-                        <input type="text" id="newRecordItemName" class="input-field" placeholder="Nhập tên sản phẩm..." required>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Đơn vị tính</label>
-                        <input type="text" id="newRecordUnit" class="input-field" placeholder="Hộp, Kg, Cái..." required>
-                    </div>
-
-                    <!-- Quantities Inputs -->
-                    <div class="filter-group">
-                        <label class="filter-label">Số lượng chuyển</label>
-                        <input type="number" id="newRecordQtyShipped" class="input-field" min="1" placeholder="Nhập số lượng chuyển..." required>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Số lượng nhận</label>
-                        <input type="number" id="newRecordQtyReceived" class="input-field" min="0" placeholder="Nhập số lượng nhận..." required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="modalCancelBtn">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Lưu bản ghi</button>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <input type="text" id="topSkuSearchInput" class="table-filter-input" style="width: 150px; margin: 0; padding: 6px 12px; border-color: var(--color-warning);" placeholder="Tìm SKU...">
-                        </div>
-                        <button class="btn btn-secondary" id="topSkuBtnExport" style="border-color: var(--color-warning); color: var(--color-warning); height: 30px; padding: 4px 12px; font-size: 12px;">
-                            <span>📥 Xuất Excel</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="table-wrapper">
-                    <table id="topSkuDiscrepancyTable">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; width: 60px;">STT</th>
-                                <th>Barcode</th>
-                                <th>Tên sản phẩm</th>
-                                <th style="text-align: center; width: 80px;">ĐVT</th>
-                                <th>Ngành hàng</th>
-                                <th style="text-align: right;">Giá mua</th>
-                                <th style="text-align: right;">SL chuyển</th>
-                                <th style="text-align: right;">SL nhận</th>
-                                <th style="text-align: right; color: var(--color-danger);">Chênh lệch</th>
-                                <th style="text-align: right; color: var(--color-danger);">Giá trị lệch</th>
-                                <th style="text-align: right; color: var(--color-danger);">% Lệch (Bộ lọc)</th>
-                                <th style="text-align: right; color: var(--color-warning);">% Lệch (D-1)</th>
-                                <th style="text-align: center; color: var(--text-primary);">So sánh D-1</th>
-                            </tr>
-                        </thead>
-                        <tbody id="topSkuDiscrepancyBody">
-                            <!-- Dynamic content -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-
-        </div>
 
 
 
@@ -1080,8 +904,8 @@
     </div>
 
     <!-- Data Script -->
-    <script src="data.js?v=107"></script>
+    <script src="data.js?v=108"></script>
     <!-- Core App Execution Script -->
-    <script src="app.js?v=107"></script>
+    <script src="app.js?v=108"></script>
 </body>
 </html>

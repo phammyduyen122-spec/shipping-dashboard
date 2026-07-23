@@ -1167,14 +1167,6 @@ function populateFilterOptions() {
         });
     }
 
-    // Populate Top SKU branch filter
-    const topSkuBranchFilter = document.getElementById("topSkuBranchFilter");
-    if (topSkuBranchFilter) {
-        topSkuBranchFilter.innerHTML = '<option value="All" selected>Tất cả siêu thị</option>';
-        toBranches.forEach(branch => {
-            topSkuBranchFilter.innerHTML += `<option value="${branch}">${branch}</option>`;
-        });
-    }
 
     // Populate Units
     if (unitOptions) {
@@ -2573,7 +2565,6 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
     const defaultDateInputs = [
         "perfF1CategoryStartDate", "perfF1CategoryEndDate",
         "catDateTableStartDate", "catDateTableEndDate",
-        "topSkuStartDate", "topSkuEndDate",
         "catValStartDate", "catValEndDate"
     ];
     defaultDateInputs.forEach(id => {
@@ -2598,7 +2589,6 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
     };
 
     bindDateFilters("catDateTableStartDate", "catDateTableEndDate", renderF1CategoryDateTable);
-    bindDateFilters("topSkuStartDate", "topSkuEndDate", renderTopSkuDiscrepancyTable);
     bindDateFilters("catValStartDate", "catValEndDate", () => renderCategoryValuePerformanceTable(transfers));
     
     const catClearFiltersBtn = document.getElementById("catClearFiltersBtn");
@@ -2610,8 +2600,7 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
             // Clear table-specific date filters
             const clearInputs = [
                 "catDateTableStartDate", "catDateTableEndDate",
-                "topSkuStartDate", "topSkuEndDate",
-                "catValStartDate", "catValEndDate"
+                        "catValStartDate", "catValEndDate"
             ];
             clearInputs.forEach(id => {
                 const el = document.getElementById(id);
@@ -2642,20 +2631,6 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
             const selectFilter = document.getElementById("perfF1GroupFilter");
             if (selectFilter) selectFilter.value = "All";
 
-            const topSkuCategoryFilter = document.getElementById("topSkuCategoryFilter");
-            if (topSkuCategoryFilter) topSkuCategoryFilter.value = "All";
-
-            const topSkuBranchFilter = document.getElementById("topSkuBranchFilter");
-            if (topSkuBranchFilter) topSkuBranchFilter.value = "All";
-
-            const topSkuMinValFilter = document.getElementById("topSkuMinValFilter");
-            if (topSkuMinValFilter) topSkuMinValFilter.value = "";
-
-            const topSkuSearchInput = document.getElementById("topSkuSearchInput");
-            if (topSkuSearchInput) topSkuSearchInput.value = "";
-
-            const topSkuSortCriteria = document.getElementById("topSkuSortCriteria");
-            if (topSkuSortCriteria) topSkuSortCriteria.value = "qty";
             
             renderF1CategoryTable();
         });
@@ -2690,50 +2665,6 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
     }
 
 
-    const topSkuCategoryFilter = document.getElementById("topSkuCategoryFilter");
-    if (topSkuCategoryFilter) {
-        topSkuCategoryFilter.addEventListener("change", () => {
-            renderTopSkuDiscrepancyTable();
-        });
-    }
-
-    const topSkuBranchFilter = document.getElementById("topSkuBranchFilter");
-    if (topSkuBranchFilter) {
-        topSkuBranchFilter.addEventListener("change", () => {
-            renderTopSkuDiscrepancyTable();
-        });
-    }
-
-    const topSkuMinValFilter = document.getElementById("topSkuMinValFilter");
-    if (topSkuMinValFilter) {
-        topSkuMinValFilter.addEventListener("input", () => {
-            renderTopSkuDiscrepancyTable();
-        });
-    }
-
-    const topSkuSortCriteria = document.getElementById("topSkuSortCriteria");
-    if (topSkuSortCriteria) {
-        topSkuSortCriteria.addEventListener("change", () => {
-            renderTopSkuDiscrepancyTable();
-        });
-    }
-
-    const topSkuSearchInput = document.getElementById("topSkuSearchInput");
-    if (topSkuSearchInput) {
-        topSkuSearchInput.addEventListener("input", () => {
-            renderTopSkuDiscrepancyTable();
-        });
-    }
-
-    const topSkuBtnExport = document.getElementById("topSkuBtnExport");
-    if (topSkuBtnExport) {
-        const newBtn = topSkuBtnExport.cloneNode(true);
-        topSkuBtnExport.parentNode.replaceChild(newBtn, topSkuBtnExport);
-        newBtn.addEventListener("click", () => {
-            const todayStr = new Date().toISOString().split("T")[0];
-            downloadTableToExcel("topSkuDiscrepancyTable", `BaoCao_Top10_SKU_Lech_${todayStr}.csv`);
-        });
-    }
 }
 
 function setupSupermarketEventListeners(earliestDate, latestDate) {
@@ -5073,7 +5004,6 @@ function renderF1CategoryTable() {
         tbody.appendChild(trTotal);
     }
     renderF1CategoryDateTable();
-    renderTopSkuDiscrepancyTable();
 }
 
 // ============================================================
@@ -5939,341 +5869,6 @@ function getPrevDateStr(dateStr) {
 
 // ============================================================
 // Bảng Top 10 SKU chia lệch nhiều nhất theo nhóm ngành hàng
-// ============================================================
-function renderTopSkuDiscrepancyTable() {
-    const tbody = document.getElementById("topSkuDiscrepancyBody");
-    if (!tbody) return;
-    tbody.innerHTML = "";
-
-    const sortCriteriaEl = document.getElementById("topSkuSortCriteria");
-    const sortCriteria = sortCriteriaEl ? sortCriteriaEl.value : "qty";
-
-    const branchFilterEl = document.getElementById("topSkuBranchFilter");
-    const selectedBranch = branchFilterEl ? branchFilterEl.value : "All";
-
-    const minValFilterEl = document.getElementById("topSkuMinValFilter");
-    const minValFilter = (minValFilterEl && minValFilterEl.value !== "") ? parseFloat(minValFilterEl.value) : 0;
-
-    const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
-    const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
-
-    const groupSelector = isCategoryTabActive ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
-    const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
-    
-    let activeGroups = [];
-    const groupFilterEl = document.getElementById("perfF1GroupFilter");
-    const groupFilterVal = groupFilterEl ? groupFilterEl.value : "All";
-
-    if (selectedGroups.length > 0) {
-        activeGroups = selectedGroups;
-    } else {
-        if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
-        } else {
-            activeGroups = [groupFilterVal];
-        }
-    }
-
-    const tableStartEl = document.getElementById("topSkuStartDate");
-    const tableEndEl = document.getElementById("topSkuEndDate");
-    const globalStartEl = document.getElementById(isCategoryTabActive ? "catFilterStartDate" : "perfFilterStartDate");
-    const globalEndEl = document.getElementById(isCategoryTabActive ? "catFilterEndDate" : "perfFilterEndDate");
-
-    const startDateQuery = (tableStartEl && tableStartEl.value) ? tableStartEl.value : (globalStartEl ? globalStartEl.value : "");
-    const endDateQuery = (tableEndEl && tableEndEl.value) ? tableEndEl.value : (globalEndEl ? globalEndEl.value : "");
-    
-    const prevStartDateQuery = startDateQuery ? getPrevDateStr(startDateQuery) : "";
-    const prevEndDateQuery = endDateQuery ? getPrevDateStr(endDateQuery) : "";
-    
-    const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
-    const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
-
-    const selectedCats = Array.from(document.querySelectorAll("#catFilterCategoryContainer input[type='checkbox']:checked")).map(cb => cb.value);
-    const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
-
-    const activeTransfers = transfers.filter(t => {
-        if (!isMainBranch(t.fromBranch)) {
-            return false;
-        }
-        if (!t.nguoiChia) {
-            return false;
-        }
-        const name = t.nguoiChia.trim().toLowerCase();
-        
-        let matchGroupPrefix = false;
-        for (const g of activeGroups) {
-            if (name.startsWith(g.toLowerCase())) {
-                matchGroupPrefix = true;
-                break;
-            }
-        }
-        if (!matchGroupPrefix) return false;
-
-        const matchUser = selectedUsers.length === 0 || selectedUsers.includes(t.nguoiChia);
-        if (!matchUser) return false;
-
-        if (localUserSearch !== "") {
-            if (!name.includes(localUserSearch)) {
-                return false;
-            }
-        }
-
-        // Match global category selection
-        const matchCategory = selectedCats.length === 0 || selectedCats.includes(t.nganhHang);
-        if (!matchCategory) return false;
-
-        // Match global branch selection
-        const matchBranch = selectedBranches.length === 0 || selectedBranches.includes(t.toBranch);
-        if (!matchBranch) return false;
-
-        const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
-        const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;
-
-        return matchStartDate && matchEndDate;
-    });
-
-    // Filter by SKU Category select dropdown
-    const categoryFilterEl = document.getElementById("topSkuCategoryFilter");
-    const selectedCategory = categoryFilterEl ? categoryFilterEl.value : "All";
-
-    // Filter by local SKU search box
-    const skuSearchEl = document.getElementById("topSkuSearchInput");
-    const skuSearchVal = skuSearchEl ? skuSearchEl.value.toLowerCase().trim() : "";
-
-    const skuAgg = {};
-    activeTransfers.forEach(t => {
-        const cat = t.nganhHang || "Khác";
-        
-        // Apply Category filter
-        if (selectedCategory !== "All" && cat !== selectedCategory) {
-            return;
-        }
-
-        // Apply Branch filter
-        if (selectedBranch !== "All" && t.toBranch !== selectedBranch) {
-            return;
-        }
-
-        const itemCode = t.itemCode;
-        const itemName = t.itemName || "";
-        const unit = t.unit || "";
-        
-        // Apply local search query
-        if (skuSearchVal !== "") {
-            if (!itemCode.toLowerCase().includes(skuSearchVal) && !itemName.toLowerCase().includes(skuSearchVal)) {
-                return;
-            }
-        }
-
-        const statusInfo = calculateStatus(t);
-        if (statusInfo.statusText === "Đang chuyển") {
-            return;
-        }
-
-        if (!skuAgg[itemCode]) {
-            const price = window.productPrices ? (window.productPrices[itemCode] || 0) : 0;
-            skuAgg[itemCode] = {
-                itemCode: itemCode,
-                itemName: itemName,
-                unit: unit,
-                nganhHang: cat,
-                qtyShipped: 0,
-                qtyReceived: 0,
-                qtyDiff: 0,
-                price: price,
-                valDiff: 0,
-                netValDiff: 0
-            };
-        }
-
-        skuAgg[itemCode].qtyShipped += t.qtyShipped;
-        skuAgg[itemCode].qtyReceived += t.qtyReceived + (t.matchedCorrectiveQty || 0);
-        
-        const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
-        if (isDiscrepant) {
-            const rowDiff = statusInfo.chenhLechConLai;
-            const absRowDiff = Math.abs(rowDiff);
-            const price = skuAgg[itemCode].price;
-            skuAgg[itemCode].qtyDiff += absRowDiff;
-            skuAgg[itemCode].valDiff += absRowDiff * price;
-            skuAgg[itemCode].netValDiff += rowDiff * price;
-        }
-    });
-
-    // Aggregate D-1 transfers
-    const prevSkuAgg = {};
-    if (prevStartDateQuery && prevEndDateQuery) {
-        const prevTransfers = transfers.filter(t => {
-            if (!isMainBranch(t.fromBranch)) {
-                return false;
-            }
-            if (!t.nguoiChia) {
-                return false;
-            }
-            const name = t.nguoiChia.trim().toLowerCase();
-            
-            let matchGroupPrefix = false;
-            for (const g of activeGroups) {
-                if (name.startsWith(g.toLowerCase())) {
-                    matchGroupPrefix = true;
-                    break;
-                }
-            }
-            if (!matchGroupPrefix) return false;
-
-            const matchUser = selectedUsers.length === 0 || selectedUsers.includes(t.nguoiChia);
-            if (!matchUser) return false;
-
-            if (localUserSearch !== "") {
-                if (!name.includes(localUserSearch)) {
-                    return false;
-                }
-            }
-
-            const matchStartDate = t.date >= prevStartDateQuery;
-            const matchEndDate = t.date <= prevEndDateQuery;
-
-            return matchStartDate && matchEndDate;
-        });
-
-        prevTransfers.forEach(t => {
-            const cat = t.nganhHang || "Khác";
-            if (selectedCategory !== "All" && cat !== selectedCategory) {
-                return;
-            }
-
-            // Apply Branch filter
-            if (selectedBranch !== "All" && t.toBranch !== selectedBranch) {
-                return;
-            }
-
-            const itemCode = t.itemCode;
-            const statusInfo = calculateStatus(t);
-            if (statusInfo.statusText === "Đang chuyển") {
-                return;
-            }
-
-            if (!prevSkuAgg[itemCode]) {
-                prevSkuAgg[itemCode] = {
-                    qtyShipped: 0,
-                    qtyReceived: 0,
-                    qtyDiff: 0
-                };
-            }
-
-            prevSkuAgg[itemCode].qtyShipped += t.qtyShipped;
-            prevSkuAgg[itemCode].qtyReceived += t.qtyReceived + (t.matchedCorrectiveQty || 0);
-            
-            const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
-            if (isDiscrepant) {
-                prevSkuAgg[itemCode].qtyDiff += Math.abs(statusInfo.chenhLechConLai);
-            }
-        });
-    }
-
-    let skuList = Object.values(skuAgg);
-
-    // Apply minimum absolute discrepancy value filter
-    if (minValFilter > 0) {
-        skuList = skuList.filter(sku => sku.valDiff >= minValFilter);
-    }
-
-    // Sort by selected criteria
-    if (sortCriteria === "percent") {
-        skuList.sort((a, b) => {
-            const aRate = a.qtyShipped > 0 ? (a.qtyDiff / a.qtyShipped) : 0;
-            const bRate = b.qtyShipped > 0 ? (b.qtyDiff / b.qtyShipped) : 0;
-            const rateCmp = bRate - aRate;
-            if (rateCmp !== 0) return rateCmp;
-            return b.qtyDiff - a.qtyDiff;
-        });
-    } else if (sortCriteria === "value") {
-        skuList.sort((a, b) => {
-            const valCmp = b.valDiff - a.valDiff;
-            if (valCmp !== 0) return valCmp;
-            return b.qtyDiff - a.qtyDiff;
-        });
-    } else {
-        // Sort by absolute discrepancy descending, then by shipped quantity descending
-        skuList.sort((a, b) => {
-            const diffCmp = b.qtyDiff - a.qtyDiff;
-            if (diffCmp !== 0) return diffCmp;
-            return b.qtyShipped - a.qtyShipped;
-        });
-    }
-
-    // Take Top 10
-    const top10 = skuList.slice(0, 10);
-
-    if (top10.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="13" style="text-align: center; padding: 20px; color: var(--text-muted);">Không có dữ liệu phù hợp</td></tr>`;
-        return;
-    }
-
-    const getStyleForDailyCat = (rateVal, qtyVal) => {
-        if (qtyVal === 0) return "text-align: right;";
-        if (rateVal < 0.5) {
-            return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
-        } else {
-            return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
-        }
-    };
-
-    top10.forEach((item, index) => {
-        const shipped = item.qtyShipped;
-        const diff = item.qtyDiff;
-        const rateVal = shipped > 0 ? (diff / shipped) * 100 : 0;
-        const style = getStyleForDailyCat(rateVal, shipped);
-
-        const valDiffStyle = item.netValDiff < 0 
-            ? 'color: var(--color-danger); font-weight: 500;' 
-            : (item.netValDiff > 0 ? 'color: var(--color-info); font-weight: 500;' : '');
-
-        // D-1 comparison calculations
-        let prevRateText = "—";
-        let prevRateStyle = "text-align: right; color: var(--text-muted);";
-        let statusHtml = `<span style="color: var(--text-muted);">—</span>`;
-
-        const prevItem = prevSkuAgg[item.itemCode];
-        if (prevItem && prevItem.qtyShipped > 0) {
-            const prevShipped = prevItem.qtyShipped;
-            const prevDiff = prevItem.qtyDiff;
-            const prevRateVal = (prevDiff / prevShipped) * 100;
-            prevRateText = prevRateVal.toFixed(2) + "%";
-            prevRateStyle = getStyleForDailyCat(prevRateVal, prevShipped);
-
-            const diffRate = rateVal - prevRateVal;
-            if (Math.abs(diffRate) < 0.005) {
-                statusHtml = `<span style="color: var(--text-muted);">—</span>`;
-            } else if (diffRate > 0) {
-                statusHtml = `<span style="color: var(--color-danger); font-weight: 600;">▲ +${diffRate.toFixed(2)}%</span>`;
-            } else {
-                statusHtml = `<span style="color: var(--color-success); font-weight: 600;">▼ ${diffRate.toFixed(2)}%</span>`;
-            }
-        }
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td style="text-align: center; font-weight: bold; color: ${index < 3 ? 'var(--color-danger)' : 'var(--text-primary)'};">${index + 1}</td>
-            <td style="font-family: monospace;">${item.itemCode}</td>
-            <td style="font-weight: 500;">${item.itemName}</td>
-            <td style="text-align: center;">${item.unit}</td>
-            <td>${item.nganhHang}</td>
-            <td style="text-align: right; color: var(--text-secondary);">${formatPrice(item.price)}</td>
-            <td style="text-align: right; font-weight: 500;">${formatNumber(shipped)}</td>
-            <td style="text-align: right; font-weight: 500;">${formatNumber(item.qtyReceived)}</td>
-            <td style="text-align: right; color: ${diff > 0 ? 'var(--color-danger)' : 'var(--text-muted)'}; font-weight: bold;">${formatDiffNumber(diff)}</td>
-            <td style="text-align: right; ${valDiffStyle}">${formatVND(item.netValDiff)}</td>
-            <td style="${style}">${shipped > 0 ? rateVal.toFixed(2) + "%" : "0.00%"}</td>
-            <td style="${prevRateStyle}">${prevRateText}</td>
-            <td style="text-align: center; font-size: 13px;">${statusHtml}</td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-// ============================================================
-// Dữ liệu Xuất Excel / CSV Dạng Cột (Tabular Format)
 // ============================================================
 function getFilteredExportData(datasetType) {
     const startDate = document.getElementById("exportStartDate") ? document.getElementById("exportStartDate").value : "";

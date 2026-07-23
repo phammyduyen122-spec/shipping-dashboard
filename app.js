@@ -1014,6 +1014,7 @@ function getUserGroup(username) {
     if (name.startsWith("huyhoang")) return "HUYHOANG";
     if (name.startsWith("bakery")) return "BAKERY";
     if (name.startsWith("f4") || name.startsWith("f40")) return "F2";
+    if (name.startsWith("meatfish")) return "MEATFISH";
     return "CTV";
 }
 
@@ -2260,8 +2261,10 @@ function populateCategoryGroupOptions() {
     let groups = [];
     if (window.activePerfWarehouseGroup === "MeatFish") {
         groups = ["HUYHOANG", "MEATFISH"];
-    } else {
+    } else if (window.activePerfWarehouseGroup === "VegBakery") {
         groups = ["NVCT", "F1", "F2", "HUYHOANG", "BAKERY"];
+    } else {
+        groups = ["NVCT", "F1", "F2", "HUYHOANG", "BAKERY", "MEATFISH"];
     }
     
     groups.forEach(g => {
@@ -4752,8 +4755,10 @@ function renderF1CategoryTable() {
     let allowedGroups = [];
     if (window.activePerfWarehouseGroup === "MeatFish") {
         allowedGroups = ["HUYHOANG", "MEATFISH"];
-    } else {
+    } else if (window.activePerfWarehouseGroup === "VegBakery") {
         allowedGroups = ["NVCT", "F1", "F2", "HUYHOANG", "BAKERY"];
+    } else {
+        allowedGroups = ["NVCT", "F1", "F2", "HUYHOANG", "BAKERY", "MEATFISH"];
     }
 
     const selectedGroups = Array.from(document.querySelectorAll("#catFilterF1GroupContainer input[type='checkbox']:checked")).map(cb => cb.value);
@@ -5031,7 +5036,13 @@ function renderF1CategoryDateTable() {
         activeGroups = selectedGroups;
     } else {
         if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
+            if (window.activePerfWarehouseGroup === "MeatFish") {
+                activeGroups = ["HUYHOANG", "MEATFISH"];
+            } else if (window.activePerfWarehouseGroup === "VegBakery") {
+                activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
+            } else {
+                activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY", "MEATFISH"];
+            }
         } else {
             activeGroups = [groupFilterVal];
         }
@@ -5273,7 +5284,7 @@ function renderCategoryValuePerformanceTable() {
         activeGroups = selectedGroups;
     } else {
         if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
+            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY", "MEATFISH"];
         } else {
             activeGroups = [groupFilterVal];
         }
@@ -6328,8 +6339,10 @@ function downloadCategoryF1Tabular() {
     let allowedGroups = [];
     if (window.activePerfWarehouseGroup === "MeatFish") {
         allowedGroups = ["HUYHOANG", "MEATFISH"];
-    } else {
+    } else if (window.activePerfWarehouseGroup === "VegBakery") {
         allowedGroups = ["NVCT", "F1", "F2", "HUYHOANG", "BAKERY"];
+    } else {
+        allowedGroups = ["NVCT", "F1", "F2", "HUYHOANG", "BAKERY", "MEATFISH"];
     }
 
     const selectedGroups = Array.from(document.querySelectorAll("#catFilterF1GroupContainer input[type='checkbox']:checked")).map(cb => cb.value);
@@ -6448,7 +6461,13 @@ function downloadCategoryDateTabular() {
         activeGroups = selectedGroups;
     } else {
         if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
+            if (window.activePerfWarehouseGroup === "MeatFish") {
+                activeGroups = ["HUYHOANG", "MEATFISH"];
+            } else if (window.activePerfWarehouseGroup === "VegBakery") {
+                activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
+            } else {
+                activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY", "MEATFISH"];
+            }
         } else {
             activeGroups = [groupFilterVal];
         }

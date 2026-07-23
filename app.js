@@ -5104,43 +5104,62 @@ function renderF1CategoryDateTable() {
     });
 
     if (activeTransfers.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 20px; color: var(--text-muted);">Không có dữ liệu phù hợp</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">Không có dữ liệu phù hợp</td></tr>`;
         return;
     }
 
-    const categories = getActiveCategories();
-    const dateAgg = {};
+    // Helper to map clean warehouse name
+    function getCleanWarehouseName(fromBranch) {
+        const b = (fromBranch || "").toString().toLowerCase().trim();
+        if (b.includes("rau củ")) return "Kho Rau Củ";
+        if (b.includes("bánh tươi")) return "Kho Bánh Tươi";
+        if (b.includes("meatfish") || b.includes("thịt cá")) return "MeatFish";
+        return fromBranch || "Khác";
+    }
 
+    // Aggregate by date, clean warehouse, and category
+    const aggMap = {};
     activeTransfers.forEach(t => {
         const date = t.date;
+        const wh = getCleanWarehouseName(t.fromBranch);
         const cat = t.nganhHang || "Khác";
-
-        if (!dateAgg[date]) {
-            dateAgg[date] = {
+        
+        const key = `${date}_${wh}_${cat}`;
+        if (!aggMap[key]) {
+            aggMap[key] = {
                 date: date,
-                categories: {}
+                warehouse: wh,
+                nganhHang: cat,
+                shipped: 0,
+                received: 0,
+                diff: 0
             };
-            categories.forEach(c => {
-                dateAgg[date].categories[c] = { shipped: 0, received: 0, diff: 0 };
-            });
         }
-
+        
         const statusInfo = calculateStatus(t);
         if (statusInfo.statusText === "Đang chuyển") {
             return;
         }
-
-        if (categories.includes(cat)) {
-            const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
-            dateAgg[date].categories[cat].shipped += t.qtyShipped;
-            dateAgg[date].categories[cat].received += t.qtyReceived + (t.matchedCorrectiveQty || 0);
-            if (isDiscrepant) {
-                dateAgg[date].categories[cat].diff += Math.abs(statusInfo.chenhLechConLai);
-            }
+        
+        aggMap[key].shipped += t.qtyShipped;
+        aggMap[key].received += t.qtyReceived + (t.matchedCorrectiveQty || 0);
+        
+        const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
+        if (isDiscrepant) {
+            aggMap[key].diff += Math.abs(statusInfo.chenhLechConLai);
         }
     });
 
-    const sortedDates = Object.keys(dateAgg).sort();
+    // Convert map to sorted array (date desc, then warehouse asc, then category asc)
+    const sortedItems = Object.values(aggMap).sort((a, b) => {
+        if (b.date !== a.date) {
+            return b.date.localeCompare(a.date);
+        }
+        if (a.warehouse !== b.warehouse) {
+            return a.warehouse.localeCompare(b.warehouse, "vi");
+        }
+        return a.nganhHang.localeCompare(b.nganhHang, "vi");
+    });
 
     const getStyleForDailyCat = (rateVal, qtyVal) => {
         if (qtyVal === 0) return "text-align: right;";
@@ -5153,115 +5172,56 @@ function renderF1CategoryDateTable() {
 
     const localDateSearch = document.getElementById("catDateTableFilterDate") ? document.getElementById("catDateTableFilterDate").value.trim() : "";
     let displayIndex = 1;
+    
+    let grandTotalShipped = 0;
+    let grandTotalDiff = 0;
 
-    sortedDates.forEach((date) => {
-        const formattedDate = formatDateToVN(date);
+    sortedItems.forEach((item) => {
+        const formattedDate = formatDateToVN(item.date);
         if (localDateSearch !== "") {
             if (!formattedDate.includes(localDateSearch)) {
                 return;
             }
         }
 
-        const dData = dateAgg[date];
-        const tr = document.createElement("tr");
+        grandTotalShipped += item.shipped;
+        grandTotalDiff += item.diff;
 
-        let htmlContent = `
+        const tr = document.createElement("tr");
+        const rateVal = item.shipped > 0 ? (item.diff / item.shipped) * 100 : 0;
+        const style = getStyleForDailyCat(rateVal, item.shipped);
+        const displayText = item.shipped === 0 ? "0.00%" : `${rateVal.toFixed(2)}%`;
+
+        tr.innerHTML = `
             <td style="text-align: center;">${displayIndex++}</td>
             <td><strong>${formattedDate}</strong></td>
+            <td>${item.warehouse}</td>
+            <td>${item.nganhHang}</td>
+            <td style="${style}">${displayText}</td>
         `;
-
-        let totalShipped = 0;
-        let totalReceived = 0;
-        let totalDiff = 0;
-
-        categories.forEach(cat => {
-            totalShipped += dData.categories[cat].shipped;
-            totalReceived += dData.categories[cat].received;
-            totalDiff += dData.categories[cat].diff;
-        });
-
-        categories.forEach(cat => {
-            const shipped = dData.categories[cat].shipped;
-            const diff = dData.categories[cat].diff;
-            const rateVal = shipped > 0 ? (diff / shipped) * 100 : 0;
-            const style = getStyleForDailyCat(rateVal, shipped);
-            const displayText = shipped === 0 ? "0.00%" : `${rateVal.toFixed(2)}%`;
-            htmlContent += `<td style="${style}">${displayText}</td>`;
-        });
-
-        const totalErrorRate = totalShipped > 0 ? (totalDiff / totalShipped) * 100 : 0;
-        const totalStyle = getStyleForDailyCat(totalErrorRate, totalShipped) + " font-weight: bold; border-left: 1px solid var(--border-color);";
-        const totalDisplayText = totalShipped === 0 ? "0.00%" : `${totalErrorRate.toFixed(2)}%`;
-        htmlContent += `<td style="${totalStyle}">${totalDisplayText}</td>`;
-
-        tr.innerHTML = htmlContent;
         tbody.appendChild(tr);
     });
 
-    // Calculate grand totals across all dates
-    let grandShipped = {};
-    let grandReceived = {};
-    let grandDiff = {};
-    categories.forEach(cat => {
-        grandShipped[cat] = 0;
-        grandReceived[cat] = 0;
-        grandDiff[cat] = 0;
-    });
-
-    let matchCount = 0;
-    sortedDates.forEach(date => {
-        const formattedDate = formatDateToVN(date);
-        if (localDateSearch !== "" && !formattedDate.includes(localDateSearch)) {
-            return;
-        }
-        matchCount++;
-        const dData = dateAgg[date];
-        categories.forEach(cat => {
-            grandShipped[cat] += dData.categories[cat].shipped;
-            grandReceived[cat] += dData.categories[cat].received;
-            grandDiff[cat] += dData.categories[cat].diff;
-        });
-    });
-
-    let grandTotalShipped = 0;
-    let grandTotalReceived = 0;
-    let grandTotalDiff = 0;
-    categories.forEach(cat => {
-        grandTotalShipped += grandShipped[cat];
-        grandTotalReceived += grandReceived[cat];
-        grandTotalDiff += grandDiff[cat];
-    });
-
-    if (matchCount > 0) {
+    // Render Grand Total Row
+    if (displayIndex > 1) {
         const trTotal = document.createElement("tr");
         trTotal.style.fontWeight = "bold";
         trTotal.style.backgroundColor = "var(--bg-secondary)";
         trTotal.style.borderTop = "2px solid var(--border-color)";
 
-        let htmlTotal = `
-            <td style="text-align: center;">-</td>
-            <td><strong>TỔNG CỘNG</strong></td>
-        `;
-
-        categories.forEach(cat => {
-            const sh = grandShipped[cat];
-            const df = grandDiff[cat];
-            const rate = sh > 0 ? (df / sh) * 100 : 0;
-            const style = getStyleForDailyCat(rate, sh);
-            const displayText = sh === 0 ? "0.00%" : `${rate.toFixed(2)}%`;
-            htmlTotal += `<td style="${style}">${displayText}</td>`;
-        });
-
         const grandTotalErrorRate = grandTotalShipped > 0 ? (grandTotalDiff / grandTotalShipped) * 100 : 0;
-        const grandTotalStyle = getStyleForDailyCat(grandTotalErrorRate, grandTotalShipped) + " border-left: 1px solid var(--border-color);";
+        const grandTotalStyle = getStyleForDailyCat(grandTotalErrorRate, grandTotalShipped);
         const grandTotalDisplayText = grandTotalShipped === 0 ? "0.00%" : `${grandTotalErrorRate.toFixed(2)}%`;
-        htmlTotal += `<td style="${grandTotalStyle}">${grandTotalDisplayText}</td>`;
 
-        trTotal.innerHTML = htmlTotal;
+        trTotal.innerHTML = `
+            <td style="text-align: center;">-</td>
+            <td colspan="3"><strong>TỔNG CỘNG</strong></td>
+            <td style="${grandTotalStyle}">${grandTotalDisplayText}</td>
+        `;
         tbody.appendChild(trTotal);
     }
 
-    // Render the new Category Value Summary Table
+    // Render the Category Value Summary Table
     renderCategoryValuePerformanceTable();
 }
 
@@ -6504,64 +6464,69 @@ function downloadCategoryDateTabular() {
         return;
     }
 
-    const categories = getActiveCategories();
-    const dateAgg = {};
-    
+    function getCleanWarehouseName(fromBranch) {
+        const b = (fromBranch || "").toString().toLowerCase().trim();
+        if (b.includes("rau củ")) return "Kho Rau Củ";
+        if (b.includes("bánh tươi")) return "Kho Bánh Tươi";
+        if (b.includes("meatfish") || b.includes("thịt cá")) return "MeatFish";
+        return fromBranch || "Khác";
+    }
+
+    const aggMap = {};
     activeTransfers.forEach(t => {
         const date = t.date;
+        const wh = getCleanWarehouseName(t.fromBranch);
         const cat = t.nganhHang || "Khác";
         
-        if (!dateAgg[date]) {
-            dateAgg[date] = {
+        const key = `${date}_${wh}_${cat}`;
+        if (!aggMap[key]) {
+            aggMap[key] = {
                 date: date,
-                categories: {}
+                warehouse: wh,
+                nganhHang: cat,
+                shipped: 0,
+                received: 0,
+                diff: 0
             };
-            categories.forEach(c => {
-                dateAgg[date].categories[c] = { shipped: 0, received: 0, diff: 0 };
-            });
         }
         
         const statusInfo = calculateStatus(t);
         if (statusInfo.statusText === "Đang chuyển") return;
         
-        if (categories.includes(cat)) {
-            const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
-            dateAgg[date].categories[cat].shipped += t.qtyShipped;
-            dateAgg[date].categories[cat].received += t.qtyReceived + (t.matchedCorrectiveQty || 0);
-            if (isDiscrepant) {
-                dateAgg[date].categories[cat].diff += Math.abs(statusInfo.chenhLechConLai);
-            }
+        aggMap[key].shipped += t.qtyShipped;
+        aggMap[key].received += t.qtyReceived + (t.matchedCorrectiveQty || 0);
+        
+        const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
+        if (isDiscrepant) {
+            aggMap[key].diff += Math.abs(statusInfo.chenhLechConLai);
         }
     });
 
-    const headers = ["Ngày", "Ngành hàng", "SL chuyển", "SL nhận + Bổ sung", "SL lệch còn lại", "Tỷ lệ chia sai"];
+    const headers = ["Ngày", "Kho", "Ngành hàng", "% sai"];
     const rows = [];
     
-    Object.keys(dateAgg).sort().forEach(date => {
-        const dData = dateAgg[date];
-        const formattedDate = formatDateToVN(date);
-        
-        if (localDateSearch !== "") {
-            if (!formattedDate.includes(localDateSearch)) {
-                return;
-            }
+    const sortedItems = Object.values(aggMap).sort((a, b) => {
+        if (b.date !== a.date) {
+            return b.date.localeCompare(a.date);
         }
-        
-        categories.forEach(cat => {
-            const shipped = dData.categories[cat].shipped;
-            const received = dData.categories[cat].received;
-            const diff = dData.categories[cat].diff;
-            if (shipped === 0 && received === 0 && diff === 0) return;
-            const rate = shipped > 0 ? (diff / shipped) * 100 : 0;
-            rows.push([
-                formattedDate,
-                cat,
-                shipped,
-                received,
-                diff,
-                `${rate.toFixed(2)}%`
-            ]);
-        });
+        if (a.warehouse !== b.warehouse) {
+            return a.warehouse.localeCompare(b.warehouse, "vi");
+        }
+        return a.nganhHang.localeCompare(b.nganhHang, "vi");
+    });
+
+    sortedItems.forEach(item => {
+        const formattedDate = formatDateToVN(item.date);
+        if (localDateSearch !== "" && !formattedDate.includes(localDateSearch)) {
+            return;
+        }
+        const rate = item.shipped > 0 ? (item.diff / item.shipped) * 100 : 0;
+        rows.push([
+            formattedDate,
+            item.warehouse,
+            item.nganhHang,
+            `${rate.toFixed(2)}%`
+        ]);
     });
 
     if (rows.length === 0) {

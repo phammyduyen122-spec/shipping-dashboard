@@ -2241,6 +2241,22 @@ function populatePerfFilterOptions() {
             `<label class="multiselect-option"><input type="checkbox" value="${cat}"> <span>${cat}</span></label>`
         ).join("");
     }
+
+    // Update perfSummaryFilterCategory dropdown options dynamically
+    const perfSummaryFilterCategory = document.getElementById("perfSummaryFilterCategory");
+    if (perfSummaryFilterCategory) {
+        const currentSelected = perfSummaryFilterCategory.value;
+        let optionsHtml = '<option value="">Tất cả ngành hàng</option>';
+        uniqueCategories.forEach(cat => {
+            optionsHtml += `<option value="${cat}">${cat}</option>`;
+        });
+        perfSummaryFilterCategory.innerHTML = optionsHtml;
+        if (uniqueCategories.includes(currentSelected)) {
+            perfSummaryFilterCategory.value = currentSelected;
+        } else {
+            perfSummaryFilterCategory.value = "";
+        }
+    }
 }
 
 // Populate the options for the F1 Category group filter dynamically

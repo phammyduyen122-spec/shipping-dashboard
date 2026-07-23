@@ -5528,7 +5528,8 @@ function renderCategoryValuePerformanceTable() {
         const shipVal = (t.qtyShipped || 0) * price;
         
         const statusInfo = calculateStatus(t);
-        const diffVal = (statusInfo.statusText === "Đang chuyển") ? 0 : (statusInfo.chenhLechConLai || 0) * price;
+        const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
+        const diffVal = isDiscrepant ? (statusInfo.chenhLechConLai || 0) * price : 0;
         
         catData[cat].shipVal += shipVal;
         catData[cat].diffVal += diffVal;
@@ -5589,7 +5590,8 @@ function renderCategoryValuePerformanceTable() {
         const shipVal = (t.qtyShipped || 0) * price;
         
         const statusInfo = calculateStatus(t);
-        const diffVal = (statusInfo.statusText === "Đang chuyển") ? 0 : (statusInfo.chenhLechConLai || 0) * price;
+        const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
+        const diffVal = isDiscrepant ? (statusInfo.chenhLechConLai || 0) * price : 0;
         
         prevCatData[cat].shipVal += shipVal;
         prevCatData[cat].diffVal += diffVal;
@@ -5879,7 +5881,8 @@ function downloadCategoryValueTabular() {
         const shipVal = (t.qtyShipped || 0) * price;
         
         const statusInfo = calculateStatus(t);
-        const diffVal = (statusInfo.statusText === "Đang chuyển") ? 0 : (statusInfo.chenhLechConLai || 0) * price;
+        const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
+        const diffVal = isDiscrepant ? (statusInfo.chenhLechConLai || 0) * price : 0;
         
         catData[cat].shipVal += shipVal;
         catData[cat].diffVal += diffVal;
@@ -5940,7 +5943,8 @@ function downloadCategoryValueTabular() {
         const shipVal = (t.qtyShipped || 0) * price;
         
         const statusInfo = calculateStatus(t);
-        const diffVal = (statusInfo.statusText === "Đang chuyển") ? 0 : (statusInfo.chenhLechConLai || 0) * price;
+        const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
+        const diffVal = isDiscrepant ? (statusInfo.chenhLechConLai || 0) * price : 0;
         
         prevCatData[cat].shipVal += shipVal;
         prevCatData[cat].diffVal += diffVal;

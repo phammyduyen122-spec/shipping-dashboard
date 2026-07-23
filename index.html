@@ -888,91 +888,7 @@
                 </div>
             </div>
 
-            <!-- Bảng theo dõi hiệu suất phân loại theo Ngày & Ngành Hàng Rau Củ (Level 3) -->
-            <div class="table-card" style="margin-bottom: 24px;">
-                <div class="table-header-row" style="background-color: rgba(16, 185, 129, 0.05); border-bottom: 1px solid rgba(16, 185, 129, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                    <span class="table-title" id="perfVegLevel3DateTableTitle" style="color: var(--color-success); display: flex; align-items: center; gap: 8px; margin: 0;">
-                        🥦 Theo dõi hiệu suất phân loại theo Ngày & Ngành Hàng Rau Củ (Level 3)
-                    </span>
-                    <div class="table-actions">
-                        <button class="btn btn-secondary" id="perfVegLevel3DateBtnExport">
-                            <span>📥 Xuất Excel/CSV</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="table-inline-filters" style="display: flex; gap: 16px; padding: 12px 20px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;">🔍 Bộ lọc nhanh:</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 120px;">
-                        <label for="vegLevel3DateFilterDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Tìm ngày:</label>
-                        <input type="text" id="vegLevel3DateFilterDate" class="input-field" placeholder="dd/mm/yyyy..." style="padding: 4px 8px; font-size: 12px; height: 30px; margin: 0; width: 100%;">
-                    </div>
-                </div>
-                <div class="table-wrapper">
-                    <table id="perfVegLevel3DateTable">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; width: 60px;">STT</th>
-                                <th>Ngày chuyển</th>
-                                <th style="text-align: right;">3.ROOT VEGGIES (% sai)</th>
-                                <th style="text-align: right;">3.FRUIT VEGGIES (% sai)</th>
-                                <th style="text-align: right;">3.LEAFY VEGGIES (% sai)</th>
-                                <th style="text-align: right;">3.PROCESSED VEGGIES (% sai)</th>
-                                <th style="text-align: right;">3.HERBS (% sai)</th>
-                                <th style="text-align: right;">3.LETTUCE, SNACKABLES (% sai)</th>
-                                <th style="text-align: right;">3.MUSHROOM (% sai)</th>
-                                <th style="text-align: right; font-weight: bold; border-left: 1px solid var(--border-color); color: var(--color-primary);">Tổng % chia sai</th>
-                            </tr>
-                        </thead>
-                        <tbody id="perfVegLevel3DateBody">
-                            <!-- Dynamic aggregate content -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
-            <!-- Bảng chi tiết hiệu suất nhóm hàng Rau Củ (Level 3 - 2.VEGETABLES) -->
-            <div class="table-card" style="margin-bottom: 24px;">
-                <div class="table-header-row" style="background-color: rgba(79, 70, 229, 0.05); border-bottom: 1px solid rgba(79, 70, 229, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                    <span class="table-title" style="color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0;">
-                        🥦 Chi tiết hiệu suất nhóm hàng Rau Củ (Level 3 - 2.VEGETABLES)
-                    </span>
-                    <div class="table-actions">
-                        <button class="btn btn-secondary" id="perfVegLevel3BtnExport">
-                            <span>📥 Xuất Excel/CSV</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="table-inline-filters" style="display: flex; gap: 16px; padding: 12px 20px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;">🔍 Bộ lọc nhanh:</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 120px;">
-                        <label for="vegLevel3FilterDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Tìm ngày:</label>
-                        <input type="text" id="vegLevel3FilterDate" class="input-field" placeholder="dd/mm/yyyy..." style="padding: 4px 8px; font-size: 12px; height: 30px; margin: 0; width: 100%;">
-                    </div>
-                </div>
-                <div class="table-wrapper">
-                    <table id="vegLevel3Table">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; width: 60px;">STT</th>
-                                <th>Ngày chuyển</th>
-                                <th>Nhóm hàng Level 3</th>
-                                <th style="text-align: right;">Tổng số lượng thực tế chia</th>
-                                <th style="text-align: right;">Tổng số lượng chia sai</th>
-                                <th style="text-align: right; color: var(--color-danger);">% Chia sai (Ngày)</th>
-                                <th style="text-align: right; color: var(--color-warning);">% Chia sai (D-1)</th>
-                                <th style="text-align: center; color: var(--text-primary);">So sánh D-1</th>
-                            </tr>
-                        </thead>
-                        <tbody id="vegLevel3Body">
-                            <!-- Dynamic content -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
 
 
@@ -1083,91 +999,7 @@
                 </div>
             </div>
 
-            <!-- Bảng theo dõi hiệu suất phân loại theo Ngày & Ngành Hàng Rau Củ (Level 3) -->
-            <div class="table-card" style="margin-bottom: 24px;">
-                <div class="table-header-row" style="background-color: rgba(16, 185, 129, 0.05); border-bottom: 1px solid rgba(16, 185, 129, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                    <span class="table-title" id="perfVegLevel3DateTableTitle" style="color: var(--color-success); display: flex; align-items: center; gap: 8px; margin: 0;">
-                        🥦 Theo dõi hiệu suất phân loại theo Ngày & Ngành Hàng Rau Củ (Level 3)
-                    </span>
-                    <div class="table-actions">
-                        <button class="btn btn-secondary" id="perfVegLevel3DateBtnExport">
-                            <span>📥 Xuất Excel/CSV</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="table-inline-filters" style="display: flex; gap: 16px; padding: 12px 20px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;">🔍 Bộ lọc nhanh:</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 120px;">
-                        <label for="vegLevel3DateFilterDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Tìm ngày:</label>
-                        <input type="text" id="vegLevel3DateFilterDate" class="input-field" placeholder="dd/mm/yyyy..." style="padding: 4px 8px; font-size: 12px; height: 30px; margin: 0; width: 100%;">
-                    </div>
-                </div>
-                <div class="table-wrapper">
-                    <table id="perfVegLevel3DateTable">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; width: 60px;">STT</th>
-                                <th>Ngày chuyển</th>
-                                <th style="text-align: right;">3.ROOT VEGGIES (% sai)</th>
-                                <th style="text-align: right;">3.FRUIT VEGGIES (% sai)</th>
-                                <th style="text-align: right;">3.LEAFY VEGGIES (% sai)</th>
-                                <th style="text-align: right;">3.PROCESSED VEGGIES (% sai)</th>
-                                <th style="text-align: right;">3.HERBS (% sai)</th>
-                                <th style="text-align: right;">3.LETTUCE, SNACKABLES (% sai)</th>
-                                <th style="text-align: right;">3.MUSHROOM (% sai)</th>
-                                <th style="text-align: right; font-weight: bold; border-left: 1px solid var(--border-color); color: var(--color-primary);">Tổng % chia sai</th>
-                            </tr>
-                        </thead>
-                        <tbody id="perfVegLevel3DateBody">
-                            <!-- Dynamic aggregate content -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
-            <!-- Bảng chi tiết hiệu suất nhóm hàng Rau Củ (Level 3 - 2.VEGETABLES) -->
-            <div class="table-card" style="margin-bottom: 24px;">
-                <div class="table-header-row" style="background-color: rgba(79, 70, 229, 0.05); border-bottom: 1px solid rgba(79, 70, 229, 0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                    <span class="table-title" style="color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin: 0;">
-                        🥦 Chi tiết hiệu suất nhóm hàng Rau Củ (Level 3 - 2.VEGETABLES)
-                    </span>
-                    <div class="table-actions">
-                        <button class="btn btn-secondary" id="perfVegLevel3BtnExport">
-                            <span>📥 Xuất Excel/CSV</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="table-inline-filters" style="display: flex; gap: 16px; padding: 12px 20px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;">🔍 Bộ lọc nhanh:</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 120px;">
-                        <label for="vegLevel3FilterDate" style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">Tìm ngày:</label>
-                        <input type="text" id="vegLevel3FilterDate" class="input-field" placeholder="dd/mm/yyyy..." style="padding: 4px 8px; font-size: 12px; height: 30px; margin: 0; width: 100%;">
-                    </div>
-                </div>
-                <div class="table-wrapper">
-                    <table id="vegLevel3Table">
-                        <thead>
-                            <tr>
-                                <th style="text-align: center; width: 60px;">STT</th>
-                                <th>Ngày chuyển</th>
-                                <th>Nhóm hàng Level 3</th>
-                                <th style="text-align: right;">Tổng số lượng thực tế chia</th>
-                                <th style="text-align: right;">Tổng số lượng chia sai</th>
-                                <th style="text-align: right; color: var(--color-danger);">% Chia sai (Ngày)</th>
-                                <th style="text-align: right; color: var(--color-warning);">% Chia sai (D-1)</th>
-                                <th style="text-align: center; color: var(--text-primary);">So sánh D-1</th>
-                            </tr>
-                        </thead>
-                        <tbody id="vegLevel3Body">
-                            <!-- Dynamic content -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
 
 
@@ -1248,8 +1080,8 @@
     </div>
 
     <!-- Data Script -->
-    <script src="data.js?v=105"></script>
+    <script src="data.js?v=106"></script>
     <!-- Core App Execution Script -->
-    <script src="app.js?v=105"></script>
+    <script src="app.js?v=106"></script>
 </body>
 </html>

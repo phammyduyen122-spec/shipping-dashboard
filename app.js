@@ -2558,8 +2558,6 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
         "perfF1CategoryStartDate", "perfF1CategoryEndDate",
         "catDateTableStartDate", "catDateTableEndDate",
         "topSkuStartDate", "topSkuEndDate",
-        "vegLevel3DateStartDate", "vegLevel3DateEndDate",
-        "vegLevel3StartDate", "vegLevel3EndDate",
         "catValStartDate", "catValEndDate"
     ];
     defaultDateInputs.forEach(id => {
@@ -2572,20 +2570,8 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
     if (catStartDate) catStartDate.value = latestDate;
     if (catEndDate) catEndDate.value = latestDate;
 
-    const vegLevel3FilterDate = document.getElementById("vegLevel3FilterDate");
-    const vegLevel3DateFilterDate = document.getElementById("vegLevel3DateFilterDate");
     if (catStartDate) catStartDate.addEventListener("change", renderF1CategoryTable);
     if (catEndDate) catEndDate.addEventListener("change", renderF1CategoryTable);
-    if (vegLevel3FilterDate) {
-        vegLevel3FilterDate.addEventListener("input", () => {
-            renderVegetablesLevel3Table();
-        });
-    }
-    if (vegLevel3DateFilterDate) {
-        vegLevel3DateFilterDate.addEventListener("input", () => {
-            renderVegetablesLevel3DateTable();
-        });
-    }
 
     // Bind table-specific date filter listeners
     const bindDateFilters = (startId, endId, renderFunc) => {
@@ -2597,8 +2583,6 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
 
     bindDateFilters("catDateTableStartDate", "catDateTableEndDate", renderF1CategoryDateTable);
     bindDateFilters("topSkuStartDate", "topSkuEndDate", renderTopSkuDiscrepancyTable);
-    bindDateFilters("vegLevel3DateStartDate", "vegLevel3DateEndDate", renderVegetablesLevel3DateTable);
-    bindDateFilters("vegLevel3StartDate", "vegLevel3EndDate", renderVegetablesLevel3Table);
     bindDateFilters("catValStartDate", "catValEndDate", () => renderCategoryValuePerformanceTable(transfers));
     
     const catClearFiltersBtn = document.getElementById("catClearFiltersBtn");
@@ -2606,15 +2590,11 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
         catClearFiltersBtn.addEventListener("click", () => {
             if (catStartDate) catStartDate.value = earliestDate;
             if (catEndDate) catEndDate.value = latestDate;
-            if (vegLevel3FilterDate) vegLevel3FilterDate.value = "";
-            if (vegLevel3DateFilterDate) vegLevel3DateFilterDate.value = "";
 
             // Clear table-specific date filters
             const clearInputs = [
                 "catDateTableStartDate", "catDateTableEndDate",
                 "topSkuStartDate", "topSkuEndDate",
-                "vegLevel3DateStartDate", "vegLevel3DateEndDate",
-                "vegLevel3StartDate", "vegLevel3EndDate",
                 "catValStartDate", "catValEndDate"
             ];
             clearInputs.forEach(id => {
@@ -2693,15 +2673,6 @@ function setupCategoryEventListeners(earliestDate, latestDate) {
         });
     }
 
-    const perfVegLevel3DateBtnExport = document.getElementById("perfVegLevel3DateBtnExport");
-    if (perfVegLevel3DateBtnExport) {
-        const newBtn = perfVegLevel3DateBtnExport.cloneNode(true);
-        perfVegLevel3DateBtnExport.parentNode.replaceChild(newBtn, perfVegLevel3DateBtnExport);
-        newBtn.addEventListener("click", () => {
-            const todayStr = new Date().toISOString().split("T")[0];
-            downloadTableToExcel("perfVegLevel3DateTable", `BaoCao_HieuSuatRauCu_Level3_TheoNgay_${todayStr}.csv`);
-        });
-    }
 
     const topSkuCategoryFilter = document.getElementById("topSkuCategoryFilter");
     if (topSkuCategoryFilter) {
@@ -5086,254 +5057,12 @@ function renderF1CategoryTable() {
         tbody.appendChild(trTotal);
     }
     renderF1CategoryDateTable();
-    renderVegetablesLevel3DateTable();
-    renderVegetablesLevel3Table();
     renderTopSkuDiscrepancyTable();
 }
 
 // ============================================================
 // Bảng chi tiết hiệu suất nhóm hàng Rau Củ (Level 3 - 2.VEGETABLES)
 // ============================================================
-function renderVegetablesLevel3Table() {
-    const tbody = document.getElementById("vegLevel3Body");
-    if (!tbody) return;
-    tbody.innerHTML = "";
-
-    const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
-    const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
-
-    const groupSelector = isCategoryTabActive ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
-    const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
-    
-    let activeGroups = [];
-    const groupFilterEl = document.getElementById("perfF1GroupFilter");
-    const groupFilterVal = groupFilterEl ? groupFilterEl.value : "All";
-
-    if (selectedGroups.length > 0) {
-        activeGroups = selectedGroups;
-    } else {
-        if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
-        } else {
-            activeGroups = [groupFilterVal];
-        }
-    }
-
-    const tableStartEl = document.getElementById("vegLevel3StartDate");
-    const tableEndEl = document.getElementById("vegLevel3EndDate");
-
-    const specificStart = tableStartEl ? tableStartEl.value : "";
-    const specificEnd = tableEndEl ? tableEndEl.value : "";
-    
-    let startDateQuery = "";
-    let endDateQuery = "";
-    
-    if (specificStart === "" && specificEnd === "") {
-        startDateQuery = latestDate;
-        endDateQuery = latestDate;
-    } else {
-        startDateQuery = specificStart;
-        endDateQuery = specificEnd;
-    }
-
-    const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
-    const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
-
-    const selectedCats = Array.from(document.querySelectorAll("#catFilterCategoryContainer input[type='checkbox']:checked")).map(cb => cb.value);
-    const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
-
-    const filteredTransfers = transfers.filter(t => {
-        if (!isMainBranch(t.fromBranch)) {
-            return false;
-        }
-        if (!t.nguoiChia) {
-            return false;
-        }
-        const name = t.nguoiChia.trim().toLowerCase();
-        
-        let matchGroupPrefix = false;
-        for (const g of activeGroups) {
-            if (name.startsWith(g.toLowerCase())) {
-                matchGroupPrefix = true;
-                break;
-            }
-        }
-        if (!matchGroupPrefix) return false;
-
-        const matchUser = selectedUsers.length === 0 || selectedUsers.includes(t.nguoiChia);
-        if (!matchUser) return false;
-
-        if (localUserSearch !== "") {
-            if (!name.includes(localUserSearch)) {
-                return false;
-            }
-        }
-
-        // Match global category selection
-        const matchCategory = selectedCats.length === 0 || selectedCats.includes(t.nganhHang);
-        if (!matchCategory) return false;
-
-        // Match global branch selection
-        const matchBranch = selectedBranches.length === 0 || selectedBranches.includes(t.toBranch);
-        if (!matchBranch) return false;
-
-        return true;
-    });
-
-    const vegLevel3FilterDate = document.getElementById("vegLevel3FilterDate") ? document.getElementById("vegLevel3FilterDate").value.toLowerCase().trim() : "";
-
-    const level3Cats = [
-        "3.ROOT VEGGIES",
-        "3.FRUIT VEGGIES",
-        "3.LEAFY VEGGIES",
-        "3.PROCESSED VEGGIES",
-        "3.HERBS",
-        "3.LETTUCE, SNACKABLES",
-        "3.MUSHROOM"
-    ];
-
-    // Group by Date + Level 3 category for ALL dates
-    const allGroupAgg = {};
-    filteredTransfers.forEach(t => {
-        if (t.nganhHang !== "2.VEGETABLES") {
-            return;
-        }
-        const level3 = t.subCategoryLevel3 || "";
-        if (!level3 || !level3Cats.includes(level3)) {
-            return;
-        }
-
-        const statusInfo = calculateStatus(t);
-        if (statusInfo.statusText === "Đang chuyển") {
-            return;
-        }
-
-        const date = t.date || "";
-        const key = `${date}_${level3}`;
-
-        if (!allGroupAgg[key]) {
-            allGroupAgg[key] = {
-                shipped: 0,
-                diff: 0
-            };
-        }
-
-        allGroupAgg[key].shipped += t.qtyShipped;
-        const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
-        if (isDiscrepant) {
-            allGroupAgg[key].diff += Math.abs(statusInfo.chenhLechConLai);
-        }
-    });
-
-    // Extract selected period subset
-    const groupAgg = {};
-    for (const key in allGroupAgg) {
-        const parts = key.split("_");
-        const date = parts[0];
-        const level3 = parts[1];
-
-        const matchStartDate = startDateQuery === "" || date >= startDateQuery;
-        const matchEndDate = endDateQuery === "" || date <= endDateQuery;
-
-        if (matchStartDate && matchEndDate) {
-            groupAgg[key] = {
-                date,
-                level3,
-                shipped: allGroupAgg[key].shipped,
-                diff: allGroupAgg[key].diff
-            };
-        }
-    }
-
-    let sortedSummary = Object.values(groupAgg);
-
-    // Apply quick inline date filter
-    if (vegLevel3FilterDate !== "") {
-        sortedSummary = sortedSummary.filter(item => {
-            return matchDateQuery(item.date, vegLevel3FilterDate);
-        });
-    }
-
-    // Sort by Date descending, then by Level 3 category name
-    sortedSummary.sort((a, b) => {
-        const dateCmp = b.date.localeCompare(a.date);
-        if (dateCmp !== 0) return dateCmp;
-        return a.level3.localeCompare(b.level3);
-    });
-
-    if (sortedSummary.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 20px; color: var(--text-muted);">Không có dữ liệu phù hợp</td></tr>`;
-        return;
-    }
-
-    const getRateStyle = (rateVal, qtyVal) => {
-        if (qtyVal === 0) return "text-align: right;";
-        if (rateVal < 0.5) {
-            return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
-        } else {
-            return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
-        }
-    };
-
-    sortedSummary.forEach((item, index) => {
-        const formattedDate = formatDateToVN(item.date);
-        const shipped = item.shipped;
-        const diff = item.diff;
-        const errorRate = shipped > 0 ? (diff / shipped) * 100 : 0;
-        const rateStyle = getRateStyle(errorRate, shipped);
-
-        // D-1 comparison calculations
-        let prevRateText = "—";
-        let prevRateStyle = "text-align: right; color: var(--text-muted);";
-        let statusHtml = `<span style="color: var(--text-muted);">—</span>`;
-
-        const prevDate = getPrevDateStr(item.date);
-        const d1Key = `${prevDate}_${item.level3}`;
-        const prevItem = allGroupAgg[d1Key];
-
-        if (prevItem && prevItem.shipped > 0) {
-            const prevShipped = prevItem.shipped;
-            const prevDiff = prevItem.diff;
-            const prevRateVal = (prevDiff / prevShipped) * 100;
-            prevRateText = prevRateVal.toFixed(2) + "%";
-            prevRateStyle = getRateStyle(prevRateVal, prevShipped);
-
-            const diffRate = errorRate - prevRateVal;
-            if (Math.abs(diffRate) < 0.005) {
-                statusHtml = `<span style="color: var(--text-muted);">—</span>`;
-            } else if (diffRate > 0) {
-                statusHtml = `<span style="color: var(--color-danger); font-weight: 600;">▲ +${diffRate.toFixed(2)}%</span>`;
-            } else {
-                statusHtml = `<span style="color: var(--color-success); font-weight: 600;">▼ ${diffRate.toFixed(2)}%</span>`;
-            }
-        }
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td style="text-align: center;">${index + 1}</td>
-            <td>${formattedDate}</td>
-            <td style="font-weight: 600; color: var(--text-primary);">${item.level3}</td>
-            <td style="text-align: right; font-weight: 500;">${formatNumber(shipped)}</td>
-            <td style="text-align: right; color: ${diff > 0 ? 'var(--color-danger)' : 'var(--text-muted)'}; font-weight: 500;">${formatDiffNumber(diff)}</td>
-            <td style="${rateStyle}">${shipped > 0 ? errorRate.toFixed(2) + "%" : "0.00%"}</td>
-            <td style="${prevRateStyle}">${prevRateText}</td>
-            <td style="text-align: center; font-size: 13px;">${statusHtml}</td>
-        `;
-        tbody.appendChild(tr);
-    });
-
-    // Bind export button click listener
-    const perfVegLevel3BtnExport = document.getElementById("perfVegLevel3BtnExport");
-    if (perfVegLevel3BtnExport) {
-        const newBtn = perfVegLevel3BtnExport.cloneNode(true);
-        perfVegLevel3BtnExport.parentNode.replaceChild(newBtn, perfVegLevel3BtnExport);
-        newBtn.addEventListener("click", () => {
-            const todayStr = new Date().toISOString().split("T")[0];
-            downloadTableToExcel("vegLevel3Table", `BaoCao_HieuSuatRauCu_Level3_${todayStr}.csv`);
-        });
-    }
-}
-
 // ============================================================
 // Bảng theo dõi hiệu suất phân loại theo Ngày & Ngành Hàng
 // ============================================================
@@ -6175,258 +5904,6 @@ function downloadCategoryValueTabular() {
 // ============================================================
 // Bảng theo dõi hiệu suất phân loại theo Ngày & Ngành Hàng Rau Củ (Level 3)
 // ============================================================
-function renderVegetablesLevel3DateTable() {
-    const tbody = document.getElementById("perfVegLevel3DateBody");
-    if (!tbody) return;
-    tbody.innerHTML = "";
-
-    const contentCategoryPerformance = document.getElementById("contentCategoryPerformance");
-    const isCategoryTabActive = contentCategoryPerformance && contentCategoryPerformance.classList.contains("active");
-
-    const groupSelector = isCategoryTabActive ? "#catFilterGroupContainer input[type='checkbox']:checked" : "#perfFilterGroupContainer input[type='checkbox']:checked";
-    const selectedGroups = Array.from(document.querySelectorAll(groupSelector)).map(cb => cb.value);
-    
-    let activeGroups = [];
-    const groupFilterEl = document.getElementById("perfF1GroupFilter");
-    const groupFilterVal = groupFilterEl ? groupFilterEl.value : "All";
-
-    if (selectedGroups.length > 0) {
-        activeGroups = selectedGroups;
-    } else {
-        if (groupFilterVal === "All") {
-            activeGroups = ["F1", "F2", "HUYHOANG", "CTV", "BAKERY"];
-        } else {
-            activeGroups = [groupFilterVal];
-        }
-    }
-
-    const tableStartEl = document.getElementById("vegLevel3DateStartDate");
-    const tableEndEl = document.getElementById("vegLevel3DateEndDate");
-    const globalStartEl = document.getElementById(isCategoryTabActive ? "catFilterStartDate" : "perfFilterStartDate");
-    const globalEndEl = document.getElementById(isCategoryTabActive ? "catFilterEndDate" : "perfFilterEndDate");
-
-    const startDateQuery = (tableStartEl && tableStartEl.value) ? tableStartEl.value : (globalStartEl ? globalStartEl.value : "");
-    const endDateQuery = (tableEndEl && tableEndEl.value) ? tableEndEl.value : (globalEndEl ? globalEndEl.value : "");
-    
-    const selectedUsers = isCategoryTabActive ? [] : Array.from(document.querySelectorAll("#perfFilterUserContainer input[type='checkbox']:checked")).map(cb => cb.value);
-    const localUserSearch = document.getElementById("perfF1UserSearch") ? document.getElementById("perfF1UserSearch").value.toLowerCase().trim() : "";
-
-    const selectedCats = Array.from(document.querySelectorAll("#catFilterCategoryContainer input[type='checkbox']:checked")).map(cb => cb.value);
-    const selectedBranches = Array.from(document.querySelectorAll("#catFilterBranchContainer input[type='checkbox']:checked")).map(cb => cb.value);
-
-    const activeTransfers = transfers.filter(t => {
-        if (!isMainBranch(t.fromBranch)) {
-            return false;
-        }
-        if (!t.nguoiChia) {
-            return false;
-        }
-        const name = t.nguoiChia.trim().toLowerCase();
-        
-        let matchGroupPrefix = false;
-        for (const g of activeGroups) {
-            if (name.startsWith(g.toLowerCase())) {
-                matchGroupPrefix = true;
-                break;
-            }
-        }
-        if (!matchGroupPrefix) return false;
-
-        const matchUser = selectedUsers.length === 0 || selectedUsers.includes(t.nguoiChia);
-        if (!matchUser) return false;
-
-        if (localUserSearch !== "") {
-            if (!name.includes(localUserSearch)) {
-                return false;
-            }
-        }
-
-        // Match global category selection
-        const matchCategory = selectedCats.length === 0 || selectedCats.includes(t.nganhHang);
-        if (!matchCategory) return false;
-
-        // Match global branch selection
-        const matchBranch = selectedBranches.length === 0 || selectedBranches.includes(t.toBranch);
-        if (!matchBranch) return false;
-
-        const matchStartDate = startDateQuery === "" || t.date >= startDateQuery;
-        const matchEndDate = endDateQuery === "" || t.date <= endDateQuery;
-
-        return matchStartDate && matchEndDate;
-    });
-
-    if (activeTransfers.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 20px; color: var(--text-muted);">Không có dữ liệu phù hợp</td></tr>`;
-        return;
-    }
-
-    const level3Cats = [
-        "3.ROOT VEGGIES",
-        "3.FRUIT VEGGIES",
-        "3.LEAFY VEGGIES",
-        "3.PROCESSED VEGGIES",
-        "3.HERBS",
-        "3.LETTUCE, SNACKABLES",
-        "3.MUSHROOM"
-    ];
-    const dateAgg = {};
-
-    activeTransfers.forEach(t => {
-        if (t.nganhHang !== "2.VEGETABLES") {
-            return;
-        }
-        const date = t.date;
-        const level3 = t.subCategoryLevel3 || "";
-
-        if (!level3 || !level3Cats.includes(level3)) {
-            return;
-        }
-
-        if (!dateAgg[date]) {
-            dateAgg[date] = {
-                date: date,
-                categories: {}
-            };
-            level3Cats.forEach(c => {
-                dateAgg[date].categories[c] = { shipped: 0, received: 0, diff: 0 };
-            });
-        }
-
-        const statusInfo = calculateStatus(t);
-        if (statusInfo.statusText === "Đang chuyển") {
-            return;
-        }
-
-        const isDiscrepant = (statusInfo.statusText === "Thiếu" || statusInfo.statusText === "Dư");
-        dateAgg[date].categories[level3].shipped += t.qtyShipped;
-        dateAgg[date].categories[level3].received += t.qtyReceived + (t.matchedCorrectiveQty || 0);
-        if (isDiscrepant) {
-            dateAgg[date].categories[level3].diff += Math.abs(statusInfo.chenhLechConLai);
-        }
-    });
-
-    const sortedDates = Object.keys(dateAgg).sort();
-
-    const getStyleForDailyCat = (rateVal, qtyVal) => {
-        if (qtyVal === 0) return "text-align: right;";
-        if (rateVal < 0.5) {
-            return "background-color: rgba(16, 185, 129, 0.15); color: var(--color-success); font-weight: bold; text-align: right;";
-        } else {
-            return "background-color: rgba(239, 68, 68, 0.15); color: var(--color-danger); font-weight: bold; text-align: right;";
-        }
-    };
-
-    const localDateSearch = document.getElementById("vegLevel3DateFilterDate") ? document.getElementById("vegLevel3DateFilterDate").value.trim() : "";
-    let displayIndex = 1;
-
-    sortedDates.forEach((date) => {
-        const formattedDate = formatDateToVN(date);
-        if (localDateSearch !== "") {
-            if (!formattedDate.includes(localDateSearch)) {
-                return;
-            }
-        }
-
-        const dData = dateAgg[date];
-        const tr = document.createElement("tr");
-
-        let htmlContent = `
-            <td style="text-align: center;">${displayIndex++}</td>
-            <td><strong>${formattedDate}</strong></td>
-        `;
-
-        let totalShipped = 0;
-        let totalReceived = 0;
-        let totalDiff = 0;
-
-        level3Cats.forEach(cat => {
-            totalShipped += dData.categories[cat].shipped;
-            totalReceived += dData.categories[cat].received;
-            totalDiff += dData.categories[cat].diff;
-        });
-
-        level3Cats.forEach(cat => {
-            const shipped = dData.categories[cat].shipped;
-            const diff = dData.categories[cat].diff;
-            const rateVal = shipped > 0 ? (diff / shipped) * 100 : 0;
-            const style = getStyleForDailyCat(rateVal, shipped);
-            const displayText = shipped === 0 ? "0.00%" : `${rateVal.toFixed(2)}%`;
-            htmlContent += `<td style="${style}">${displayText}</td>`;
-        });
-
-        const totalErrorRate = totalShipped > 0 ? (totalDiff / totalShipped) * 100 : 0;
-        const totalStyle = getStyleForDailyCat(totalErrorRate, totalShipped) + " font-weight: bold; border-left: 1px solid var(--border-color);";
-        const totalDisplayText = totalShipped === 0 ? "0.00%" : `${totalErrorRate.toFixed(2)}%`;
-        htmlContent += `<td style="${totalStyle}">${totalDisplayText}</td>`;
-
-        tr.innerHTML = htmlContent;
-        tbody.appendChild(tr);
-    });
-
-    // Calculate grand totals across all dates
-    let grandShipped = {};
-    let grandReceived = {};
-    let grandDiff = {};
-    level3Cats.forEach(cat => {
-        grandShipped[cat] = 0;
-        grandReceived[cat] = 0;
-        grandDiff[cat] = 0;
-    });
-
-    let matchCount = 0;
-    sortedDates.forEach(date => {
-        const formattedDate = formatDateToVN(date);
-        if (localDateSearch !== "" && !formattedDate.includes(localDateSearch)) {
-            return;
-        }
-        matchCount++;
-        const dData = dateAgg[date];
-        level3Cats.forEach(cat => {
-            grandShipped[cat] += dData.categories[cat].shipped;
-            grandReceived[cat] += dData.categories[cat].received;
-            grandDiff[cat] += dData.categories[cat].diff;
-        });
-    });
-
-    let grandTotalShipped = 0;
-    let grandTotalReceived = 0;
-    let grandTotalDiff = 0;
-    level3Cats.forEach(cat => {
-        grandTotalShipped += grandShipped[cat];
-        grandTotalReceived += grandReceived[cat];
-        grandTotalDiff += grandDiff[cat];
-    });
-
-    if (matchCount > 0) {
-        const trTotal = document.createElement("tr");
-        trTotal.style.fontWeight = "bold";
-        trTotal.style.backgroundColor = "var(--bg-secondary)";
-        trTotal.style.borderTop = "2px solid var(--border-color)";
-
-        let htmlTotal = `
-            <td style="text-align: center;">-</td>
-            <td><strong>TỔNG CỘNG</strong></td>
-        `;
-
-        level3Cats.forEach(cat => {
-            const sh = grandShipped[cat];
-            const df = grandDiff[cat];
-            const rate = sh > 0 ? (df / sh) * 100 : 0;
-            const style = getStyleForDailyCat(rate, sh);
-            const displayText = sh === 0 ? "0.00%" : `${rate.toFixed(2)}%`;
-            htmlTotal += `<td style="${style}">${displayText}</td>`;
-        });
-
-        const grandTotalErrorRate = grandTotalShipped > 0 ? (grandTotalDiff / grandTotalShipped) * 100 : 0;
-        const grandTotalStyle = getStyleForDailyCat(grandTotalErrorRate, grandTotalShipped) + " border-left: 1px solid var(--border-color);";
-        const grandTotalDisplayText = grandTotalShipped === 0 ? "0.00%" : `${grandTotalErrorRate.toFixed(2)}%`;
-        htmlTotal += `<td style="${grandTotalStyle}">${grandTotalDisplayText}</td>`;
-
-        trTotal.innerHTML = htmlTotal;
-        tbody.appendChild(trTotal);
-    }
-}
-
 function getPrevDateStr(dateStr) {
     if (!dateStr) return "";
     const parts = dateStr.split("-");

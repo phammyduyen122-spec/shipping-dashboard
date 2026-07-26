@@ -2324,6 +2324,9 @@ function setupTabs() {
         if (contentSupermarketPerformance) contentSupermarketPerformance.classList.remove("active");
         if (contentExportExcel) contentExportExcel.classList.remove("active");
         
+        populatePerfFilterOptions();
+        populateCategoryGroupOptions();
+        clearPerfFilters();
         renderF1CategoryTable();
     });
 

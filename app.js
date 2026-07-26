@@ -764,11 +764,13 @@ function linkTransfers(rawTransfers) {
                 matchedCorrectiveQty: 0
             });
         } else if (fromB === "kho rau củ xử lý chênh lệch chuyển hàng" || fromB === "kho quá cảnh bánh tươi xử lý chênh lệch chuyển hàng" || fromB === "meatfish - miền đông - scf - lệch chuyển hàng") {
-            correctives.push({
-                ...t,
-                remainingQty: t.qtyShipped,
-                isMerged: false
-            });
+            if (norm(t.toBranch).startsWith("kfm")) {
+                correctives.push({
+                    ...t,
+                    remainingQty: t.qtyShipped,
+                    isMerged: false
+                });
+            }
         }
     });
 
